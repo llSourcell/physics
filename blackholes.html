@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Edge of Forever - Interactive Black Hole Laboratory</title>
+    <style>
+        :root {
+            --bg-color: #000005;
+            --text-color: rgba(255, 255, 255, 0.9);
+            --accent-color: #00BFFF;
+            --glass-bg: rgba(20, 20, 30, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --font-ui: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            --font-mono: 'Menlo', 'Monaco', 'Courier New', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-ui);
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        canvas#gl-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* UI Overlay */
+        #ui-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none;
+            /* Let clicks pass through to canvas */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 15px;
+            pointer-events: auto;
+            /* Re-enable clicks for UI elements */
+            transition: all 0.3s ease;
+        }
+
+        /* Top Bar */
+        #top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            height: 60px;
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-color);
+        }
+
+        .controls-group {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        /* Sliders */
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 150px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Side Panels */
+        .middle-section {
+            display: flex;
+            justify-content: space-between;
+            flex-grow: 1;
+            padding: 20px 0;
+        }
+
+        #left-panel,
+        #right-panel {
+            width: 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow-y: auto;
+        }
+
+        #right-panel {
+            align-items: flex-end;
+            text-align: right;
+        }
+
+        .data-display {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--accent-color);
+        }
+
+        .data-label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.7rem;
+        }
+
+        /* Bottom Bar */
+        #bottom-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            height: 60px;
+            align-items: center;
+        }
+
+        button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--glass-border);
+            color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: var(--font-ui);
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        button.active {
+            background: var(--accent-color);
+            color: #000;
+        }
+
+        /* Split Screen */
+        #split-screen-container {
+            display: none;
+            /* Hidden by default */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .split-divider {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--glass-border);
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="gl-canvas"></canvas>
+    <canvas id="particle-canvas"></canvas>
+
+    <div id="ui-container">
+        <!-- Top Bar -->
+        <div id="top-bar" class="glass-panel">
+            <h1>The Edge of Forever</h1>
+            <div class="controls-group">
+                <div class="slider-container">
+                    <label for="mass-slider">Black Hole Mass (M)</label>
+                    <input type="range" id="mass-slider" min="1" max="10" step="0.1" value="1">
+                </div>
+                <div class="slider-container">
+                    <label for="spin-slider">Spin Parameter (a)</label>
+                    <input type="range" id="spin-slider" min="0" max="0.99" step="0.01" value="0">
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Section -->
+        <div class="middle-section">
+            <!-- Left Panel: Toggles -->
+            <div id="left-panel">
+                <div class="glass-panel">
+                    <label style="display:block; margin-bottom:10px;">Visual Layers</label>
+                    <button id="toggle-grid">Spacetime Grid</button>
+                    <button id="toggle-lensing">Gravitational Lensing</button>
+                    <button id="toggle-accretion">Accretion Disk</button>
+                </div>
+                <div class="glass-panel">
+                    <label style="display:block; margin-bottom:10px;">Overlays</label>
+                    <button id="toggle-photon-sphere">Photon Sphere</button>
+                    <button id="toggle-isco">ISCO</button>
+                    <button id="toggle-horizon">Event Horizon</button>
+                </div>
+                <div class="glass-panel">
+                    <div class="control-group">
+                        <label>Launch Mode</label>
+                        <div class="button-row">
+                            <button id="mode-particle">Test Particle</button>
+                            <button id="mode-photon">Photon</button>
+                            <button id="mode-rod">Extended Body</button>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Observer</label>
+                        <button id="mode-dual">Dual Observer View</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Data -->
+            <div id="right-panel">
+                <div class="glass-panel">
+                    <div class="data-label">CURVATURE SCALAR (K)</div>
+                    <div class="data-display" id="curvature-val">0.0000</div>
+                </div>
+                <div class="glass-panel">
+                    <div class="data-label">GRAVITATIONAL REDSHIFT (z)</div>
+                    <div class="data-display" id="redshift-val">0.0000</div>
+                </div>
+                <div class="glass-panel">
+                    <div class="data-label">DISTANCE TO HORIZON</div>
+                    <div class="data-display" id="distance-val">∞ Rs</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div id="bottom-bar" class="glass-panel">
+            <button id="btn-play">⏸ Pause</button>
+            <button id="btn-reset">↺ Reset</button>
+            <div style="width: 20px;"></div>
+            <button id="mode-particle">Test Particle</button>
+            <button id="mode-photon">Photon</button>
+            <button id="mode-dual">Dual Observer</button>
+        </div>
+    </div>
+
+    <style>
+        /* Add particle canvas style */
+        canvas#particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            /* Above GL canvas, below UI */
+            pointer-events: none;
+        }
+
+        /* Fix appearance lint */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 150px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+    </style>
+
+    <!-- Shaders -->
+    <script id="vs" type="x-shader/x-vertex">#version 300 es
+        in vec4 a_position;
+        void main() {
+            gl_Position = a_position;
+        }
+    </script>
+
+    <script id="fs" type="x-shader/x-fragment">#version 300 es
+        precision highp float;
+
+        uniform vec2 u_resolution;
+        uniform float u_time;
+        uniform vec3 u_cameraPos;
+        uniform float u_mass; // Mass M
+        uniform float u_spin; // Spin a
+        
+        // Toggles
+        uniform bool u_showGrid;
+        uniform bool u_showLensing;
+        uniform bool u_showAccretion;
+        uniform bool u_showPhotonSphere;
+        uniform bool u_showISCO;
+        uniform bool u_showHorizon;
+
+        out vec4 outColor;
+
+        // Constants
+        const float PI = 3.14159265359;
+        const int MAX_STEPS = 250; 
+        const float STEP_SIZE = 0.15; 
+        const float MAX_DIST = 100.0;
+        const float RS_FACTOR = 2.0; // Rs = 2M
+
+        // --- Procedural Background (Starfield) ---
+        float hash(vec2 p) {
+            p = fract(p * vec2(123.34, 456.21));
+            p += dot(p, p + 45.32);
+            return fract(p.x * p.y);
+        }
+
+        float starField(vec3 dir) {
+            vec2 uv = dir.xy / (dir.z + 2.0); 
+            float theta = acos(dir.y);
+            float phi = atan(dir.z, dir.x);
+            vec2 p = vec2(phi, theta) * 30.0;
+            
+            float brightness = 0.0;
+            float h = hash(floor(p));
+            
+            if (h > 0.98) {
+                vec2 local = fract(p) - 0.5;
+                float d = length(local);
+                brightness = exp(-d * 20.0) * (h - 0.98) * 100.0;
+            }
+            
+            float band = sin(phi * 2.0 + 1.0) * sin(theta * 4.0);
+            brightness += max(0.0, band * 0.1);
+            
+            return brightness;
+        }
+
+        vec3 getBackground(vec3 dir) {
+            float stars = starField(dir);
+            vec3 col = vec3(stars);
+            
+            float theta = acos(dir.y);
+            float phi = atan(dir.z, dir.x);
+            float band = smoothstep(0.4, 0.6, abs(dir.y)); 
+            col += vec3(0.1, 0.05, 0.2) * (1.0 - band) * 0.5; 
+            
+            return col;
+        }
+
+        // --- Physics ---
+        vec3 getAcceleration(vec3 pos, vec3 vel) {
+            float r2 = dot(pos, pos);
+            float r = sqrt(r2);
+            float Rs = RS_FACTOR * u_mass;
+            vec3 h = cross(pos, vel);
+            float h2 = dot(h, h);
+            return -1.5 * Rs * h2 * pos / (r2 * r2 * r);
+        }
+
+        // --- Accretion Disk ---
+        vec4 getDiskColor(vec3 pos, vec3 vel) {
+            float r = length(pos);
+            float Rs = RS_FACTOR * u_mass;
+            float isco = 3.0 * Rs; // ISCO for Schwarzschild
+            float outer = 12.0 * Rs;
+            
+            if (r < isco || r > outer) return vec4(0.0);
+
+            // Temperature profile T ~ r^(-3/4)
+            float temp = pow(r / isco, -0.75);
+            
+            // Blackbody-ish color
+            vec3 color = vec3(1.0, 0.5 * temp, 0.1 * temp * temp) * temp * 2.0;
+            
+            // Doppler Beaming
+            // Disk velocity (Keplerian approx)
+            vec3 diskVel = normalize(cross(vec3(0.0, 1.0, 0.0), pos)); // Counter-clockwise
+            float doppler = dot(diskVel, normalize(vel));
+            float beaming = pow(1.0 + doppler, 3.0); // Relativistic beaming factor
+            
+            color *= beaming;
+            
+            // Texture/Turbulence
+            float angle = atan(pos.z, pos.x);
+            float noise = hash(vec2(r * 0.5, angle * 2.0 + u_time * 0.5));
+            color *= (0.8 + 0.4 * noise);
+
+            return vec4(color, 0.4); // Alpha
+        }
+
+        void main() {
+            vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / u_resolution.y;
+
+            // Camera Setup
+            vec3 ro = u_cameraPos;
+            vec3 lookAt = vec3(0.0, 0.0, 0.0);
+            float zoom = 1.0;
+            
+            vec3 f = normalize(lookAt - ro);
+            vec3 r_vec = normalize(cross(vec3(0.0, 1.0, 0.0), f));
+            vec3 u = cross(f, r_vec);
+            vec3 rd = normalize(f * zoom + r_vec * uv.x + u * uv.y);
+
+            // Initial State
+            vec3 pos = ro;
+            vec3 vel = rd; 
+            
+            vec3 col = vec3(0.0);
+            vec3 accumColor = vec3(0.0);
+            float accumAlpha = 0.0;
+
+            bool hitHorizon = false;
+            float Rs = RS_FACTOR * u_mass;
+            float minDist = 1000.0;
+            
+            for(int i=0; i<MAX_STEPS; i++) {
+                float r = length(pos);
+                minDist = min(minDist, r);
+                
+                float step = STEP_SIZE * max(0.1, (r - Rs) * 0.8); 
+                
+                vec3 prevPos = pos;
+                
+                // RK4 Integration
+                vec3 k1_v = getAcceleration(pos, vel);
+                vec3 k1_p = vel;
+                vec3 pos2 = pos + k1_p * step * 0.5;
+                vec3 vel2 = vel + k1_v * step * 0.5;
+                vec3 k2_v = getAcceleration(pos2, vel2);
+                vec3 k2_p = vel2;
+                vec3 pos3 = pos + k2_p * step * 0.5;
+                vec3 vel3 = vel + k2_v * step * 0.5;
+                vec3 k3_v = getAcceleration(pos3, vel3);
+                vec3 k3_p = vel3;
+                vec3 pos4 = pos + k3_p * step;
+                vec3 vel4 = vel + k3_v * step;
+                vec3 k4_v = getAcceleration(pos4, vel4);
+                vec3 k4_p = vel4;
+                
+                pos += (k1_p + 2.0*k2_p + 2.0*k3_p + k4_p) * step / 6.0;
+                vel += (k1_v + 2.0*k2_v + 2.0*k3_v + k4_v) * step / 6.0;
+
+                // Accretion Disk Intersection
+                if (u_showAccretion && prevPos.y * pos.y < 0.0) {
+                    // Crossed the plane
+                    float t = -prevPos.y / (pos.y - prevPos.y);
+                    vec3 intersect = mix(prevPos, pos, t);
+                    vec4 diskCol = getDiskColor(intersect, vel);
+                    
+                    accumColor += diskCol.rgb * diskCol.a * (1.0 - accumAlpha);
+                    accumAlpha += diskCol.a;
+                    
+                    if (accumAlpha > 0.95) break; 
+                }
+
+                if(r < Rs) {
+                    hitHorizon = true;
+                    break;
+                }
+                if(r > MAX_DIST) break;
+            }
+            
+            if(hitHorizon) {
+                if (u_showHorizon) {
+                     // Horizon Grid/Glow
+                     col = vec3(0.0); 
+                } else {
+                     col = vec3(0.0);
+                }
+            } else {
+                col = getBackground(normalize(vel));
+            }
+            
+            // Blend Accretion Disk
+            col = mix(col, accumColor, accumAlpha);
+
+            // Photon Sphere Glow
+            if (u_showPhotonSphere) {
+                float psRadius = 1.5 * Rs;
+                float glow = exp(-abs(minDist - psRadius) * 2.0);
+                col += vec3(1.0, 0.8, 0.2) * glow * 0.5;
+            }
+            
+            // ISCO Ring
+            if (u_showISCO) {
+                float iscoRadius = 3.0 * Rs;
+                float glow = exp(-abs(minDist - iscoRadius) * 5.0);
+                col += vec3(0.2, 0.5, 1.0) * glow * 0.3;
+            }
+
+            outColor = vec4(col, 1.0);
+        }
+    </script>
+
+    <script>
+        class PhysicsEngine {
+            constructor() {
+                this.particles = [];
+            }
+
+            addParticle(pos, vel, type = 'mass', groupId = null) {
+                // Convert Cartesian pos/vel to Spherical State
+                // State: [t, r, theta, phi, ut, ur, utheta, uphi]
+                // For simplicity, we'll store Cartesian and integrate in Cartesian using the Force approximation
+                // OR convert to Spherical for integration.
+                // Let's use Spherical Integration for stability.
+
+                const r = Math.sqrt(pos[0] ** 2 + pos[1] ** 2 + pos[2] ** 2);
+                const theta = Math.acos(pos[1] / r);
+                const phi = Math.atan2(pos[2], pos[0]);
+
+                // Velocity conversion is tricky.
+                // Let's stick to Cartesian integration with a robust step.
+                // It's easier for 3D visualization.
+
+                this.particles.push({
+                    pos: [...pos],
+                    vel: [...vel],
+                    trail: [],
+                    type: type,
+                    active: true,
+                    properTime: 0,
+                    groupId: groupId
+                });
+            }
+
+            update(dt, mass) {
+                const Rs = 2.0 * mass;
+
+                this.particles.forEach(p => {
+                    if (!p.active) return;
+
+                    // Sub-stepping
+                    const steps = 10;
+                    const h = dt / steps;
+
+                    for (let i = 0; i < steps; i++) {
+                        this.integrateRK4(p, h, Rs);
+
+                        const r = Math.sqrt(p.pos[0] ** 2 + p.pos[1] ** 2 + p.pos[2] ** 2);
+                        if (r < Rs) {
+                            p.active = false; // Fell in
+                            break;
+                        }
+                        if (r > 100) {
+                            p.active = false; // Escaped
+                            break;
+                        }
+                    }
+
+                    // Update trail
+                    if (p.active) {
+                        p.trail.push([...p.pos]);
+                        if (p.trail.length > 100) p.trail.shift();
+                        p.properTime += dt; // Approx
+                    }
+                });
+            }
+
+            integrateRK4(p, h, Rs) {
+                const getAcc = (pos, vel) => {
+                    const r2 = pos[0] ** 2 + pos[1] ** 2 + pos[2] ** 2;
+                    const r = Math.sqrt(r2);
+                    const M = Rs / 2.0;
+
+                    // Effective Force Approximation for Schwarzschild
+                    // F = -M/r^3 * x + ...
+                    // We use the same as in shader for consistency
+
+                    const crossX = pos[1] * vel[2] - pos[2] * vel[1];
+                    const crossY = pos[2] * vel[0] - pos[0] * vel[2];
+                    const crossZ = pos[0] * vel[1] - pos[1] * vel[0];
+                    const L2 = crossX ** 2 + crossY ** 2 + crossZ ** 2;
+
+                    const nx = pos[0] / r;
+                    const ny = pos[1] / r;
+                    const nz = pos[2] / r;
+
+                    const forceMag = -M / r2 - 3.0 * M * L2 / (r2 * r2 * r2); // 1/r^4 term
+
+                    return [forceMag * nx, forceMag * ny, forceMag * nz];
+                };
+
+                const k1_v = getAcc(p.pos, p.vel);
+                const k1_p = p.vel;
+
+                const pos2 = [
+                    p.pos[0] + k1_p[0] * h * 0.5,
+                    p.pos[1] + k1_p[1] * h * 0.5,
+                    p.pos[2] + k1_p[2] * h * 0.5
+                ];
+                const vel2 = [
+                    p.vel[0] + k1_v[0] * h * 0.5,
+                    p.vel[1] + k1_v[1] * h * 0.5,
+                    p.vel[2] + k1_v[2] * h * 0.5
+                ];
+
+                const k2_v = getAcc(pos2, vel2);
+                const k2_p = vel2;
+
+                const pos3 = [
+                    p.pos[0] + k2_p[0] * h * 0.5,
+                    p.pos[1] + k2_p[1] * h * 0.5,
+                    p.pos[2] + k2_p[2] * h * 0.5
+                ];
+                const vel3 = [
+                    p.vel[0] + k2_v[0] * h * 0.5,
+                    p.vel[1] + k2_v[1] * h * 0.5,
+                    p.vel[2] + k2_v[2] * h * 0.5
+                ];
+
+                const k3_v = getAcc(pos3, vel3);
+                const k3_p = vel3;
+
+                const pos4 = [
+                    p.pos[0] + k3_p[0] * h,
+                    p.pos[1] + k3_p[1] * h,
+                    p.pos[2] + k3_p[2] * h
+                ];
+                const vel4 = [
+                    p.vel[0] + k3_v[0] * h,
+                    p.vel[1] + k3_v[1] * h,
+                    p.vel[2] + k3_v[2] * h
+                ];
+
+                const k4_v = getAcc(pos4, vel4);
+                const k4_p = vel4;
+
+                for (let i = 0; i < 3; i++) {
+                    p.pos[i] += (k1_p[i] + 2 * k2_p[i] + 2 * k3_p[i] + k4_p[i]) * h / 6.0;
+                    p.vel[i] += (k1_v[i] + 2 * k2_v[i] + 2 * k3_v[i] + k4_v[i]) * h / 6.0;
+                }
+            }
+
+            addRod(pos, vel, length, segments) {
+                const groupId = Math.random().toString(36).substr(2, 9);
+                // Create a rod oriented radially or tangentially?
+                // Let's do radial for spaghettification (tidal stretching)
+                // Or tangential to show convergence?
+                // Let's do a mix or just radial.
+
+                // Direction of rod: Radial from center
+                const r = Math.sqrt(pos[0] ** 2 + pos[1] ** 2 + pos[2] ** 2);
+                const dir = [pos[0] / r, pos[1] / r, pos[2] / r];
+
+                for (let i = 0; i < segments; i++) {
+                    const offset = (i - segments / 2) * (length / segments);
+                    const p = [
+                        pos[0] + dir[0] * offset,
+                        pos[1] + dir[1] * offset,
+                        pos[2] + dir[2] * offset
+                    ];
+                    // Velocity is roughly the same, maybe slight Keplerian difference?
+                    // If we give them exact same velocity, they will separate due to different r.
+                    this.addParticle(p, vel, 'mass', groupId);
+                }
+            }
+        }
+
+        class App {
+            constructor() {
+                this.canvas = document.getElementById('gl-canvas');
+                this.pCanvas = document.getElementById('particle-canvas');
+                this.gl = this.canvas.getContext('webgl2');
+                this.ctx = this.pCanvas.getContext('2d');
+
+                if (!this.gl) {
+                    console.error("WebGL 2 not supported");
+                    return;
+                }
+
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+
+                this.initShaders();
+                this.initBuffers();
+
+                this.physics = new PhysicsEngine();
+
+                // State
+                this.camera = {
+                    pos: [0, 5, -25], // Start slightly above
+                    target: [0, 0, 0],
+                    up: [0, 1, 0],
+                    radius: 25,
+                    theta: 0,
+                    phi: 0.2
+                };
+
+                this.params = {
+                    mass: 1.0,
+                    spin: 0.0,
+                    showGrid: false,
+                    showLensing: true,
+                    showAccretion: true,
+                    showPhotonSphere: true,
+                    showISCO: false,
+                    showHorizon: true,
+                    paused: false
+                };
+
+                this.bindUI();
+                this.startTime = performance.now();
+                this.lastTime = this.startTime;
+                this.animate();
+            }
+
+            bindUI() {
+                // Sliders
+                document.getElementById('mass-slider').addEventListener('input', (e) => this.params.mass = parseFloat(e.target.value));
+                document.getElementById('spin-slider').addEventListener('input', (e) => this.params.spin = parseFloat(e.target.value));
+
+                // Toggles
+                const bindToggle = (id, paramKey) => {
+                    const btn = document.getElementById(id);
+                    if (this.params[paramKey]) btn.classList.add('active');
+                    btn.addEventListener('click', () => {
+                        this.params[paramKey] = !this.params[paramKey];
+                        btn.classList.toggle('active');
+                    });
+                };
+
+                bindToggle('toggle-grid', 'showGrid');
+                bindToggle('toggle-lensing', 'showLensing');
+                bindToggle('toggle-accretion', 'showAccretion');
+                bindToggle('toggle-photon-sphere', 'showPhotonSphere');
+                bindToggle('toggle-isco', 'showISCO');
+                bindToggle('toggle-horizon', 'showHorizon');
+
+                document.getElementById('btn-play').addEventListener('click', (e) => {
+                    this.params.paused = !this.params.paused;
+                    e.target.innerText = this.params.paused ? "▶ Play" : "⏸ Pause";
+                });
+
+                document.getElementById('btn-reset').addEventListener('click', () => {
+                    this.physics.particles = [];
+                    this.params.dualMode = false; // ADDED
+                    document.getElementById('split-screen-container').style.display = 'none'; // ADDED
+                    this.resize(); // ADDED
+                });
+
+                document.getElementById('mode-particle').addEventListener('click', () => {
+                    // Launch a test particle
+                    // Random orbit
+                    const r = 10.0;
+                    const theta = Math.random() * Math.PI * 2;
+                    const pos = [r * Math.cos(theta), 0, r * Math.sin(theta)];
+                    const vel = [-Math.sin(theta) * 0.4, 0, Math.cos(theta) * 0.4]; // Circular-ish
+                    this.physics.addParticle(pos, vel, 'mass');
+                });
+
+                // ADDED START
+                document.getElementById('mode-photon').addEventListener('click', () => {
+                    const r = 10.0;
+                    const theta = Math.random() * Math.PI * 2;
+                    const pos = [r * Math.cos(theta), 0, r * Math.sin(theta)];
+                    const vel = [-Math.sin(theta) * 0.99, 0, Math.cos(theta) * 0.99];
+                    this.physics.addParticle(pos, vel, 'photon');
+                });
+
+                // ADDED: Extended Body Button Handler
+                document.getElementById('mode-rod').addEventListener('click', () => {
+                    const r = 10.0;
+                    const theta = Math.random() * Math.PI * 2;
+                    const pos = [r * Math.cos(theta), 0, r * Math.sin(theta)];
+                    const vel = [-Math.sin(theta) * 0.4, 0, Math.cos(theta) * 0.4]; // Similar to mass particle
+                    this.physics.addRod(pos, vel, 2.0, 5); // Length 2.0, 5 segments
+                });
+
+                document.getElementById('mode-dual').addEventListener('click', () => {
+                    this.params.dualMode = !this.params.dualMode;
+                    const container = document.getElementById('split-screen-container');
+
+                    if (this.params.dualMode) {
+                        container.style.display = 'block';
+                        // Spawn falling observer
+                        this.physics.particles = []; // Clear others
+                        const pos = [0, 0, 15.0]; // Start at 15 Rs
+                        const vel = [0, 0, -0.1]; // Slow radial infall
+                        this.physics.addParticle(pos, vel, 'observer');
+                        this.observerParticle = this.physics.particles[0];
+                    } else {
+                        container.style.display = 'none';
+                        this.observerParticle = null;
+                        this.resize();
+                    }
+                });
+                // ADDED END
+
+                // Camera Controls (Mouse Drag)
+                let isDragging = false;
+                let lastX, lastY;
+
+                this.pCanvas.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    lastX = e.clientX;
+                    lastY = e.clientY;
+                });
+
+                window.addEventListener('mouseup', () => isDragging = false);
+
+                window.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    const dx = e.clientX - lastX;
+                    const dy = e.clientY - lastY;
+                    lastX = e.clientX;
+                    lastY = e.clientY;
+
+                    this.camera.theta += dx * 0.01;
+                    this.camera.phi = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, this.camera.phi + dy * 0.01));
+
+                    this.updateCameraPos();
+                });
+
+                // Zoom
+                this.pCanvas.addEventListener('wheel', (e) => {
+                    this.camera.radius = Math.max(5, Math.min(100, this.camera.radius + e.deltaY * 0.05));
+                    this.updateCameraPos();
+                });
+
+                this.updateCameraPos();
+            }
+
+            updateCameraPos() {
+                const r = this.camera.radius;
+                const t = this.camera.theta;
+                const p = this.camera.phi;
+
+                this.camera.pos[0] = r * Math.cos(p) * Math.sin(t);
+                this.camera.pos[1] = r * Math.sin(p);
+                this.camera.pos[2] = r * Math.cos(p) * Math.cos(t);
+            }
+
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                this.pCanvas.width = window.innerWidth;
+                this.pCanvas.height = window.innerHeight;
+                // this.gl.viewport(0, 0, this.canvas.width, this.canvas.height); // MOVED TO renderScene
+            }
+
+            initShaders() {
+                const vsSource = document.getElementById('vs').text.trim();
+                const fsSource = document.getElementById('fs').text.trim();
+
+                const vs = this.compileShader(this.gl.VERTEX_SHADER, vsSource);
+                const fs = this.compileShader(this.gl.FRAGMENT_SHADER, fsSource);
+
+                this.program = this.gl.createProgram();
+                this.gl.attachShader(this.program, vs);
+                this.gl.attachShader(this.program, fs);
+                this.gl.linkProgram(this.program);
+
+                if (!this.gl.getProgramParameter(this.program, this.gl.LINK_STATUS)) {
+                    console.error(this.gl.getProgramInfoLog(this.program));
+                }
+            }
+
+            compileShader(type, source) {
+                const shader = this.gl.createShader(type);
+                this.gl.shaderSource(shader, source);
+                this.gl.compileShader(shader);
+                if (!this.gl.getShaderParameter(shader, this.gl.COMPILE_STATUS)) {
+                    console.error(this.gl.getShaderInfoLog(shader));
+                }
+                return shader;
+            }
+
+            initBuffers() {
+                // Full screen quad
+                const positions = new Float32Array([
+                    -1, -1,
+                    1, -1,
+                    -1, 1,
+                    -1, 1,
+                    1, -1,
+                    1, 1,
+                ]);
+
+                const vao = this.gl.createVertexArray();
+                this.gl.bindVertexArray(vao);
+
+                const positionBuffer = this.gl.createBuffer();
+                this.gl.bindBuffer(this.gl.ARRAY_BUFFER, positionBuffer);
+                this.gl.bufferData(this.gl.ARRAY_BUFFER, positions, this.gl.STATIC_DRAW);
+
+                const positionAttributeLocation = this.gl.getAttribLocation(this.program, "a_position");
+                this.gl.enableVertexAttribArray(positionAttributeLocation);
+                this.gl.vertexAttribPointer(positionAttributeLocation, 2, this.gl.FLOAT, false, 0, 0);
+            }
+
+            // MODIFIED: Added camera, width, height, offsetX parameters
+            project(pos, camera, width, height, offsetX = 0) {
+                // Simple perspective projection for overlay
+                // We need the View and Projection matrices matching the shader
+                // Shader uses: ro, lookAt -> View Matrix
+
+                // View Matrix
+                const eye = camera.pos;
+                const target = camera.target;
+                const up = camera.up;
+
+                const zAxis = normalize(subtract(eye, target));
+                const xAxis = normalize(cross(up, zAxis));
+                const yAxis = cross(zAxis, xAxis);
+
+                // Transform pos to camera space
+                const relPos = subtract(pos, eye);
+                const x = dot(relPos, xAxis);
+                const y = dot(relPos, yAxis);
+                const z = dot(relPos, zAxis); // z is negative depth
+
+                // Projection
+                // Shader uses simple ray marching, effectively FOV ~ 90 deg (uv goes -0.5 to 0.5)
+                // uv.y = (screenY - 0.5*h)/h
+                // rd = f + r*uv.x + u*uv.y
+                // This corresponds to a specific projection.
+                // Let's approximate:
+                // ScreenX = x / -z * scale
+
+                if (z > 0) return null; // Behind camera
+
+                const scale = height; // Zoom factor
+                const sx = (x / -z) * scale + width / 2 + offsetX; // MODIFIED: Added offsetX
+                const sy = (-y / -z) * scale + height / 2;
+
+                return [sx, sy];
+            }
+
+            // MODIFIED: Added camera, width, height, offsetX parameters
+            drawParticles(camera, width, height, offsetX = 0) {
+                // Group by ID
+                const groups = {};
+
+                this.physics.particles.forEach(p => {
+                    if (!p.active) return;
+
+                    const screenPos = this.project(p.pos, camera, width, height, offsetX);
+                    if (!screenPos) return;
+
+                    // Draw Trail
+                    this.ctx.beginPath();
+                    this.ctx.strokeStyle = p.type === 'photon' ? 'rgba(255, 200, 100, 0.4)' : 'rgba(255, 255, 255, 0.4)';
+                    this.ctx.lineWidth = 2;
+                    let started = false;
+                    for (let i = 0; i < p.trail.length; i++) {
+                        const sp = this.project(p.trail[i], camera, width, height, offsetX);
+                        if (sp) {
+                            if (!started) {
+                                this.ctx.moveTo(sp[0], sp[1]);
+                                started = true;
+                            } else {
+                                this.ctx.lineTo(sp[0], sp[1]);
+                            }
+                        }
+                    }
+                    this.ctx.stroke();
+
+                    // Draw Particle
+                    this.ctx.beginPath();
+                    this.ctx.fillStyle = p.type === 'photon' ? '#fc0' : '#fff';
+                    this.ctx.arc(screenPos[0], screenPos[1], p.type === 'photon' ? 3 : 4, 0, Math.PI * 2);
+                    this.ctx.fill();
+
+                    // Store for group drawing
+                    if (p.groupId) {
+                        if (!groups[p.groupId]) groups[p.groupId] = [];
+                        groups[p.groupId].push(screenPos);
+                    }
+                });
+
+                // Draw Rods (Connections)
+                this.ctx.strokeStyle = 'rgba(100, 255, 100, 0.8)';
+                this.ctx.lineWidth = 3;
+                for (const id in groups) {
+                    const points = groups[id];
+                    if (points.length < 2) continue;
+
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(points[0][0], points[0][1]);
+                    for (let i = 1; i < points.length; i++) {
+                        this.ctx.lineTo(points[i][0], points[i][1]);
+                    }
+                    this.ctx.stroke();
+                }
+            }
+
+            // ADDED START
+            renderScene(camera, x, y, width, height, time) {
+                this.gl.viewport(x, y, width, height);
+
+                this.gl.uniform2f(this.gl.getUniformLocation(this.program, "u_resolution"), width, height);
+                this.gl.uniform1f(this.gl.getUniformLocation(this.program, "u_time"), time);
+                this.gl.uniform3fv(this.gl.getUniformLocation(this.program, "u_cameraPos"), camera.pos);
+                this.gl.uniform1f(this.gl.getUniformLocation(this.program, "u_mass"), this.params.mass);
+                this.gl.uniform1f(this.gl.getUniformLocation(this.program, "u_spin"), this.params.spin);
+
+                this.gl.uniform1i(this.gl.getUniformLocation(this.program, "u_showGrid"), this.params.showGrid);
+                this.gl.uniform1i(this.gl.getUniformLocation(this.program, "u_showLensing"), this.params.showLensing);
+                this.gl.uniform1i(this.gl.getUniformLocation(this.program, "u_showAccretion"), this.params.showAccretion);
+                this.gl.uniform1i(this.gl.getUniformLocation(this.program, "u_showPhotonSphere"), this.params.showPhotonSphere);
+                this.gl.uniform1i(this.gl.getUniformLocation(this.program, "u_showISCO"), this.params.showISCO);
+                this.gl.uniform1i(this.gl.getUniformLocation(this.program, "u_showHorizon"), this.params.showHorizon);
+
+                this.gl.drawArrays(this.gl.TRIANGLES, 0, 6);
+            }
+            // ADDED END
+
+            animate() {
+                const now = performance.now();
+                const dt = Math.min((now - this.lastTime) / 1000, 0.1);
+                this.lastTime = now;
+
+                if (!this.params.paused) {
+                    this.physics.update(dt, this.params.mass);
+                }
+
+                this.gl.useProgram(this.program);
+                this.ctx.clearRect(0, 0, this.pCanvas.width, this.pCanvas.height); // MOVED HERE
+
+                // MODIFIED START
+                if (this.params.dualMode) {
+                    const w = this.canvas.width / 2;
+                    const h = this.canvas.height;
+
+                    // Left: Falling Observer
+                    let fallingCam = {
+                        pos: [0, 0, 0],
+                        target: [0, 0, 0],
+                        up: [0, 1, 0]
+                    };
+                    if (this.observerParticle && this.observerParticle.active) {
+                        fallingCam.pos = this.observerParticle.pos;
+                        // Look forward (velocity) or center? Center is more dramatic for "falling in"
+                        fallingCam.target = [0, 0, 0];
+                    } else {
+                        fallingCam.pos = [0, 0, 5]; // Default if lost
+                    }
+
+                    this.renderScene(fallingCam, 0, 0, w, h, now / 1000);
+
+                    // Right: Distant Observer
+                    this.renderScene(this.camera, w, 0, w, h, now / 1000);
+
+                    // Draw Particles Overlay
+                    // We need to draw particles on both sides with correct projection
+                    // Left
+                    this.ctx.save();
+                    this.ctx.beginPath();
+                    this.ctx.rect(0, 0, w, h);
+                    this.ctx.clip();
+                    this.drawParticles(fallingCam, w, h, 0);
+
+                    // Draw Text
+                    this.ctx.fillStyle = '#0ff';
+                    this.ctx.font = '16px monospace';
+                    this.ctx.fillText("FALLING OBSERVER", 20, 30);
+                    if (this.observerParticle) {
+                        this.ctx.fillText(`PROPER TIME: ${this.observerParticle.properTime.toFixed(2)}`, 20, 50);
+                    }
+                    this.ctx.restore();
+
+                    // Right
+                    this.ctx.save();
+                    this.ctx.beginPath();
+                    this.ctx.rect(w, 0, w, h);
+                    this.ctx.clip();
+                    this.drawParticles(this.camera, w, h, w);
+
+                    this.ctx.fillStyle = '#0ff';
+                    this.ctx.font = '16px monospace';
+                    this.ctx.fillText("DISTANT OBSERVER", w + 20, 30);
+                    this.ctx.fillText(`COORD TIME: ${(now / 1000).toFixed(2)}`, w + 20, 50);
+                    this.ctx.restore();
+
+                    // Divider
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(w, 0);
+                    this.ctx.lineTo(w, h);
+                    this.ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+                    this.ctx.stroke();
+
+                } else {
+                    // Normal Mode
+                    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+                    this.renderScene(this.camera, 0, 0, this.canvas.width, this.canvas.height, now / 1000);
+                    this.drawParticles(this.camera, this.canvas.width, this.canvas.height, 0);
+                }
+
+                // Update Data Panel
+                const r = Math.sqrt(this.camera.pos[0] ** 2 + this.camera.pos[1] ** 2 + this.camera.pos[2] ** 2);
+                const Rs = 2.0 * this.params.mass;
+                document.getElementById('distance-val').innerText = (r / Rs).toFixed(2) + " Rs";
+                document.getElementById('curvature-val').innerText = (48 * this.params.mass ** 2 / Math.pow(r, 6)).toExponential(2);
+                document.getElementById('redshift-val').innerText = (1.0 / Math.sqrt(1.0 - Rs / r) - 1.0).toFixed(4);
+                // MODIFIED END
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // Vector Utils
+        function normalize(v) {
+            const l = Math.sqrt(v[0] ** 2 + v[1] ** 2 + v[2] ** 2);
+            return [v[0] / l, v[1] / l, v[2] / l];
+        }
+        function cross(a, b) {
+            return [
+                a[1] * b[2] - a[2] * b[1],
+                a[2] * b[0] - a[0] * b[2],
+                a[0] * b[1] - a[1] * b[0]
+            ];
+        }
+        function subtract(a, b) {
+            return [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+        }
+        function dot(a, b) {
+            return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+        }
+
+        // Initialize App
+        window.onload = () => {
+            const app = new App();
+        };
+    </script>
+</body>
+
+</html>
