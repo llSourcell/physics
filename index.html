@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Siraj’s Physics Logs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg: #020617;
+        --bg-alt: #020817;
+        --accent: #38bdf8;
+        --accent-soft: rgba(56, 189, 248, 0.35);
+        --accent-purple: #a855f7;
+        --text-main: #e5e7eb;
+        --text-dim: #9ca3af;
+        --card-bg: rgba(15, 23, 42, 0.9);
+        --border-subtle: rgba(148, 163, 184, 0.25);
+        --radius-xl: 1.5rem;
+        --blur: 20px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        min-height: 100vh;
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        color: var(--text-main);
+        background:
+          radial-gradient(circle at 10% 0%, #1d3557 0, transparent 55%),
+          radial-gradient(circle at 80% 10%, #4c1d95 0, transparent 55%),
+          radial-gradient(circle at 0% 80%, #0f766e 0, transparent 55%),
+          radial-gradient(circle at 100% 100%, #1d4ed8 0, transparent 55%),
+          radial-gradient(circle at 50% 50%, #020617 0, #000 65%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1.5rem;
+      }
+
+      .stars {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          radial-gradient(1px 1px at 10% 20%, rgba(248, 250, 252, 0.7) 0, transparent 60%),
+          radial-gradient(1px 1px at 80% 30%, rgba(248, 250, 252, 0.6) 0, transparent 60%),
+          radial-gradient(1px 1px at 20% 80%, rgba(248, 250, 252, 0.5) 0, transparent 60%),
+          radial-gradient(1px 1px at 90% 70%, rgba(248, 250, 252, 0.4) 0, transparent 60%);
+        opacity: 0.75;
+        z-index: 0;
+        animation: drift 40s linear infinite;
+      }
+
+      @keyframes drift {
+        from {
+          transform: translate3d(0, 0, 0);
+        }
+        to {
+          transform: translate3d(-60px, -40px, 0);
+        }
+      }
+
+      .frame {
+        position: relative;
+        z-index: 1;
+        max-width: 960px;
+        width: 100%;
+        border-radius: 2rem;
+        padding: 1px;
+        background: radial-gradient(circle at top left, #38bdf8, #a855f7, #0f172a);
+        box-shadow:
+          0 0 0 1px rgba(15, 23, 42, 0.7),
+          0 24px 80px rgba(15, 23, 42, 0.95),
+          0 0 60px rgba(56, 189, 248, 0.25);
+      }
+
+      .shell {
+        border-radius: 2rem;
+        background: radial-gradient(circle at top, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.98));
+        backdrop-filter: blur(var(--blur));
+        padding: 2rem 1.75rem 2.25rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      @media (min-width: 768px) {
+        .shell {
+          padding: 2.5rem 2.5rem 2.75rem;
+        }
+      }
+
+      .scanline {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(15, 23, 42, 0.4) 48%,
+          transparent 100%
+        );
+        mix-blend-mode: soft-light;
+        opacity: 0.5;
+        pointer-events: none;
+      }
+
+      .header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+      }
+
+      .title-block {
+        max-width: 560px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.7rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 0.85rem;
+      }
+
+      .eyebrow-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: radial-gradient(circle at 30% 30%, #e0f2fe, #38bdf8);
+        box-shadow: 0 0 16px rgba(56, 189, 248, 0.9);
+      }
+
+      h1 {
+        font-family: "Orbitron", system-ui, sans-serif;
+        font-weight: 700;
+        font-size: clamp(1.9rem, 3vw, 2.4rem);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 0.75rem;
+        text-shadow: 0 0 22px rgba(15, 23, 42, 0.9);
+      }
+
+      .subtitle {
+        font-size: 0.95rem;
+        color: var(--text-dim);
+        max-width: 32rem;
+        line-height: 1.6;
+      }
+
+      .badge {
+        border-radius: 999px;
+        padding: 0.35rem 0.85rem;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: linear-gradient(
+          to right,
+          rgba(15, 23, 42, 0.9),
+          rgba(15, 23, 42, 0.7)
+        );
+      }
+
+      .badge-pip {
+        width: 6px;
+        height: 18px;
+        border-radius: 999px;
+        background: linear-gradient(to bottom, #a855f7, #38bdf8);
+      }
+
+      .grid {
+        display: grid;
+        gap: 1.2rem;
+        margin-bottom: 1.9rem;
+      }
+
+      @media (min-width: 640px) {
+        .grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+
+      .card {
+        position: relative;
+        border-radius: var(--radius-xl);
+        padding: 1.1rem 1rem;
+        background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.15), var(--card-bg));
+        border: 1px solid var(--border-subtle);
+        overflow: hidden;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        transition:
+          transform 180ms ease-out,
+          box-shadow 180ms ease-out,
+          border-color 180ms ease-out,
+          background 200ms ease-out;
+      }
+
+      .card:hover {
+        transform: translateY(-4px) translateZ(0);
+        border-color: var(--accent-soft);
+        box-shadow:
+          0 16px 40px rgba(15, 23, 42, 0.9),
+          0 0 40px rgba(56, 189, 248, 0.25);
+        background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.23), var(--card-bg));
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: -60%;
+        background: radial-gradient(
+          circle at top,
+          rgba(56, 189, 248, 0.18),
+          transparent 70%
+        );
+        opacity: 0;
+        transition: opacity 200ms ease-out;
+      }
+
+      .card:hover::before {
+        opacity: 1;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.7rem;
+      }
+
+      .card-label {
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: var(--accent-purple);
+        opacity: 0.9;
+      }
+
+      .card-title {
+        font-size: 0.98rem;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+      }
+
+      .card-pill {
+        font-size: 0.68rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        background-color: rgba(15, 23, 42, 0.9);
+        color: var(--text-dim);
+        white-space: nowrap;
+      }
+
+      .card-body {
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        line-height: 1.5;
+      }
+
+      .card-footer {
+        margin-top: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        color: rgba(148, 163, 184, 0.9);
+      }
+
+      .card-footer span {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+
+      .card-footer svg {
+        width: 12px;
+        height: 12px;
+        flex-shrink: 0;
+      }
+
+      .footer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+      }
+
+      .footer-left {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .status-light {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: radial-gradient(circle at center, #bbf7d0, #22c55e);
+        box-shadow: 0 0 14px rgba(34, 197, 94, 0.9);
+      }
+
+      .footer-right {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .chip {
+        border-radius: 999px;
+        padding: 0.25rem 0.7rem;
+        background-color: rgba(15, 23, 42, 0.95);
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+      }
+
+      .chip-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: var(--accent);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="stars"></div>
+
+    <main class="frame">
+      <div class="shell">
+        <div class="scanline"></div>
+
+        <header class="header">
+          <div class="title-block">
+            <div class="eyebrow">
+              <span class="eyebrow-dot"></span>
+              STARDATE 2025 · STARFLEET SCIENCE LOG
+            </div>
+            <h1>Siraj’s Physics Logs</h1>
+            <p class="subtitle">
+              Personal science archive of a wandering human trying to reverse-engineer the universe.
+              Tap a log to enter a sector of spacetime.
+            </p>
+          </div>
+
+          <div class="badge">
+            <span class="badge-pip"></span>
+            <span>USS GitHub · Deck: <strong>Physics</strong></span>
+          </div>
+        </header>
+
+        <section class="grid" aria-label="Physics sections">
+          <!-- Spacetime -->
+          <a class="card" href="spacetime.html">
+            <div class="card-header">
+              <div>
+                <div class="card-label">Sector 01</div>
+                <div class="card-title">Spacetime &amp; Gravity</div>
+              </div>
+              <div class="card-pill">Warp Field Notes</div>
+            </div>
+            <p class="card-body">
+              Minkowski diagrams, curvature, time dilation, and why falling is just following the
+              geometry. The closest thing we have to a Star Trek warp manual.
+            </p>
+            <div class="card-footer">
+              <span>
+                <!-- tiny arrow -->
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path
+                    d="M6 4l6 6-6 6"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                Enter log
+              </span>
+              <span>Core concept · GR &amp; SR</span>
+            </div>
+          </a>
+
+          <!-- Waves (or 2nd file) -->
+          <a class="card" href="waves.html">
+            <div class="card-header">
+              <div>
+                <div class="card-label">Sector 02</div>
+                <div class="card-title">Waves, Fields &amp; Light</div>
+              </div>
+              <div class="card-pill">Sensors &amp; Signals</div>
+            </div>
+            <p class="card-body">
+              Oscillations, interference, and the math that turns “vibes” into wave equations. From
+              photons to warp-core plasma streams.
+            </p>
+            <div class="card-footer">
+              <span>
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path
+                    d="M6 4l6 6-6 6"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                Enter log
+              </span>
+              <span>Core concept · EM &amp; QFT</span>
+            </div>
+          </a>
+
+          <!-- Home / Index or 3rd file -->
+          <a class="card" href="index.html">
+            <div class="card-header">
+              <div>
+                <div class="card-label">Sector 00</div>
+                <div class="card-title">Main Computer</div>
+              </div>
+              <div class="card-pill">Index &amp; Overview</div>
+            </div>
+            <p class="card-body">
+              Start here to expand the ship’s library. Add new logs, reorganize sectors, and keep
+              upgrading your personal physics canon.
+            </p>
+            <div class="card-footer">
+              <span>
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path
+                    d="M6 4l6 6-6 6"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                Command deck
+              </span>
+              <span>Hub · Editable</span>
+            </div>
+          </a>
+        </section>
+
+        <footer class="footer">
+          <div class="footer-left">
+            <span class="status-light"></span>
+            <span>GitHub Pages online · Signal locked</span>
+          </div>
+          <div class="footer-right">
+            <div class="chip">
+              <span class="chip-dot"></span>
+              <span>Made in the Sol system</span>
+            </div>
+            <div class="chip">
+              <span class="chip-dot"></span>
+              <span>Client: Browser · Engine: Curiosity</span>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </main>
+  </body>
+</html>
