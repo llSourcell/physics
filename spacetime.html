@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Dance of Spacetime</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --text-color: #e0e0e0;
+            --accent-color: #00f3ff;
+            --panel-bg: rgba(20, 20, 30, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .ui-element {
+            pointer-events: auto;
+            position: absolute;
+            padding: 12px 20px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .header {
+            top: 24px;
+            left: 24px;
+        }
+
+        .header h1 {
+            font-size: 1.2rem;
+            font-weight: 300;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.9);
+            text-transform: uppercase;
+        }
+
+        .controls {
+            top: 24px;
+            right: 24px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .toggle-btn {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.7);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn.active {
+            background: rgba(0, 243, 255, 0.15);
+            border-color: var(--accent-color);
+            color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+        }
+
+        .toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .instructions {
+            bottom: 24px;
+            left: 24px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            display: flex;
+            gap: 16px;
+        }
+
+        .instruction-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 4px;
+            height: 4px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+
+        /* Vignette effect */
+        .vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.6) 100%);
+            pointer-events: none;
+            z-index: 5;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="simCanvas"></canvas>
+    <div class="vignette"></div>
+
+    <div class="ui-layer">
+        <div class="ui-element header">
+            <h1>Spacetime Curvature</h1>
+        </div>
+
+        <div class="ui-element controls">
+            <button class="toggle-btn active" id="btn-grid" onclick="toggleOption('showGrid')">Grid</button>
+            <button class="toggle-btn active" id="btn-waves" onclick="toggleOption('enableWaves')">Waves</button>
+            <button class="toggle-btn active" id="btn-trails" onclick="toggleOption('showTrails')">Trails</button>
+        </div>
+
+        <div class="ui-element instructions">
+            <div class="instruction-item"><span class="dot"></span> Click to add mass</div>
+            <div class="instruction-item"><span class="dot"></span> Drag to move</div>
+            <div class="instruction-item"><span class="dot"></span> Scroll to zoom</div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const CONFIG = {
+            G: 0.5,                // Gravitational constant
+            GRID_RES: 60,          // Grid resolution (N x N)
+            GRID_SIZE: 2000,       // Physical size of grid
+            DAMPING: 0.98,         // Wave damping
+            WAVE_SPEED: 0.15,      // Wave propagation speed
+            MAX_TRAIL: 200,        // Trail length
+            ZOOM_SENSITIVITY: 0.001,
+            MIN_ZOOM: 0.2,
+            MAX_ZOOM: 3.0,
+            STAR_COUNT: 400
+        };
+
+        const STATE = {
+            showGrid: true,
+            enableWaves: true,
+            showTrails: true,
+            zoom: 1.0,
+            cameraOffset: { x: 0, y: 0 },
+            isDragging: false,
+            draggedMass: null,
+            mouseX: 0,
+            mouseY: 0
+        };
+
+        // --- MATH HELPERS ---
+        class Vector2 {
+            constructor(x, y) { this.x = x; this.y = y; }
+            add(v) { return new Vector2(this.x + v.x, this.y + v.y); }
+            sub(v) { return new Vector2(this.x - v.x, this.y - v.y); }
+            mult(s) { return new Vector2(this.x * s, this.y * s); }
+            mag() { return Math.sqrt(this.x * this.x + this.y * this.y); }
+            dist(v) { return Math.sqrt((this.x - v.x)**2 + (this.y - v.y)**2); }
+            normalize() {
+                const m = this.mag();
+                return m === 0 ? new Vector2(0, 0) : new Vector2(this.x / m, this.y / m);
+            }
+        }
+
+        // --- PHYSICS CLASSES ---
+        class Mass {
+            constructor(x, y, m) {
+                this.pos = new Vector2(x, y);
+                this.vel = new Vector2(0, 0);
+                this.acc = new Vector2(0, 0);
+                this.mass = m;
+                this.radius = Math.sqrt(m) * 4; // Visual radius
+                this.trail = [];
+                
+                // Color based on mass
+                if (m < 20) this.color = '#4facfe'; // Blue
+                else if (m < 50) this.color = '#f093fb'; // Purple/Pink
+                else this.color = '#ff6b6b'; // Red/Orange
+            }
+
+            update() {
+                if (STATE.draggedMass === this) return; // Don't update physics if being dragged
+
+                this.vel = this.vel.add(this.acc);
+                this.pos = this.pos.add(this.vel);
+                this.acc = new Vector2(0, 0); // Reset acc
+
+                // Trail logic
+                if (STATE.showTrails) {
+                    this.trail.push({ x: this.pos.x, y: this.pos.y });
+                    if (this.trail.length > CONFIG.MAX_TRAIL) this.trail.shift();
+                }
+            }
+
+            draw(ctx, center, zoom) {
+                // Draw Trail
+                if (STATE.showTrails && this.trail.length > 1) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = this.color;
+                    for (let i = 0; i < this.trail.length - 1; i++) {
+                        const p1 = worldToScreen(this.trail[i], center, zoom);
+                        const p2 = worldToScreen(this.trail[i+1], center, zoom);
+                        ctx.globalAlpha = (i / this.trail.length) * 0.5;
+                        ctx.lineWidth = 2 * zoom;
+                        ctx.moveTo(p1.x, p1.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                    ctx.globalAlpha = 1.0;
+                }
+
+                // Draw Mass
+                const screenPos = worldToScreen(this.pos, center, zoom);
+                const r = this.radius * zoom;
+
+                // Glow
+                const gradient = ctx.createRadialGradient(screenPos.x, screenPos.y, r * 0.2, screenPos.x, screenPos.y, r * 4);
+                gradient.addColorStop(0, this.color);
+                gradient.addColorStop(0.4, this.color + '40'); // Hex alpha
+                gradient.addColorStop(1, 'transparent');
+
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(screenPos.x, screenPos.y, r * 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Core
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(screenPos.x, screenPos.y, r * 0.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        // --- GRID SYSTEM ---
+        class GridSystem {
+            constructor() {
+                this.cols = CONFIG.GRID_RES;
+                this.rows = CONFIG.GRID_RES;
+                this.points = [];
+                this.spacing = CONFIG.GRID_SIZE / CONFIG.GRID_RES;
+
+                // Initialize grid points
+                for (let i = 0; i < this.cols; i++) {
+                    this.points[i] = [];
+                    for (let j = 0; j < this.rows; j++) {
+                        this.points[i][j] = {
+                            x: (i - this.cols/2) * this.spacing,
+                            z: (j - this.rows/2) * this.spacing, // Z is "depth" in 3D, Y is up/down
+                            y: 0,      // Current height (displacement)
+                            vel: 0,    // Velocity for wave eq
+                            baseY: 0   // Gravity well displacement
+                        };
+                    }
+                }
+            }
+
+            update(masses) {
+                // 1. Calculate Gravity Wells (Static displacement)
+                for (let i = 0; i < this.cols; i++) {
+                    for (let j = 0; j < this.rows; j++) {
+                        const p = this.points[i][j];
+                        let displacement = 0;
+                        
+                        for (const m of masses) {
+                            const dx = p.x - m.pos.x;
+                            const dz = p.z - m.pos.y; // Map 2D physics Y to 3D Z
+                            const distSq = dx*dx + dz*dz;
+                            const dist = Math.sqrt(distSq);
+                            
+                            // Softened gravity well formula
+                            // Depth proportional to Mass / Distance
+                            // Clamp distance to avoid infinity
+                            displacement -= (m.mass * 15) / (dist + 50);
+                        }
+                        p.baseY = displacement;
+                    }
+                }
+
+                // 2. Wave Equation (Dynamic ripples)
+                if (STATE.enableWaves) {
+                    for (let i = 1; i < this.cols - 1; i++) {
+                        for (let j = 1; j < this.rows - 1; j++) {
+                            const p = this.points[i][j];
+                            
+                            // Laplacian (average of neighbors)
+                            const neighbors = (
+                                this.points[i-1][j].y + 
+                                this.points[i+1][j].y + 
+                                this.points[i][j-1].y + 
+                                this.points[i][j+1].y
+                            ) / 4;
+
+                            // Acceleration = force (restoring force towards neighbors)
+                            // But we want it to oscillate around baseY
+                            // Actually, standard wave eq: u_tt = c^2 * laplacian
+                            // Here we treat 'y' as the deviation from baseY for the wave part?
+                            // Let's simplify: simulate waves on top of gravity wells.
+                            // We'll store 'waveHeight' separately if we want true superposition,
+                            // but modifying 'y' directly works if we are careful.
+                            
+                            // Let's use a simple cellular automaton approach for ripples
+                            // We need a separate buffer for wave simulation to be stable, 
+                            // but for visual effect, let's try a direct integration.
+                            
+                            // Better approach for this visual:
+                            // The 'y' is the total height.
+                            // We want it to relax towards 'baseY'.
+                            // And also propagate changes.
+                            
+                            const force = (neighbors - p.y) * CONFIG.WAVE_SPEED;
+                            p.vel += force;
+                            p.vel *= CONFIG.DAMPING;
+                            
+                            // Pull towards gravity well shape
+                            const gravityPull = (p.baseY - p.y) * 0.1; 
+                            p.vel += gravityPull;
+                        }
+                    }
+
+                    // Apply velocity
+                    for (let i = 0; i < this.cols; i++) {
+                        for (let j = 0; j < this.rows; j++) {
+                            this.points[i][j].y += this.points[i][j].vel;
+                        }
+                    }
+                } else {
+                    // Just set to gravity well if waves disabled
+                    for (let i = 0; i < this.cols; i++) {
+                        for (let j = 0; j < this.rows; j++) {
+                            this.points[i][j].y = this.points[i][j].baseY;
+                        }
+                    }
+                }
+            }
+
+            triggerWave(x, z, strength) {
+                // Find nearest grid point
+                const i = Math.floor((x / this.spacing) + this.cols/2);
+                const j = Math.floor((z / this.spacing) + this.rows/2);
+                
+                if (i >= 1 && i < this.cols-1 && j >= 1 && j < this.rows-1) {
+                    this.points[i][j].vel += strength;
+                    this.points[i+1][j].vel += strength * 0.5;
+                    this.points[i-1][j].vel += strength * 0.5;
+                    this.points[i][j+1].vel += strength * 0.5;
+                    this.points[i][j-1].vel += strength * 0.5;
+                }
+            }
+
+            draw(ctx, center, zoom) {
+                if (!STATE.showGrid) return;
+
+                ctx.lineWidth = 1;
+                
+                // Draw lines
+                for (let i = 0; i < this.cols; i++) {
+                    for (let j = 0; j < this.rows; j++) {
+                        const p = this.points[i][j];
+                        const screenP = project3D(p.x, p.y, p.z, center, zoom);
+
+                        // Horizontal lines
+                        if (i < this.cols - 1) {
+                            const pNext = this.points[i+1][j];
+                            const screenNext = project3D(pNext.x, pNext.y, pNext.z, center, zoom);
+                            
+                            // Color based on depth/stress
+                            const stress = Math.abs(p.y - pNext.y);
+                            const alpha = Math.min(0.1 + stress * 0.05, 0.8);
+                            
+                            ctx.strokeStyle = `rgba(0, 243, 255, ${alpha})`;
+                            ctx.beginPath();
+                            ctx.moveTo(screenP.x, screenP.y);
+                            ctx.lineTo(screenNext.x, screenNext.y);
+                            ctx.stroke();
+                        }
+
+                        // Vertical lines
+                        if (j < this.rows - 1) {
+                            const pNext = this.points[i][j+1];
+                            const screenNext = project3D(pNext.x, pNext.y, pNext.z, center, zoom);
+                            
+                            const stress = Math.abs(p.y - pNext.y);
+                            const alpha = Math.min(0.1 + stress * 0.05, 0.8);
+
+                            ctx.strokeStyle = `rgba(0, 243, 255, ${alpha})`;
+                            ctx.beginPath();
+                            ctx.moveTo(screenP.x, screenP.y);
+                            ctx.lineTo(screenNext.x, screenNext.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+        }
+
+        // --- MAIN APP ---
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let masses = [];
+        let grid;
+        let stars = [];
+
+        function init() {
+            resize();
+            window.addEventListener('resize', resize);
+            
+            // Init Grid
+            grid = new GridSystem();
+
+            // Init Masses
+            masses.push(new Mass(-200, 0, 40));
+            masses.push(new Mass(200, 0, 30));
+            masses.push(new Mass(0, 200, 15));
+
+            // Give them some initial velocity for orbit
+            masses[0].vel = new Vector2(0, 1.5);
+            masses[1].vel = new Vector2(0, -2);
+            masses[2].vel = new Vector2(-1.5, 0);
+
+            // Init Stars
+            for(let i=0; i<CONFIG.STAR_COUNT; i++) {
+                stars.push({
+                    x: (Math.random() - 0.5) * 3000,
+                    y: (Math.random() - 0.5) * 3000,
+                    z: Math.random() * 2 + 0.5, // depth factor
+                    size: Math.random() * 1.5
+                });
+            }
+
+            // Input Handlers
+            canvas.addEventListener('mousedown', onMouseDown);
+            canvas.addEventListener('mousemove', onMouseMove);
+            canvas.addEventListener('mouseup', onMouseUp);
+            canvas.addEventListener('wheel', onWheel);
+
+            // Start Loop
+            requestAnimationFrame(loop);
+        }
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        function project3D(x, y, z, center, zoom) {
+            // Simple perspective projection with camera tilt
+            // Tilt angle
+            const angle = 0.4; // radians (~23 degrees)
+            const cos = Math.cos(angle);
+            const sin = Math.sin(angle);
+
+            // Rotate around X axis (tilt)
+            // y' = y*cos - z*sin
+            // z' = y*sin + z*cos
+            const y_rot = y * cos - z * sin;
+            const z_rot = y * sin + z * cos;
+
+            // Perspective scale
+            // Assume camera is at some distance
+            const camDist = 1000;
+            const scale = camDist / (camDist + z_rot); // Parallax
+
+            const screenX = width/2 + (x - center.x) * zoom; // * scale; // Simplify: Orthographic x/z but tilted
+            const screenY = height/2 + (y_rot - center.y) * zoom; 
+
+            // Let's do a pseudo-3D projection that looks good top-down
+            // x maps to x
+            // z maps to y (with tilt foreshortening)
+            // y maps to y (height)
+            
+            const tilt = 0.6; // 1.0 = top down, 0.0 = front view
+            
+            const px = width/2 + (x - center.x) * zoom;
+            const py = height/2 + ((z - center.y) * tilt - y) * zoom;
+
+            return { x: px, y: py };
+        }
+
+        function worldToScreen(vec2, center, zoom) {
+            // Map 2D physics coordinates to the 3D projected screen coordinates
+            // Physics X = 3D X
+            // Physics Y = 3D Z
+            // Physics Height = 0 (masses are on the plane, visually)
+            // But we want masses to sink into the well? 
+            // Actually, masses usually sit 'in' the well.
+            // Let's sample the grid height at the mass position for better visual integration.
+            
+            // Find grid height at this pos
+            // Simple approximation
+            let h = 0;
+            // We could interpolate grid, but for now assume 0 or calculate gravity well depth
+            // Let's just project them on the flat plane for clarity, or slightly below
+            
+            return project3D(vec2.x, 0, vec2.y, center, zoom);
+        }
+
+        function screenToWorld(sx, sy, center, zoom) {
+            // Inverse of worldToScreen (approximate)
+            const tilt = 0.6;
+            const x = (sx - width/2) / zoom + center.x;
+            const y = ((sy - height/2) / zoom + center.y * tilt) / tilt; // ignoring height y component
+            return new Vector2(x, y);
+        }
+
+        function updatePhysics() {
+            // 1. N-Body Gravity
+            for (let i = 0; i < masses.length; i++) {
+                for (let j = i + 1; j < masses.length; j++) {
+                    const m1 = masses[i];
+                    const m2 = masses[j];
+                    
+                    const dir = m2.pos.sub(m1.pos);
+                    const dist = dir.mag();
+                    
+                    if (dist > 5) { // Avoid singularity
+                        const forceMag = (CONFIG.G * m1.mass * m2.mass) / (dist * dist);
+                        const force = dir.normalize().mult(forceMag);
+                        
+                        m1.acc = m1.acc.add(force.mult(1/m1.mass));
+                        m2.acc = m2.acc.sub(force.mult(1/m2.mass)); // Newton's 3rd law
+
+                        // Trigger waves on fast acceleration/close pass
+                        // Heuristic: if force is high, trigger wave
+                        if (forceMag > 0.5 && STATE.enableWaves) {
+                            // Add some jitter/wave to grid near these masses
+                            if (Math.random() < 0.1) {
+                                grid.triggerWave(m1.pos.x, m1.pos.y, forceMag * 2);
+                            }
+                        }
+                    } else {
+                        // Merge logic could go here
+                        // For now, just bounce or ignore
+                    }
+                }
+            }
+
+            // 2. Update Positions
+            masses.forEach(m => m.update());
+
+            // 3. Update Grid
+            grid.update(masses);
+        }
+
+        function draw() {
+            // Clear
+            ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg-color');
+            ctx.fillRect(0, 0, width, height);
+
+            // Draw Stars (Parallax)
+            ctx.fillStyle = '#fff';
+            stars.forEach(star => {
+                const px = (star.x - STATE.cameraOffset.x * 0.5) * STATE.zoom + width/2;
+                const py = (star.y - STATE.cameraOffset.y * 0.5 * 0.6) * STATE.zoom + height/2;
+                
+                // Wrap around
+                const wrapW = 3000 * STATE.zoom;
+                const wrapH = 3000 * STATE.zoom;
+                
+                const dx = (px % wrapW + wrapW) % wrapW;
+                const dy = (py % wrapH + wrapH) % wrapH;
+
+                ctx.globalAlpha = 0.3 + Math.random() * 0.5;
+                ctx.beginPath();
+                ctx.arc(dx, dy, star.size * STATE.zoom, 0, Math.PI*2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1.0;
+
+            // Draw Grid
+            grid.draw(ctx, STATE.cameraOffset, STATE.zoom);
+
+            // Draw Masses
+            masses.forEach(m => m.draw(ctx, STATE.cameraOffset, STATE.zoom));
+        }
+
+        function loop() {
+            updatePhysics();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        // --- INPUT HANDLING ---
+        function onMouseDown(e) {
+            const rect = canvas.getBoundingClientRect();
+            const mousePos = screenToWorld(e.clientX, e.clientY, STATE.cameraOffset, STATE.zoom);
+            
+            // Check if clicking a mass
+            let clickedMass = null;
+            for (const m of masses) {
+                if (m.pos.dist(mousePos) < m.radius * 2) { // Hitbox
+                    clickedMass = m;
+                    break;
+                }
+            }
+
+            if (clickedMass) {
+                STATE.isDragging = true;
+                STATE.draggedMass = clickedMass;
+                // Stop it while dragging
+                clickedMass.vel = new Vector2(0, 0);
+            } else {
+                // Spawn new mass
+                const m = new Mass(mousePos.x, mousePos.y, 10 + Math.random() * 40);
+                // Give it random velocity
+                m.vel = new Vector2((Math.random()-0.5)*2, (Math.random()-0.5)*2);
+                masses.push(m);
+                
+                // Trigger big wave
+                grid.triggerWave(mousePos.x, mousePos.y, -50);
+            }
+        }
+
+        function onMouseMove(e) {
+            if (STATE.isDragging && STATE.draggedMass) {
+                const mousePos = screenToWorld(e.clientX, e.clientY, STATE.cameraOffset, STATE.zoom);
+                STATE.draggedMass.pos = mousePos;
+                STATE.draggedMass.vel = new Vector2(0,0); // Keep still
+            }
+        }
+
+        function onMouseUp(e) {
+            if (STATE.isDragging && STATE.draggedMass) {
+                // Fling?
+                // For now just release
+                STATE.isDragging = false;
+                STATE.draggedMass = null;
+            }
+        }
+
+        function onWheel(e) {
+            e.preventDefault();
+            const delta = -Math.sign(e.deltaY) * 0.1;
+            const newZoom = Math.max(CONFIG.MIN_ZOOM, Math.min(CONFIG.MAX_ZOOM, STATE.zoom + delta));
+            STATE.zoom = newZoom;
+        }
+
+        // --- UI FUNCTIONS ---
+        window.toggleOption = function(opt) {
+            STATE[opt] = !STATE[opt];
+            
+            // Update button state
+            const btnMap = {
+                'showGrid': 'btn-grid',
+                'enableWaves': 'btn-waves',
+                'showTrails': 'btn-trails'
+            };
+            
+            const btn = document.getElementById(btnMap[opt]);
+            if (STATE[opt]) btn.classList.add('active');
+            else btn.classList.remove('active');
+        };
+
+        // Init
+        init();
+
+    </script>
+</body>
+</html>
