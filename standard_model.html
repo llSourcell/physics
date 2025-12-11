@@ -1,0 +1,1439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Vacuum Symphony | The Dance of Virtual Particles</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap');
+
+        body {
+            font-family: 'Outfit', -apple-system, sans-serif;
+            background: #000;
+            color: #fff;
+            overflow: hidden;
+            min-height: 100vh;
+        }
+
+        #canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Glassmorphism UI Panel */
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            background: rgba(15, 15, 35, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            z-index: 100;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #00f5ff, #ff00ff, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+        }
+
+        .control-group {
+            margin-bottom: 16px;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 6px;
+            font-weight: 400;
+        }
+
+        .control-value {
+            color: #00f5ff;
+            font-weight: 500;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 5px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(90deg, rgba(0, 245, 255, 0.2), rgba(255, 0, 255, 0.2));
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #00f5ff, #ff00ff);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 245, 255, 0.6);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 25px rgba(0, 245, 255, 0.9);
+        }
+
+        .particle-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .particle-btn {
+            padding: 8px 6px;
+            border: none;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .particle-btn.electron {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.3), rgba(0, 245, 255, 0.1));
+            color: #00f5ff;
+            border: 1px solid rgba(0, 245, 255, 0.3);
+        }
+
+        .particle-btn.quark {
+            background: linear-gradient(135deg, rgba(255, 100, 100, 0.3), rgba(100, 255, 100, 0.1));
+            color: #ff9999;
+            border: 1px solid rgba(255, 100, 100, 0.3);
+        }
+
+        .particle-btn.photon {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
+            color: #ffd700;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .particle-btn.gluon {
+            background: linear-gradient(135deg, rgba(255, 0, 255, 0.3), rgba(0, 255, 255, 0.1));
+            color: #ff00ff;
+            border: 1px solid rgba(255, 0, 255, 0.3);
+        }
+
+        .particle-btn.higgs {
+            background: linear-gradient(135deg, rgba(255, 180, 0, 0.3), rgba(255, 180, 0, 0.1));
+            color: #ffb400;
+            border: 1px solid rgba(255, 180, 0, 0.3);
+        }
+
+        .particle-btn.neutrino {
+            background: linear-gradient(135deg, rgba(200, 200, 255, 0.3), rgba(200, 200, 255, 0.1));
+            color: #c8c8ff;
+            border: 1px solid rgba(200, 200, 255, 0.3);
+        }
+
+        .particle-btn.wboson {
+            background: linear-gradient(135deg, rgba(255, 150, 200, 0.3), rgba(255, 150, 200, 0.1));
+            color: #ff96c8;
+            border: 1px solid rgba(255, 150, 200, 0.3);
+        }
+
+        .particle-btn.zboson {
+            background: linear-gradient(135deg, rgba(150, 200, 255, 0.3), rgba(150, 200, 255, 0.1));
+            color: #96c8ff;
+            border: 1px solid rgba(150, 200, 255, 0.3);
+        }
+
+        .particle-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .particle-btn.active {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px currentColor;
+        }
+
+        /* Standard Model Chart Panel */
+        .sm-chart-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(15, 15, 35, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 16px;
+            z-index: 100;
+            max-width: 520px;
+        }
+
+        .sm-chart-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffd700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sm-grid {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            gap: 4px;
+            font-size: 9px;
+        }
+
+        .sm-particle {
+            padding: 6px 4px;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            position: relative;
+        }
+
+        .sm-particle:hover {
+            transform: scale(1.1);
+            z-index: 10;
+        }
+
+        .sm-particle.highlighted {
+            transform: scale(1.15);
+            z-index: 10;
+            box-shadow: 0 0 20px currentColor;
+            border-color: currentColor;
+        }
+
+        .sm-particle.dimmed {
+            opacity: 0.25;
+        }
+
+        .sm-particle .symbol {
+            font-size: 14px;
+            font-weight: 600;
+            display: block;
+        }
+
+        .sm-particle .name {
+            font-size: 7px;
+            opacity: 0.8;
+            display: block;
+            margin-top: 2px;
+        }
+
+        .sm-particle .mass {
+            font-size: 6px;
+            opacity: 0.6;
+            display: block;
+        }
+
+        /* Quark colors */
+        .sm-quark {
+            background: linear-gradient(135deg, rgba(255, 100, 100, 0.4), rgba(255, 100, 100, 0.2));
+            color: #ff9999;
+        }
+
+        /* Lepton colors */
+        .sm-lepton {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.4), rgba(0, 245, 255, 0.2));
+            color: #00f5ff;
+        }
+
+        /* Boson colors */
+        .sm-boson {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.4), rgba(255, 215, 0, 0.2));
+            color: #ffd700;
+        }
+
+        /* Higgs */
+        .sm-higgs {
+            background: linear-gradient(135deg, rgba(255, 180, 0, 0.5), rgba(255, 180, 0, 0.3));
+            color: #ffb400;
+        }
+
+        .sm-section-label {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            font-size: 8px;
+            color: rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+        }
+
+        .sm-gen-label {
+            font-size: 8px;
+            color: rgba(255, 255, 255, 0.4);
+            text-align: center;
+            grid-column: span 2;
+        }
+
+        /* Lagrangian Panel */
+        .lagrangian-panel {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(15, 15, 35, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 16px;
+            z-index: 100;
+            max-width: 400px;
+        }
+
+        .lagrangian-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #ff00ff;
+            margin-bottom: 10px;
+        }
+
+        .lagrangian-eq {
+            font-family: 'Times New Roman', serif;
+            font-size: 14px;
+            line-height: 2;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .lagrangian-eq .term {
+            display: inline;
+            padding: 2px 4px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .lagrangian-eq .term:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .lagrangian-eq .term.highlighted {
+            background: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .lagrangian-eq .term.dimmed {
+            opacity: 0.25;
+        }
+
+        .term-gauge {
+            color: #ffd700;
+        }
+
+        .term-fermion {
+            color: #00f5ff;
+        }
+
+        .term-higgs {
+            color: #ffb400;
+        }
+
+        .term-yukawa {
+            color: #ff96c8;
+        }
+
+        .term-qcd {
+            color: #ff00ff;
+        }
+
+        .term-label {
+            font-size: 9px;
+            color: rgba(255, 255, 255, 0.5);
+            display: block;
+            margin-top: 8px;
+        }
+
+        /* Stats Display */
+        .stats-panel {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(15, 15, 35, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 14px 18px;
+            z-index: 100;
+        }
+
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            margin-bottom: 5px;
+        }
+
+        .stat-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .stat-value {
+            font-weight: 500;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .stat-value.energy {
+            color: #00f5ff;
+        }
+
+        .stat-value.particles {
+            color: #ff00ff;
+        }
+
+        .stat-value.pairs {
+            color: #ffd700;
+        }
+
+        /* Title */
+        .main-title {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .main-title h1 {
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: 6px;
+            background: linear-gradient(135deg, #00f5ff, #ff00ff, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+
+        .main-title p {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 2px;
+        }
+
+        /* Selected particle info */
+        .particle-info {
+            position: fixed;
+            top: 140px;
+            left: 20px;
+            background: rgba(15, 15, 35, 0.85);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 14px;
+            z-index: 100;
+            min-width: 200px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .particle-info.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .particle-info-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .particle-info-row {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 4px;
+        }
+
+        .particle-info-row span {
+            color: #00f5ff;
+        }
+
+        /* Click hint */
+        .click-hint {
+            position: fixed;
+            bottom: 50%;
+            left: 50%;
+            transform: translate(-50%, 50%);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 2px;
+            z-index: 50;
+            pointer-events: none;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        .click-hint.hidden {
+            display: none;
+        }
+
+        /* Subscript/superscript for Lagrangian */
+        sub {
+            font-size: 0.7em;
+            vertical-align: sub;
+        }
+
+        sup {
+            font-size: 0.7em;
+            vertical-align: super;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+
+    <!-- Title -->
+    <div class="main-title">
+        <h1>QUANTUM VACUUM SYMPHONY</h1>
+        <p>CLICK ANYWHERE TO CREATE PARTICLE COLLISIONS • SELECT PARTICLES TO EXPLORE THE STANDARD MODEL</p>
+    </div>
+
+    <!-- Control Panel -->
+    <div class="control-panel">
+        <div class="panel-title">⚛ QUANTUM CONTROLS</div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span>Vacuum Energy</span>
+                <span class="control-value" id="energyValue">50%</span>
+            </div>
+            <input type="range" id="energySlider" min="10" max="100" value="50">
+        </div>
+
+        <div class="control-group">
+            <div class="control-label">
+                <span>Time Dilation</span>
+                <span class="control-value" id="timeValue">1.0x</span>
+            </div>
+            <input type="range" id="timeSlider" min="1" max="20" value="10">
+        </div>
+
+        <div class="control-group">
+            <div class="control-label"><span>Select Particle Type</span></div>
+            <div class="particle-buttons">
+                <button class="particle-btn electron active" data-type="all">ALL</button>
+                <button class="particle-btn electron" data-type="electron">e⁻/e⁺</button>
+                <button class="particle-btn quark" data-type="quark">QUARKS</button>
+                <button class="particle-btn photon" data-type="photon">γ PHOTON</button>
+                <button class="particle-btn gluon" data-type="gluon">g GLUON</button>
+                <button class="particle-btn higgs" data-type="higgs">H HIGGS</button>
+                <button class="particle-btn neutrino" data-type="neutrino">ν NEUTRINO</button>
+                <button class="particle-btn wboson" data-type="wboson">W± BOSON</button>
+                <button class="particle-btn zboson" data-type="zboson">Z⁰ BOSON</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Panel -->
+    <div class="stats-panel">
+        <div class="stat-row">
+            <span class="stat-label">Vacuum Energy:</span>
+            <span class="stat-value energy" id="statEnergy">2.47 × 10⁻¹² J</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">Active Particles:</span>
+            <span class="stat-value particles" id="statParticles">0</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">Pair Creations:</span>
+            <span class="stat-value pairs" id="statPairs">0</span>
+        </div>
+    </div>
+
+    <!-- Particle Info Panel -->
+    <div class="particle-info" id="particleInfo">
+        <div class="particle-info-title" id="particleInfoTitle">Electron</div>
+        <div class="particle-info-row">Mass: <span id="particleInfoMass">0.511 MeV/c²</span></div>
+        <div class="particle-info-row">Charge: <span id="particleInfoCharge">-1</span></div>
+        <div class="particle-info-row">Spin: <span id="particleInfoSpin">1/2</span></div>
+        <div class="particle-info-row">Type: <span id="particleInfoType">Lepton</span></div>
+    </div>
+
+    <!-- Standard Model Chart -->
+    <div class="sm-chart-panel">
+        <div class="sm-chart-title">📊 STANDARD MODEL OF PARTICLE PHYSICS</div>
+        <div class="sm-grid">
+            <!-- Generation labels -->
+            <div></div>
+            <div class="sm-gen-label">I</div>
+            <div class="sm-gen-label">II</div>
+            <div class="sm-gen-label">III</div>
+            <div></div>
+
+            <!-- Quarks Row 1 -->
+            <div class="sm-section-label">QUARKS</div>
+            <div class="sm-particle sm-quark" data-particle="up" data-type="quark">
+                <span class="symbol">u</span>
+                <span class="name">up</span>
+                <span class="mass">2.2 MeV</span>
+            </div>
+            <div class="sm-particle sm-quark" data-particle="charm" data-type="quark">
+                <span class="symbol">c</span>
+                <span class="name">charm</span>
+                <span class="mass">1.27 GeV</span>
+            </div>
+            <div class="sm-particle sm-quark" data-particle="top" data-type="quark">
+                <span class="symbol">t</span>
+                <span class="name">top</span>
+                <span class="mass">173 GeV</span>
+            </div>
+            <!-- Gauge Bosons -->
+            <div class="sm-particle sm-boson" data-particle="gluon" data-type="gluon">
+                <span class="symbol">g</span>
+                <span class="name">gluon</span>
+                <span class="mass">0</span>
+            </div>
+            <div class="sm-particle sm-boson" data-particle="photon" data-type="photon">
+                <span class="symbol">γ</span>
+                <span class="name">photon</span>
+                <span class="mass">0</span>
+            </div>
+            <div class="sm-particle sm-boson" data-particle="zboson" data-type="zboson">
+                <span class="symbol">Z</span>
+                <span class="name">Z boson</span>
+                <span class="mass">91.2 GeV</span>
+            </div>
+            <div class="sm-particle sm-higgs" data-particle="higgs" data-type="higgs">
+                <span class="symbol">H</span>
+                <span class="name">Higgs</span>
+                <span class="mass">125 GeV</span>
+            </div>
+
+            <!-- Quarks Row 2 -->
+            <div></div>
+            <div class="sm-particle sm-quark" data-particle="down" data-type="quark">
+                <span class="symbol">d</span>
+                <span class="name">down</span>
+                <span class="mass">4.7 MeV</span>
+            </div>
+            <div class="sm-particle sm-quark" data-particle="strange" data-type="quark">
+                <span class="symbol">s</span>
+                <span class="name">strange</span>
+                <span class="mass">96 MeV</span>
+            </div>
+            <div class="sm-particle sm-quark" data-particle="bottom" data-type="quark">
+                <span class="symbol">b</span>
+                <span class="name">bottom</span>
+                <span class="mass">4.18 GeV</span>
+            </div>
+            <!-- W boson -->
+            <div class="sm-particle sm-boson" data-particle="wboson" data-type="wboson">
+                <span class="symbol">W</span>
+                <span class="name">W boson</span>
+                <span class="mass">80.4 GeV</span>
+            </div>
+            <div></div>
+            <div></div>
+            <div></div>
+
+            <!-- Leptons Row 1 -->
+            <div class="sm-section-label">LEPTONS</div>
+            <div class="sm-particle sm-lepton" data-particle="electron" data-type="electron">
+                <span class="symbol">e</span>
+                <span class="name">electron</span>
+                <span class="mass">0.511 MeV</span>
+            </div>
+            <div class="sm-particle sm-lepton" data-particle="muon" data-type="electron">
+                <span class="symbol">μ</span>
+                <span class="name">muon</span>
+                <span class="mass">105.7 MeV</span>
+            </div>
+            <div class="sm-particle sm-lepton" data-particle="tau" data-type="electron">
+                <span class="symbol">τ</span>
+                <span class="name">tau</span>
+                <span class="mass">1.78 GeV</span>
+            </div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+
+            <!-- Leptons Row 2 (Neutrinos) -->
+            <div></div>
+            <div class="sm-particle sm-lepton" data-particle="nu_e" data-type="neutrino" style="opacity: 0.7;">
+                <span class="symbol">ν<sub>e</sub></span>
+                <span class="name">e neutrino</span>
+                <span class="mass">
+                    < 1 eV</span>
+            </div>
+            <div class="sm-particle sm-lepton" data-particle="nu_mu" data-type="neutrino" style="opacity: 0.7;">
+                <span class="symbol">ν<sub>μ</sub></span>
+                <span class="name">μ neutrino</span>
+                <span class="mass">
+                    < 0.17 MeV</span>
+            </div>
+            <div class="sm-particle sm-lepton" data-particle="nu_tau" data-type="neutrino" style="opacity: 0.7;">
+                <span class="symbol">ν<sub>τ</sub></span>
+                <span class="name">τ neutrino</span>
+                <span class="mass">
+                    < 18.2 MeV</span>
+            </div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+    <!-- Lagrangian Panel -->
+    <div class="lagrangian-panel">
+        <div class="lagrangian-title">📐 STANDARD MODEL LAGRANGIAN</div>
+        <div class="lagrangian-eq">
+            <span class="term term-gauge" data-terms="gauge,photon,gluon,wboson,zboson"
+                title="Gauge field kinetic terms">
+                ℒ = −¼F<sub>μν</sub>F<sup>μν</sup>
+            </span>
+            <span class="term term-qcd" data-terms="gluon,quark" title="QCD gluon self-interactions">
+                − ¼G<sup>a</sup><sub>μν</sub>G<sup>aμν</sup>
+            </span>
+            <br>
+            <span class="term term-fermion" data-terms="electron,quark,neutrino" title="Fermion kinetic terms">
+                + iψ̄γ<sup>μ</sup>D<sub>μ</sub>ψ
+            </span>
+            <span class="term term-higgs" data-terms="higgs,wboson,zboson" title="Higgs kinetic & potential">
+                + |D<sub>μ</sub>φ|² − V(φ)
+            </span>
+            <br>
+            <span class="term term-yukawa" data-terms="higgs,electron,quark" title="Yukawa couplings (mass terms)">
+                − y<sub>f</sub>ψ̄φψ
+            </span>
+            <span class="term-label">
+                F: gauge fields • G: gluon field • ψ: fermions • φ: Higgs • D: covariant derivative
+            </span>
+        </div>
+    </div>
+
+    <div class="click-hint" id="clickHint">CLICK TO INTERACT</div>
+
+    <script>
+        // ========================================
+        // QUANTUM VACUUM SYMPHONY
+        // Nobel Prize-Worthy Particle Physics Visualization
+        // with Standard Model Integration
+        // ========================================
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let particles = [];
+        let trails = [];
+        let fieldWaves = [];
+        let pairCount = 0;
+        let hasInteracted = false;
+        let selectedType = 'all';
+
+        // Configuration
+        const config = {
+            energy: 50,
+            scale: 1.0,
+            timeScale: 1.0,
+            highlightType: 'all',
+            maxParticles: 600,
+            pairCreationRate: 0.06
+        };
+
+        // Comprehensive particle data for Standard Model
+        const PARTICLE_DATA = {
+            // Quarks
+            up: { name: 'Up Quark', symbol: 'u', mass: '2.2 MeV/c²', charge: '+2/3', spin: '1/2', type: 'Quark', color: '#ff9999' },
+            down: { name: 'Down Quark', symbol: 'd', mass: '4.7 MeV/c²', charge: '-1/3', spin: '1/2', type: 'Quark', color: '#ff9999' },
+            charm: { name: 'Charm Quark', symbol: 'c', mass: '1.27 GeV/c²', charge: '+2/3', spin: '1/2', type: 'Quark', color: '#ff9999' },
+            strange: { name: 'Strange Quark', symbol: 's', mass: '96 MeV/c²', charge: '-1/3', spin: '1/2', type: 'Quark', color: '#ff9999' },
+            top: { name: 'Top Quark', symbol: 't', mass: '173 GeV/c²', charge: '+2/3', spin: '1/2', type: 'Quark', color: '#ff9999' },
+            bottom: { name: 'Bottom Quark', symbol: 'b', mass: '4.18 GeV/c²', charge: '-1/3', spin: '1/2', type: 'Quark', color: '#ff9999' },
+
+            // Leptons
+            electron: { name: 'Electron', symbol: 'e⁻', mass: '0.511 MeV/c²', charge: '-1', spin: '1/2', type: 'Lepton', color: '#00f5ff' },
+            muon: { name: 'Muon', symbol: 'μ⁻', mass: '105.7 MeV/c²', charge: '-1', spin: '1/2', type: 'Lepton', color: '#00f5ff' },
+            tau: { name: 'Tau', symbol: 'τ⁻', mass: '1.78 GeV/c²', charge: '-1', spin: '1/2', type: 'Lepton', color: '#00f5ff' },
+            nu_e: { name: 'Electron Neutrino', symbol: 'νₑ', mass: '< 1 eV/c²', charge: '0', spin: '1/2', type: 'Lepton', color: '#c8c8ff' },
+            nu_mu: { name: 'Muon Neutrino', symbol: 'νμ', mass: '< 0.17 MeV/c²', charge: '0', spin: '1/2', type: 'Lepton', color: '#c8c8ff' },
+            nu_tau: { name: 'Tau Neutrino', symbol: 'ντ', mass: '< 18.2 MeV/c²', charge: '0', spin: '1/2', type: 'Lepton', color: '#c8c8ff' },
+
+            // Gauge Bosons
+            photon: { name: 'Photon', symbol: 'γ', mass: '0', charge: '0', spin: '1', type: 'Gauge Boson', color: '#ffd700' },
+            gluon: { name: 'Gluon', symbol: 'g', mass: '0', charge: '0', spin: '1', type: 'Gauge Boson', color: '#ff00ff' },
+            wboson: { name: 'W Boson', symbol: 'W±', mass: '80.4 GeV/c²', charge: '±1', spin: '1', type: 'Gauge Boson', color: '#ff96c8' },
+            zboson: { name: 'Z Boson', symbol: 'Z⁰', mass: '91.2 GeV/c²', charge: '0', spin: '1', type: 'Gauge Boson', color: '#96c8ff' },
+
+            // Higgs
+            higgs: { name: 'Higgs Boson', symbol: 'H', mass: '125 GeV/c²', charge: '0', spin: '0', type: 'Scalar Boson', color: '#ffb400' },
+
+            // Generic for visualization
+            quark: { name: 'Quark', symbol: 'q', mass: 'varies', charge: '±1/3, ±2/3', spin: '1/2', type: 'Quark', color: '#ff9999' },
+            neutrino: { name: 'Neutrino', symbol: 'ν', mass: '< 1 eV/c²', charge: '0', spin: '1/2', type: 'Lepton', color: '#c8c8ff' }
+        };
+
+        // Particle Types with their visual properties
+        const PARTICLE_TYPES = {
+            electron: {
+                name: 'Electron',
+                antiName: 'Positron',
+                color: { h: 185, s: 100, l: 55 },
+                antiColor: { h: 320, s: 100, l: 65 },
+                mass: 0.511,
+                charge: -1,
+                lifetime: { min: 100, max: 300 },
+                trailLength: 30,
+                size: 4
+            },
+            quark: {
+                name: 'Quark',
+                antiName: 'Antiquark',
+                colors: [
+                    { h: 0, s: 85, l: 55 },
+                    { h: 120, s: 85, l: 45 },
+                    { h: 220, s: 85, l: 55 }
+                ],
+                mass: 2.3,
+                charge: 0.67,
+                lifetime: { min: 50, max: 150 },
+                trailLength: 20,
+                size: 5
+            },
+            photon: {
+                name: 'Photon',
+                color: { h: 45, s: 100, l: 60 },
+                mass: 0,
+                charge: 0,
+                lifetime: { min: 80, max: 200 },
+                trailLength: 50,
+                size: 3,
+                speed: 3
+            },
+            gluon: {
+                name: 'Gluon',
+                colorShift: true,
+                mass: 0,
+                charge: 0,
+                lifetime: { min: 40, max: 100 },
+                trailLength: 25,
+                size: 4,
+                speed: 2.5
+            },
+            higgs: {
+                name: 'Higgs Boson',
+                color: { h: 40, s: 100, l: 55 },
+                mass: 125000,
+                charge: 0,
+                lifetime: { min: 20, max: 60 },
+                trailLength: 15,
+                size: 8
+            },
+            neutrino: {
+                name: 'Neutrino',
+                color: { h: 240, s: 30, l: 80 },
+                mass: 0.0001,
+                charge: 0,
+                lifetime: { min: 200, max: 400 },
+                trailLength: 40,
+                size: 2,
+                speed: 4,
+                opacity: 0.4
+            },
+            wboson: {
+                name: 'W Boson',
+                color: { h: 330, s: 80, l: 70 },
+                mass: 80400,
+                charge: 1,
+                lifetime: { min: 15, max: 40 },
+                trailLength: 12,
+                size: 7,
+                speed: 1.5
+            },
+            zboson: {
+                name: 'Z Boson',
+                color: { h: 210, s: 80, l: 70 },
+                mass: 91200,
+                charge: 0,
+                lifetime: { min: 15, max: 40 },
+                trailLength: 12,
+                size: 7,
+                speed: 1.5
+            }
+        };
+
+        // Initialize
+        function init() {
+            resize();
+            window.addEventListener('resize', resize);
+            canvas.addEventListener('click', handleClick);
+            setupControls();
+            setupStandardModelInteractions();
+            createInitialParticles();
+            animate();
+        }
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+
+        // Particle class
+        class Particle {
+            constructor(x, y, type, isAnti = false, velocity = null) {
+                this.x = x;
+                this.y = y;
+                this.type = type;
+                this.typeData = PARTICLE_TYPES[type];
+                this.isAnti = isAnti;
+
+                if (velocity) {
+                    this.vx = velocity.x;
+                    this.vy = velocity.y;
+                } else {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = (this.typeData.speed || 1) * (0.5 + Math.random() * 1.5);
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed;
+                }
+
+                const lt = this.typeData.lifetime;
+                this.lifetime = lt.min + Math.random() * (lt.max - lt.min);
+                this.maxLifetime = this.lifetime;
+                this.age = 0;
+
+                this.size = this.typeData.size * (0.8 + Math.random() * 0.4);
+                this.trail = [];
+                this.trailLength = this.typeData.trailLength;
+
+                if (type === 'quark') {
+                    this.colorIndex = Math.floor(Math.random() * 3);
+                    this.baseColor = this.typeData.colors[this.colorIndex];
+                } else if (type === 'gluon') {
+                    this.huePhase = Math.random() * 360;
+                } else if (this.isAnti && this.typeData.antiColor) {
+                    this.baseColor = this.typeData.antiColor;
+                } else {
+                    this.baseColor = this.typeData.color;
+                }
+
+                this.pair = null;
+                this.spiralPhase = Math.random() * Math.PI * 2;
+                this.spiralSpeed = 0.1 + Math.random() * 0.1;
+            }
+
+            update(deltaTime) {
+                const dt = deltaTime * config.timeScale;
+                this.age += dt;
+
+                this.trail.unshift({ x: this.x, y: this.y, age: 0 });
+                if (this.trail.length > this.trailLength) {
+                    this.trail.pop();
+                }
+
+                this.trail.forEach(p => p.age += dt);
+
+                if (this.type === 'electron') {
+                    this.spiralPhase += this.spiralSpeed * dt;
+                    const spiralRadius = 0.5;
+                    this.x += this.vx * dt + Math.cos(this.spiralPhase) * spiralRadius;
+                    this.y += this.vy * dt + Math.sin(this.spiralPhase) * spiralRadius;
+                } else {
+                    this.x += this.vx * dt;
+                    this.y += this.vy * dt;
+                }
+
+                if (this.type === 'gluon') {
+                    this.huePhase += dt * 2;
+                }
+
+                if (this.pair && !this.pair.dead) {
+                    const dx = this.pair.x - this.x;
+                    const dy = this.pair.y - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist > 10) {
+                        const force = 0.001;
+                        this.vx += (dx / dist) * force * dt;
+                        this.vy += (dy / dist) * force * dt;
+                    }
+                }
+
+                if (this.age >= this.lifetime) {
+                    this.dead = true;
+                }
+
+                if (this.x < -50) this.x = width + 50;
+                if (this.x > width + 50) this.x = -50;
+                if (this.y < -50) this.y = height + 50;
+                if (this.y > height + 50) this.y = -50;
+            }
+
+            getColor(alpha = 1) {
+                if (this.type === 'gluon') {
+                    const hue = (this.huePhase % 360);
+                    return `hsla(${hue}, 100%, 60%, ${alpha})`;
+                }
+                const c = this.baseColor;
+                return `hsla(${c.h}, ${c.s}%, ${c.l}%, ${alpha})`;
+            }
+
+            draw(ctx) {
+                const lifeRatio = 1 - (this.age / this.maxLifetime);
+                const fadeIn = Math.min(1, this.age / 20);
+                const alpha = lifeRatio * fadeIn * (this.typeData.opacity || 1);
+
+                const isHighlighted = config.highlightType === 'all' || config.highlightType === this.type;
+                const dimFactor = isHighlighted ? 1 : 0.15;
+
+                // Draw trail
+                for (let i = 0; i < this.trail.length - 1; i++) {
+                    const t1 = this.trail[i];
+                    const t2 = this.trail[i + 1];
+                    const trailAlpha = (1 - i / this.trail.length) * alpha * 0.6 * dimFactor;
+
+                    ctx.beginPath();
+                    ctx.moveTo(t1.x, t1.y);
+                    ctx.lineTo(t2.x, t2.y);
+                    ctx.strokeStyle = this.getColor(trailAlpha);
+                    ctx.lineWidth = this.size * (1 - i / this.trail.length) * 0.8;
+                    ctx.lineCap = 'round';
+                    ctx.stroke();
+                }
+
+                // Draw glow
+                const glowSize = this.size * 4;
+                const gradient = ctx.createRadialGradient(
+                    this.x, this.y, 0,
+                    this.x, this.y, glowSize
+                );
+                gradient.addColorStop(0, this.getColor(0.8 * alpha * dimFactor));
+                gradient.addColorStop(0.5, this.getColor(0.3 * alpha * dimFactor));
+                gradient.addColorStop(1, this.getColor(0));
+
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, glowSize, 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+
+                // Draw core
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.getColor(alpha * dimFactor);
+                ctx.fill();
+
+                // Inner bright core
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size * 0.5, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${0.8 * alpha * dimFactor})`;
+                ctx.fill();
+            }
+        }
+
+        // Field Wave class
+        class FieldWave {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.radius = 0;
+                this.maxRadius = 150 + Math.random() * 100;
+                this.speed = 2 + Math.random() * 2;
+                this.color = color || { h: 200, s: 100, l: 50 };
+                this.dead = false;
+            }
+
+            update(deltaTime) {
+                this.radius += this.speed * deltaTime * config.timeScale;
+                if (this.radius >= this.maxRadius) {
+                    this.dead = true;
+                }
+            }
+
+            draw(ctx) {
+                const alpha = (1 - this.radius / this.maxRadius) * 0.3;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = `hsla(${this.color.h}, ${this.color.s}%, ${this.color.l}%, ${alpha})`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+
+        // Create particle pair
+        function createPair(x, y, type) {
+            if (particles.length >= config.maxParticles) return;
+
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 1 + Math.random() * 2;
+
+            const particle = new Particle(x, y, type, false, {
+                x: Math.cos(angle) * speed,
+                y: Math.sin(angle) * speed
+            });
+
+            const antiParticle = new Particle(x, y, type, true, {
+                x: -Math.cos(angle) * speed,
+                y: -Math.sin(angle) * speed
+            });
+
+            particle.pair = antiParticle;
+            antiParticle.pair = particle;
+
+            particles.push(particle);
+            particles.push(antiParticle);
+
+            const typeData = PARTICLE_TYPES[type];
+            const waveColor = typeData.color || typeData.colors?.[0] || { h: 200, s: 100, l: 50 };
+            fieldWaves.push(new FieldWave(x, y, waveColor));
+
+            pairCount++;
+        }
+
+        // Create force carrier
+        function createForceCarrier(x, y, type) {
+            if (particles.length >= config.maxParticles) return;
+            particles.push(new Particle(x, y, type));
+        }
+
+        // Spontaneous pair creation
+        function spontaneousPairCreation() {
+            const rate = config.pairCreationRate * (config.energy / 50);
+
+            if (Math.random() < rate) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+
+                const rand = Math.random();
+                let type;
+                if (rand < 0.30) type = 'electron';
+                else if (rand < 0.50) type = 'quark';
+                else if (rand < 0.62) type = 'photon';
+                else if (rand < 0.74) type = 'gluon';
+                else if (rand < 0.82) type = 'neutrino';
+                else if (rand < 0.88) type = 'wboson';
+                else if (rand < 0.94) type = 'zboson';
+                else type = 'higgs';
+
+                if (type === 'photon' || type === 'gluon') {
+                    createForceCarrier(x, y, type);
+                } else {
+                    createPair(x, y, type);
+                }
+            }
+        }
+
+        // Create initial particles
+        function createInitialParticles() {
+            for (let i = 0; i < 25; i++) {
+                const x = Math.random() * width;
+                const y = Math.random() * height;
+                const types = ['electron', 'quark', 'photon', 'gluon', 'neutrino', 'wboson', 'zboson'];
+                const type = types[Math.floor(Math.random() * types.length)];
+
+                if (type === 'photon' || type === 'gluon') {
+                    createForceCarrier(x, y, type);
+                } else {
+                    createPair(x, y, type);
+                }
+            }
+        }
+
+        // Handle click
+        function handleClick(e) {
+            if (!hasInteracted) {
+                hasInteracted = true;
+                document.getElementById('clickHint').classList.add('hidden');
+            }
+
+            const x = e.clientX;
+            const y = e.clientY;
+
+            const burstCount = 5 + Math.floor(Math.random() * 5);
+            for (let i = 0; i < burstCount; i++) {
+                const offsetX = (Math.random() - 0.5) * 40;
+                const offsetY = (Math.random() - 0.5) * 40;
+
+                const types = ['electron', 'quark', 'photon', 'gluon', 'higgs', 'wboson', 'zboson'];
+                const type = types[Math.floor(Math.random() * types.length)];
+
+                setTimeout(() => {
+                    if (type === 'photon' || type === 'gluon') {
+                        createForceCarrier(x + offsetX, y + offsetY, type);
+                    } else {
+                        createPair(x + offsetX, y + offsetY, type);
+                    }
+                }, i * 30);
+            }
+
+            fieldWaves.push(new FieldWave(x, y, { h: 45, s: 100, l: 60 }));
+        }
+
+        // Setup UI controls
+        function setupControls() {
+            const energySlider = document.getElementById('energySlider');
+            const energyValue = document.getElementById('energyValue');
+            energySlider.addEventListener('input', () => {
+                config.energy = parseInt(energySlider.value);
+                energyValue.textContent = `${config.energy}%`;
+            });
+
+            const timeSlider = document.getElementById('timeSlider');
+            const timeValue = document.getElementById('timeValue');
+            timeSlider.addEventListener('input', () => {
+                config.timeScale = parseInt(timeSlider.value) / 10;
+                timeValue.textContent = `${config.timeScale.toFixed(1)}x`;
+            });
+
+            // Particle buttons
+            document.querySelectorAll('.particle-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.particle-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    const type = btn.dataset.type;
+                    config.highlightType = type;
+                    selectedType = type;
+                    updateStandardModelHighlighting(type);
+                    updateParticleInfo(type);
+                });
+            });
+        }
+
+        // Setup Standard Model chart and Lagrangian interactions
+        function setupStandardModelInteractions() {
+            // SM particle cells
+            document.querySelectorAll('.sm-particle').forEach(cell => {
+                cell.addEventListener('click', () => {
+                    const particleType = cell.dataset.type;
+                    const particleName = cell.dataset.particle;
+
+                    // Update button selection
+                    document.querySelectorAll('.particle-btn').forEach(b => b.classList.remove('active'));
+                    const matchingBtn = document.querySelector(`.particle-btn[data-type="${particleType}"]`);
+                    if (matchingBtn) matchingBtn.classList.add('active');
+
+                    config.highlightType = particleType;
+                    selectedType = particleType;
+                    updateStandardModelHighlighting(particleType);
+                    updateParticleInfo(particleName || particleType);
+                });
+
+                cell.addEventListener('mouseenter', () => {
+                    const particleName = cell.dataset.particle;
+                    if (particleName) {
+                        showParticleInfoHover(particleName);
+                    }
+                });
+            });
+
+            // Lagrangian terms
+            document.querySelectorAll('.lagrangian-eq .term').forEach(term => {
+                term.addEventListener('click', () => {
+                    const terms = term.dataset.terms.split(',');
+                    if (terms.length > 0) {
+                        const type = terms[0];
+                        config.highlightType = type;
+                        selectedType = type;
+
+                        document.querySelectorAll('.particle-btn').forEach(b => b.classList.remove('active'));
+                        const matchingBtn = document.querySelector(`.particle-btn[data-type="${type}"]`);
+                        if (matchingBtn) matchingBtn.classList.add('active');
+
+                        updateStandardModelHighlighting(type);
+                        updateParticleInfo(type);
+                    }
+                });
+            });
+        }
+
+        // Update Standard Model chart highlighting
+        function updateStandardModelHighlighting(selectedType) {
+            // Update SM chart
+            document.querySelectorAll('.sm-particle').forEach(cell => {
+                const cellType = cell.dataset.type;
+                if (selectedType === 'all') {
+                    cell.classList.remove('highlighted', 'dimmed');
+                } else if (cellType === selectedType) {
+                    cell.classList.add('highlighted');
+                    cell.classList.remove('dimmed');
+                } else {
+                    cell.classList.remove('highlighted');
+                    cell.classList.add('dimmed');
+                }
+            });
+
+            // Update Lagrangian terms
+            document.querySelectorAll('.lagrangian-eq .term').forEach(term => {
+                const terms = term.dataset.terms ? term.dataset.terms.split(',') : [];
+                if (selectedType === 'all') {
+                    term.classList.remove('highlighted', 'dimmed');
+                } else if (terms.includes(selectedType)) {
+                    term.classList.add('highlighted');
+                    term.classList.remove('dimmed');
+                } else {
+                    term.classList.remove('highlighted');
+                    term.classList.add('dimmed');
+                }
+            });
+        }
+
+        // Show particle info panel
+        function updateParticleInfo(type) {
+            const infoPanel = document.getElementById('particleInfo');
+            const data = PARTICLE_DATA[type];
+
+            if (data && type !== 'all') {
+                document.getElementById('particleInfoTitle').textContent = data.name;
+                document.getElementById('particleInfoTitle').style.color = data.color;
+                document.getElementById('particleInfoMass').textContent = data.mass;
+                document.getElementById('particleInfoCharge').textContent = data.charge;
+                document.getElementById('particleInfoSpin').textContent = data.spin;
+                document.getElementById('particleInfoType').textContent = data.type;
+                infoPanel.classList.add('visible');
+            } else {
+                infoPanel.classList.remove('visible');
+            }
+        }
+
+        function showParticleInfoHover(particleName) {
+            const data = PARTICLE_DATA[particleName];
+            if (data) {
+                updateParticleInfo(particleName);
+            }
+        }
+
+        // Update stats display
+        function updateStats() {
+            const energyExp = (config.energy / 50 * 2.47).toFixed(2);
+            document.getElementById('statEnergy').textContent = `${energyExp} × 10⁻¹² J`;
+            document.getElementById('statParticles').textContent = particles.length;
+            document.getElementById('statPairs').textContent = pairCount;
+        }
+
+        // Draw background
+        function drawBackground() {
+            const gradient = ctx.createRadialGradient(
+                width / 2, height / 2, 0,
+                width / 2, height / 2, Math.max(width, height) * 0.8
+            );
+            gradient.addColorStop(0, '#0a0a15');
+            gradient.addColorStop(0.5, '#050510');
+            gradient.addColorStop(1, '#000005');
+
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+
+            // Subtle quantum field grid
+            ctx.strokeStyle = 'rgba(100, 150, 255, 0.02)';
+            ctx.lineWidth = 1;
+
+            const gridSize = 60;
+            const time = Date.now() * 0.001;
+
+            for (let x = 0; x < width; x += gridSize) {
+                for (let y = 0; y < height; y += gridSize) {
+                    const wave = Math.sin(x * 0.01 + time) * Math.cos(y * 0.01 + time) * 2;
+                    ctx.beginPath();
+                    ctx.arc(x + wave, y + wave, 1, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Draw Higgs field effect
+        function drawHiggsField() {
+            const time = Date.now() * 0.0005;
+
+            for (let i = 0; i < 4; i++) {
+                const x = width * 0.5 + Math.cos(time + i) * width * 0.3;
+                const y = height * 0.5 + Math.sin(time * 0.7 + i) * height * 0.3;
+
+                const gradient = ctx.createRadialGradient(x, y, 0, x, y, 180);
+                gradient.addColorStop(0, 'rgba(255, 180, 0, 0.02)');
+                gradient.addColorStop(1, 'rgba(255, 180, 0, 0)');
+
+                ctx.beginPath();
+                ctx.arc(x, y, 180, 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+            }
+        }
+
+        // Animation loop
+        let lastTime = 0;
+        function animate(currentTime = 0) {
+            const deltaTime = Math.min((currentTime - lastTime) / 16.67, 3);
+            lastTime = currentTime;
+
+            drawBackground();
+            drawHiggsField();
+
+            spontaneousPairCreation();
+
+            fieldWaves = fieldWaves.filter(wave => {
+                wave.update(deltaTime);
+                if (!wave.dead) wave.draw(ctx);
+                return !wave.dead;
+            });
+
+            particles = particles.filter(particle => {
+                particle.update(deltaTime);
+                if (!particle.dead) particle.draw(ctx);
+                return !particle.dead;
+            });
+
+            updateStats();
+
+            requestAnimationFrame(animate);
+        }
+
+        // Start
+        init();
+    </script>
+</body>
+
+</html>
