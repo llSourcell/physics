@@ -1,0 +1,1922 @@
+<!--
+ARCHITECTURE PLAN (UPGRADED):
+1. DISCRETE SCALE REGIMES with epistemic transitions
+2. HONEST BREAKDOWN visualization at Planck scale
+3. INFORMATION HORIZON with area-law entropy
+4. ENTANGLEMENT → GEOMETRY causation
+5. CAUSAL CONES with light-cone constraints
+6. PEDAGOGICALLY PRECISE explanations
+7. UNIFYING MOMENT at deepest scale
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PLANCK HORIZON | Where Distance Stops Being Classical</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Space Grotesk',-apple-system,sans-serif;background:#000;color:#fff;overflow:hidden;min-height:100vh}
+#canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1}
+.glass{background:rgba(8,12,20,0.85);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.08);border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.5)}
+.panel-title{font-size:12px;font-weight:600;margin-bottom:10px;background:linear-gradient(135deg,#00e5ff,#ff0080,#ffd000);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:1px}
+.control-panel{position:fixed;top:20px;right:20px;width:280px;padding:14px;z-index:100}
+.control-group{margin-bottom:10px;transition:opacity 0.3s}
+.control-group.disabled{opacity:0.35;pointer-events:none}
+.control-group.disabled input{cursor:not-allowed}
+.control-label{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.6);margin-bottom:3px}
+.control-value{color:#00e5ff;font-weight:500}
+.control-note{font-size:8px;color:rgba(255,180,0,0.7);margin-top:2px;font-style:italic;display:none}
+.control-group.disabled .control-note{display:block}
+input[type="range"]{width:100%;height:3px;-webkit-appearance:none;background:linear-gradient(90deg,rgba(0,229,255,0.3),rgba(255,0,128,0.3));border-radius:2px;cursor:pointer}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:linear-gradient(135deg,#00e5ff,#ff0080);border-radius:50%;box-shadow:0 0 10px rgba(0,229,255,0.5)}
+.toggle-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.toggle-btn{padding:4px 8px;border:1px solid rgba(255,255,255,0.15);border-radius:6px;font-size:9px;cursor:pointer;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.7);transition:all 0.2s}
+.toggle-btn.active{border-color:#00e5ff;color:#00e5ff;background:rgba(0,229,255,0.1)}
+.toggle-btn:hover{background:rgba(255,255,255,0.1)}
+/* Regime indicator */
+.regime-indicator{margin-top:12px;padding:8px;background:rgba(0,0,0,0.4);border-radius:8px;border-left:3px solid #00e5ff}
+.regime-indicator.quantum{border-left-color:#ffd000}
+.regime-indicator.transition{border-left-color:#ff6b35}
+.regime-indicator.planck{border-left-color:#ff0080}
+.regime-name{font-size:11px;font-weight:600;margin-bottom:2px}
+.regime-desc{font-size:9px;color:rgba(255,255,255,0.6);line-height:1.4}
+.stats-panel{position:fixed;top:20px;left:20px;padding:12px 16px;z-index:100;min-width:220px}
+.stat-row{display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px}
+.stat-label{color:rgba(255,255,255,0.5)}
+.stat-value{font-weight:500;min-width:90px;text-align:right}
+.stat-value.cyan{color:#00e5ff}
+.stat-value.magenta{color:#ff0080}
+.stat-value.gold{color:#ffd000}
+.stat-value.warning{color:#ff6b35}
+.stat-note{font-size:8px;color:rgba(255,255,255,0.4);text-align:right}
+.main-title{position:fixed;top:14px;left:50%;transform:translateX(-50%);text-align:center;z-index:100;pointer-events:none}
+.main-title h1{font-size:18px;font-weight:400;letter-spacing:6px;background:linear-gradient(135deg,#00e5ff,#ff0080,#ffd000);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.main-title p{font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:2px;margin-top:2px}
+/* Epistemic banner */
+.epistemic-banner{position:fixed;top:50px;left:50%;transform:translateX(-50%);padding:8px 20px;z-index:99;text-align:center;opacity:0;transition:opacity 0.5s;pointer-events:none;border:1px solid rgba(255,0,128,0.3);max-width:500px}
+.epistemic-banner.visible{opacity:1}
+.epistemic-banner p{font-size:11px;color:rgba(255,255,255,0.8);line-height:1.5}
+.epistemic-banner .label{font-size:8px;color:#ff0080;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.event-feed{position:fixed;top:220px;right:20px;width:280px;max-height:180px;overflow:hidden;padding:12px;z-index:99}
+.event-feed-title{font-size:10px;font-weight:600;color:#ffd000;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.event-feed-title::before{content:'';width:6px;height:6px;background:#00ff88;border-radius:50%;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.event-item{font-size:9px;padding:6px 8px;margin-bottom:4px;background:rgba(0,0,0,0.4);border-radius:6px;border-left:3px solid #00e5ff;opacity:0;transform:translateX(20px);animation:slideIn 0.3s forwards;line-height:1.4}
+@keyframes slideIn{to{opacity:1;transform:translateX(0)}}
+.event-item.horizon{border-left-color:#ff0080}
+.event-item.causal{border-left-color:#ffd000}
+.event-item.entropy{border-left-color:#00ff88}
+.event-item.epistemic{border-left-color:#ff6b35}
+.event-type{font-weight:600;text-transform:uppercase;font-size:7px;margin-bottom:2px;color:#00e5ff}
+.event-item.horizon .event-type{color:#ff0080}
+.event-item.causal .event-type{color:#ffd000}
+.event-item.entropy .event-type{color:#00ff88}
+.event-item.epistemic .event-type{color:#ff6b35}
+.concept-panel{position:fixed;bottom:20px;left:20px;padding:12px;z-index:100;max-width:380px}
+.concept-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.concept-tile{padding:8px 6px;border-radius:6px;text-align:center;cursor:pointer;transition:all 0.2s;font-size:9px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1)}
+.concept-tile:hover{transform:scale(1.05);border-color:rgba(255,255,255,0.3)}
+.concept-tile.active{border-color:#00e5ff;box-shadow:0 0 15px rgba(0,229,255,0.3)}
+.concept-tile .icon{font-size:16px;display:block;margin-bottom:2px}
+.concept-tile .name{font-size:8px;opacity:0.8}
+.idea-panel{position:fixed;bottom:20px;right:20px;padding:12px;z-index:100;max-width:300px}
+.idea-cards{display:flex;flex-direction:column;gap:4px}
+.idea-card{padding:8px 10px;border-radius:6px;cursor:pointer;transition:all 0.2s;background:rgba(0,0,0,0.3);border-left:3px solid #ffd000}
+.idea-card:hover{background:rgba(255,215,0,0.1)}
+.idea-card.active{background:rgba(255,215,0,0.15);border-left-width:5px}
+.idea-card .eq{font-family:'Times New Roman',serif;font-size:12px;color:#ffd000}
+.idea-card .label{font-size:8px;color:rgba(255,255,255,0.5);margin-top:2px}
+.explanation-card{position:fixed;bottom:180px;left:20px;padding:16px;z-index:101;max-width:380px;opacity:0;transform:translateY(10px);transition:all 0.3s;pointer-events:none}
+.explanation-card.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.explanation-card .close{position:absolute;top:8px;right:10px;cursor:pointer;font-size:14px;opacity:0.5}
+.explanation-card .close:hover{opacity:1}
+.explanation-card h3{font-size:13px;margin-bottom:8px;color:#00e5ff}
+.explanation-card p{font-size:11px;line-height:1.5;color:rgba(255,255,255,0.8);margin-bottom:6px}
+.explanation-card .why{font-size:10px;color:#ffd000;font-style:italic}
+.explanation-card .visual{font-size:9px;color:rgba(255,255,255,0.5);margin-top:6px}
+.explanation-card .metaphor-tag{font-size:8px;color:#ff6b35;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.scale-indicator{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 24px;z-index:100;text-align:center}
+.scale-value{font-size:18px;font-weight:500;color:#00e5ff}
+.scale-stage{font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px}
+/* Unifying moment overlay */
+.unifying-moment{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0);z-index:150;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:all 2s ease-out}
+.unifying-moment.active{opacity:1;background:rgba(0,0,0,0.7)}
+.unifying-text{text-align:center;max-width:500px;padding:40px}
+.unifying-text p{font-size:16px;line-height:2;color:rgba(255,255,255,0.9);opacity:0;transform:translateY(20px);transition:all 1s ease-out}
+.unifying-text p.visible{opacity:1;transform:translateY(0)}
+.unifying-text p:first-child{color:#00e5ff}
+.unifying-text p:last-child{font-size:12px;color:rgba(255,255,255,0.5);margin-top:20px}
+.tour-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.5s}
+.tour-overlay.active{opacity:1;pointer-events:auto}
+.tour-card{background:rgba(15,20,35,0.95);backdrop-filter:blur(30px);border:1px solid rgba(0,229,255,0.2);border-radius:20px;padding:30px 40px;max-width:550px;text-align:center;box-shadow:0 0 60px rgba(0,229,255,0.15)}
+.tour-step{font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:8px}
+.tour-title{font-size:22px;font-weight:500;margin-bottom:14px;background:linear-gradient(135deg,#00e5ff,#ff0080);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tour-text{font-size:13px;line-height:1.7;color:rgba(255,255,255,0.8);margin-bottom:20px}
+.tour-buttons{display:flex;gap:12px;justify-content:center}
+.tour-btn{padding:10px 24px;border:none;border-radius:10px;font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s}
+.tour-btn.primary{background:linear-gradient(135deg,#00e5ff,#ff0080);color:#000}
+.tour-btn.secondary{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2)}
+.tour-btn:hover{transform:translateY(-2px)}
+.zoom-journey{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;z-index:300;display:flex;align-items:center;justify-content:center;flex-direction:column;transition:opacity 1s}
+.zoom-journey.hidden{opacity:0;pointer-events:none}
+.zoom-stage{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transform:scale(0.5);transition:all 0.8s ease-out;text-align:center;padding:20px}
+.zoom-stage.active{opacity:1;transform:scale(1)}
+.zoom-stage.zooming-out{opacity:0;transform:scale(3)}
+.zoom-icon{font-size:70px;margin-bottom:16px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.zoom-scale{font-size:42px;font-weight:300;color:#00e5ff;margin-bottom:8px}
+.zoom-label{font-size:22px;color:rgba(255,255,255,0.9);margin-bottom:6px}
+.zoom-desc{font-size:13px;color:rgba(255,255,255,0.6);max-width:450px;line-height:1.5}
+.zoom-note{font-size:11px;color:#ffd000;margin-top:10px;padding:6px 12px;background:rgba(255,215,0,0.1);border-radius:6px}
+.zoom-progress{position:absolute;bottom:40px;display:flex;gap:8px}
+.zoom-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.2);transition:all 0.3s}
+.zoom-dot.active{background:#00e5ff;box-shadow:0 0 10px #00e5ff}
+.zoom-skip{position:absolute;top:20px;right:20px;padding:8px 16px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:20px;color:#fff;font-size:11px;cursor:pointer;transition:all 0.2s}
+.zoom-skip:hover{background:rgba(255,255,255,0.2)}
+.zoom-message{position:absolute;bottom:80px;font-size:11px;color:rgba(255,255,255,0.4)}
+.disclaimer-btn{position:fixed;bottom:20px;right:340px;padding:6px 12px;font-size:9px;cursor:pointer;z-index:100}
+.disclaimer-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:400;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
+.disclaimer-modal.active{opacity:1;pointer-events:auto}
+.disclaimer-content{background:rgba(15,20,35,0.98);border:1px solid rgba(255,255,255,0.1);border-radius:16px;padding:30px;max-width:520px;max-height:80vh;overflow-y:auto}
+.disclaimer-content h2{font-size:16px;color:#ff0080;margin-bottom:12px}
+.disclaimer-content p{font-size:12px;line-height:1.6;color:rgba(255,255,255,0.8);margin-bottom:10px}
+.disclaimer-content .close-btn{margin-top:16px;padding:10px 20px;background:linear-gradient(135deg,#00e5ff,#ff0080);border:none;border-radius:8px;color:#000;font-weight:500;cursor:pointer}
+.replay-btn{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);padding:6px 14px;font-size:10px;cursor:pointer;z-index:100}
+/* Horizon tooltip */
+.horizon-tooltip{position:fixed;padding:10px 14px;z-index:110;max-width:280px;opacity:0;pointer-events:none;transition:opacity 0.2s;font-size:10px;line-height:1.5}
+.horizon-tooltip.visible{opacity:1}
+.horizon-tooltip .ht-title{color:#ff0080;font-weight:600;margin-bottom:4px}
+sub{font-size:0.7em;vertical-align:sub}
+sup{font-size:0.7em;vertical-align:super}
+</style>
+</head>
+<body>
+<div class="zoom-journey" id="zoomJourney">
+<button class="zoom-skip" id="zoomSkip">Skip Journey →</button>
+<div class="zoom-stage" data-stage="0">
+<div class="zoom-icon">✋</div>
+<div class="zoom-scale">10<sup>-1</sup> m</div>
+<div class="zoom-label">Human Scale</div>
+<div class="zoom-desc">Your hand. Classical physics describes this perfectly. Distance, time, and causality are well-defined concepts here.</div>
+</div>
+<div class="zoom-stage" data-stage="1">
+<div class="zoom-icon">🔬</div>
+<div class="zoom-scale">10<sup>-5</sup> m</div>
+<div class="zoom-label">Cell Scale</div>
+<div class="zoom-desc">A living cell. Still classical. The geometry of space is smooth and predictable.</div>
+</div>
+<div class="zoom-stage" data-stage="2">
+<div class="zoom-icon">⚛️</div>
+<div class="zoom-scale">10<sup>-10</sup> m</div>
+<div class="zoom-label">Atomic Scale</div>
+<div class="zoom-desc">Electron clouds. Quantum mechanics matters here, but spacetime itself remains smooth.</div>
+<div class="zoom-note">REGIME SHIFT: Quantum mechanics becomes essential</div>
+</div>
+<div class="zoom-stage" data-stage="3">
+<div class="zoom-icon">🔴</div>
+<div class="zoom-scale">10<sup>-15</sup> m</div>
+<div class="zoom-label">Nuclear Scale</div>
+<div class="zoom-desc">Protons and neutrons. Quantum field theory works beautifully. Spacetime is still a fixed background.</div>
+</div>
+<div class="zoom-stage" data-stage="4">
+<div class="zoom-icon">⚡</div>
+<div class="zoom-scale">10<sup>-19</sup> m</div>
+<div class="zoom-label">Collider Frontier</div>
+<div class="zoom-desc">The LHC probes here. This is the smallest scale ever measured directly. QFT on smooth spacetime works perfectly.</div>
+<div class="zoom-note">✓ EXPERIMENTALLY VERIFIED: Standard Model works here</div>
+</div>
+<div class="zoom-stage" data-stage="5">
+<div class="zoom-icon">❓</div>
+<div class="zoom-scale">10<sup>-25</sup> m</div>
+<div class="zoom-label">Beyond Experiment</div>
+<div class="zoom-desc">No experiment has probed this scale. We extrapolate, but cannot verify. Gravity is still negligible.</div>
+<div class="zoom-note">⚠ EXTRAPOLATION: No direct experimental access</div>
+</div>
+<div class="zoom-stage" data-stage="6">
+<div class="zoom-icon">🌀</div>
+<div class="zoom-scale">10<sup>-35</sup> m</div>
+<div class="zoom-label">Planck Scale</div>
+<div class="zoom-desc">ℓ<sub>P</sub> = √(ℏG/c³). At this scale, probing with enough energy to resolve it would create a black hole. The concepts of "distance" and "time" lose their classical meaning.</div>
+<div class="zoom-note">⚠ EPISTEMIC LIMIT: Classical spacetime is not well-defined</div>
+</div>
+<div class="zoom-stage" data-stage="7">
+<div class="zoom-icon">✨</div>
+<div class="zoom-scale">CONCEPTUAL VISUALIZATION</div>
+<div class="zoom-label">Welcome to the Edge of Knowledge</div>
+<div class="zoom-desc">What follows is a METAPHOR—not a simulation. It illustrates ideas from quantum gravity research: emergent geometry, information horizons, and the breakdown of classical concepts.</div>
+</div>
+<div class="zoom-progress" id="zoomProgress">
+<div class="zoom-dot active" data-dot="0"></div>
+<div class="zoom-dot" data-dot="1"></div>
+<div class="zoom-dot" data-dot="2"></div>
+<div class="zoom-dot" data-dot="3"></div>
+<div class="zoom-dot" data-dot="4"></div>
+<div class="zoom-dot" data-dot="5"></div>
+<div class="zoom-dot" data-dot="6"></div>
+<div class="zoom-dot" data-dot="7"></div>
+</div>
+<div class="zoom-message">Click anywhere to continue...</div>
+</div>
+
+<canvas id="canvas"></canvas>
+
+<div class="main-title">
+<h1>PLANCK HORIZON</h1>
+<p>WHERE "DISTANCE" STOPS BEING A CLASSICAL IDEA</p>
+</div>
+
+<!-- Epistemic banner that appears at Planck scale -->
+<div class="epistemic-banner glass" id="epistemicBanner">
+<div class="label">Epistemic Boundary</div>
+<p>Below this scale, classical distance is no longer well-defined. What you see is a conceptual metaphor, not a physical prediction.</p>
+</div>
+
+<div class="control-panel glass">
+<div class="panel-title">⚛ QUANTUM GRAVITY CONTROLS</div>
+<div class="control-group" id="scaleGroup">
+<div class="control-label"><span>Scale</span><span class="control-value" id="scaleValueCtrl">10<sup>-10</sup> m</span></div>
+<input type="range" id="scaleSlider" min="0" max="100" value="26">
+</div>
+<div class="control-group" id="energyGroup">
+<div class="control-label"><span>Energy Density</span><span class="control-value" id="energyValue">30%</span></div>
+<input type="range" id="energySlider" min="0" max="100" value="30">
+<div class="control-note">At Planck scale, energy concentration → horizon formation</div>
+</div>
+<div class="control-group" id="entangleGroup">
+<div class="control-label"><span>Entanglement Strength</span><span class="control-value" id="entangleValue">50%</span></div>
+<input type="range" id="entangleSlider" min="10" max="100" value="50">
+<div class="control-note">Stronger entanglement → more coherent geometry</div>
+</div>
+<div class="control-group" id="jitterGroup">
+<div class="control-label"><span>Causal Jitter</span><span class="control-value" id="jitterValue">10%</span></div>
+<input type="range" id="jitterSlider" min="0" max="100" value="10">
+<div class="control-note">At Planck scale, causal order becomes uncertain</div>
+</div>
+<div class="control-group" id="timeGroup">
+<div class="control-label"><span>Time Scale</span><span class="control-value" id="timeValue">1.0×</span></div>
+<input type="range" id="timeSlider" min="1" max="20" value="10">
+</div>
+<div class="toggle-row">
+<button class="toggle-btn active" id="toggleCones">Cones</button>
+<button class="toggle-btn" id="togglePaths">Paths</button>
+<button class="toggle-btn active" id="toggleHorizon">Horizon</button>
+<button class="toggle-btn active" id="toggleMetric">Metric</button>
+<button class="toggle-btn" id="toggleSound">Sound</button>
+</div>
+<!-- Regime indicator -->
+<div class="regime-indicator" id="regimeIndicator">
+<div class="regime-name" id="regimeName">Classical Regime</div>
+<div class="regime-desc" id="regimeDesc">Spacetime is smooth. Distance and time are well-defined.</div>
+</div>
+</div>
+
+<div class="stats-panel glass">
+<div class="stat-row"><span class="stat-label">Scale:</span><span class="stat-value cyan" id="statScale">10<sup>-10</sup> m</span></div>
+<div class="stat-row"><span class="stat-label">λ ~ ℏ/p (proxy):</span><span class="stat-value cyan" id="statResolution">~10<sup>-10</sup> m</span></div>
+<div class="stat-note">Resolution set by probe energy</div>
+<div class="stat-row"><span class="stat-label">Energy (symbolic):</span><span class="stat-value magenta" id="statEnergy">~1 keV</span></div>
+<div class="stat-row"><span class="stat-label">S (boundary):</span><span class="stat-value gold" id="statEntropy">0</span></div>
+<div class="stat-row"><span class="stat-label">Perimeter:</span><span class="stat-value gold" id="statPerimeter">0</span></div>
+<div class="stat-note" id="areaLawNote" style="display:none">S ∝ perimeter (area law in 2D)</div>
+<div class="stat-row"><span class="stat-label">Horizon:</span><span class="stat-value warning" id="statHorizon">OFF</span></div>
+<div class="stat-row"><span class="stat-label">Packets / Links:</span><span class="stat-value cyan" id="statCounts">0 / 0</span></div>
+</div>
+
+<div class="event-feed glass" id="eventFeed">
+<div class="event-feed-title">LIVE: Conceptual Events</div>
+<div id="eventList"></div>
+</div>
+
+<div class="concept-panel glass">
+<div class="panel-title">💡 CONCEPTS</div>
+<div class="concept-grid">
+<div class="concept-tile" data-concept="quantum"><span class="icon">🌊</span><span class="name">Quantum</span></div>
+<div class="concept-tile" data-concept="relativity"><span class="icon">🕐</span><span class="name">Relativity</span></div>
+<div class="concept-tile" data-concept="gravity"><span class="icon">🌀</span><span class="name">Gravity</span></div>
+<div class="concept-tile" data-concept="entanglement"><span class="icon">🔗</span><span class="name">Entanglement</span></div>
+<div class="concept-tile" data-concept="causality"><span class="icon">➡️</span><span class="name">Causality</span></div>
+<div class="concept-tile" data-concept="horizon"><span class="icon">🔮</span><span class="name">Horizon</span></div>
+<div class="concept-tile" data-concept="entropy"><span class="icon">📊</span><span class="name">Entropy</span></div>
+<div class="concept-tile" data-concept="emergence"><span class="icon">🏗️</span><span class="name">Emergence</span></div>
+<div class="concept-tile" data-concept="holography"><span class="icon">🖼️</span><span class="name">Holography</span></div>
+</div>
+</div>
+
+<div class="idea-panel glass">
+<div class="panel-title">📐 KEY RELATIONS</div>
+<div class="idea-cards">
+<div class="idea-card" data-idea="planck"><div class="eq">ℓ<sub>P</sub> = √(ℏG/c³)</div><div class="label">Planck Length</div></div>
+<div class="idea-card" data-idea="resolution"><div class="eq">λ ~ ℏ/p</div><div class="label">Resolution Limit</div></div>
+<div class="idea-card" data-idea="schwarzschild"><div class="eq">r<sub>s</sub> ~ GE/c⁴</div><div class="label">Horizon Scale</div></div>
+<div class="idea-card" data-idea="arealaw"><div class="eq">S ∝ A</div><div class="label">Area Law</div></div>
+<div class="idea-card" data-idea="emergence"><div class="eq">geometry ← correlations</div><div class="label">Emergent Metric</div></div>
+</div>
+</div>
+
+<div class="explanation-card glass" id="explanationCard">
+<span class="close" id="closeExplanation">×</span>
+<div class="metaphor-tag" id="expTag">CONCEPT</div>
+<h3 id="expTitle">Title</h3>
+<p id="expText">Explanation text</p>
+<p class="why" id="expWhy">Why it matters</p>
+<p class="visual" id="expVisual">What you're seeing</p>
+</div>
+
+<div class="scale-indicator glass">
+<div class="scale-value" id="scaleDisplay">10<sup>-10</sup> m</div>
+<div class="scale-stage" id="scaleStage">Atomic Scale</div>
+</div>
+
+<!-- Unifying moment overlay -->
+<div class="unifying-moment" id="unifyingMoment">
+<div class="unifying-text">
+<p>The Planck scale is not a place.</p>
+<p>It is the limit of what "place" means.</p>
+<p>(Click anywhere to continue exploring)</p>
+</div>
+</div>
+
+<!-- Horizon tooltip -->
+<div class="horizon-tooltip glass" id="horizonTooltip">
+<div class="ht-title">Information Horizon</div>
+<p>This is not a black hole—it visualizes the idea that information content scales with the boundary, not the interior volume.</p>
+</div>
+
+<button class="replay-btn glass" id="replayBtn">🔍 Replay Scale Journey</button>
+<button class="disclaimer-btn glass" id="disclaimerBtn">⚠ Accuracy & Limits</button>
+
+<div class="disclaimer-modal" id="disclaimerModal">
+<div class="disclaimer-content">
+<h2>⚠ What This Visualization Shows</h2>
+<p><strong>This is a conceptual teaching tool, not a physical simulation.</strong></p>
+<p><strong>Experimentally verified:</strong> Quantum mechanics and general relativity work extremely well in their respective domains. The LHC probes ~10<sup>-19</sup> m.</p>
+<p><strong>Theoretically motivated:</strong> The Planck scale (10<sup>-35</sup> m) is where ℏ, G, and c combine to set a fundamental length. Probing smaller would require creating black holes.</p>
+<p><strong>Speculative:</strong> The exact structure at the Planck scale. Ideas like emergent geometry, holography, and quantum spacetime are research directions, not established facts.</p>
+<p><strong>What you see here:</strong> A network metaphor for "geometry from correlations." The nodes, links, horizons, and causal cones illustrate concepts—they are not predictions of any specific theory.</p>
+<p>The goal: help you understand WHY physicists think classical spacetime breaks down, not claim to show what replaces it.</p>
+<button class="close-btn" id="closeDisclaimer">I Understand</button>
+</div>
+</div>
+
+<div class="tour-overlay" id="tourOverlay">
+<div class="tour-card">
+<div class="tour-step" id="tourStep">Step 1 of 7</div>
+<div class="tour-title" id="tourTitle">Welcome to the Planck Horizon</div>
+<div class="tour-text" id="tourText">Loading...</div>
+<div class="tour-buttons">
+<button class="tour-btn secondary" id="tourSkip">Skip Tour</button>
+<button class="tour-btn primary" id="tourNext">Next →</button>
+</div>
+</div>
+</div>
+
+<script>
+// ================================================
+// PLANCK HORIZON - Upgraded Educational Visualization
+// ================================================
+// DESIGN PRINCIPLES:
+// 1. Scale as primary narrative with discrete regime transitions
+// 2. Honest breakdown visualization (not random noise)
+// 3. Entanglement → geometry causation
+// 4. Causal cones that teach, not decorate
+// 5. Pedagogically precise language
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+let animationId;
+let lastTime = 0;
+
+// ========== CONFIGURATION ==========
+const config = {
+    scale: 26, // 0-100 maps to exponent
+    energyDensity: 30,
+    entanglementStrength: 50,
+    causalJitter: 10,
+    timeScale: 1.0,
+    showCones: true,
+    showPaths: false, // New: show allowed/forbidden paths
+    showHorizon: true,
+    showMetric: true,
+    soundEnabled: false,
+    reducedMotion: false
+};
+
+// ========== DISCRETE SCALE REGIMES ==========
+// PHYSICALLY MOTIVATED: These represent real epistemic transitions
+const REGIMES = {
+    CLASSICAL: {
+        name: 'Classical Regime',
+        desc: 'Spacetime is smooth. Distance and time are well-defined. Classical physics works perfectly.',
+        minExp: -1, maxExp: -9,
+        color: '#00e5ff',
+        jitterAllowed: false,
+        horizonAllowed: false
+    },
+    QUANTUM: {
+        name: 'Quantum Regime',
+        desc: 'Quantum mechanics is essential. Spacetime remains a fixed, smooth background.',
+        minExp: -10, maxExp: -19,
+        color: '#ffd000',
+        jitterAllowed: false,
+        horizonAllowed: false
+    },
+    TRANSITION: {
+        name: 'Transition Regime',
+        desc: 'Beyond experimental reach. Extrapolation only. Quantum gravity effects may begin.',
+        minExp: -20, maxExp: -29,
+        color: '#ff6b35',
+        jitterAllowed: true,
+        horizonAllowed: true
+    },
+    PLANCK: {
+        name: 'Planck Regime',
+        desc: 'Classical spacetime is not well-defined. Geometry, causality, and distance lose their ordinary meaning.',
+        minExp: -30, maxExp: -35,
+        color: '#ff0080',
+        jitterAllowed: true,
+        horizonAllowed: true
+    }
+};
+
+function getScaleExponent() {
+    return -1 - (config.scale / 100) * 34;
+}
+
+function getCurrentRegime() {
+    const exp = getScaleExponent();
+    if (exp > -10) return REGIMES.CLASSICAL;
+    if (exp > -20) return REGIMES.QUANTUM;
+    if (exp > -30) return REGIMES.TRANSITION;
+    return REGIMES.PLANCK;
+}
+
+function isPlanckRegime() {
+    return getScaleExponent() <= -30;
+}
+
+function isTransitionOrPlanck() {
+    return getScaleExponent() <= -20;
+}
+
+// Track if unifying moment has been shown
+let unifyingMomentShown = false;
+let unifyingMomentTriggered = false;
+
+// ========== SPATIAL GRID FOR EFFICIENCY ==========
+class SpatialGrid {
+    constructor(cellSize = 100) {
+        this.cellSize = cellSize;
+        this.grid = new Map();
+    }
+    clear() { this.grid.clear(); }
+    getKey(x, y) {
+        return `${Math.floor(x / this.cellSize)},${Math.floor(y / this.cellSize)}`;
+    }
+    insert(obj) {
+        const key = this.getKey(obj.x, obj.y);
+        if (!this.grid.has(key)) this.grid.set(key, []);
+        this.grid.get(key).push(obj);
+    }
+    getNearby(x, y, radius = 1) {
+        const results = [];
+        const cx = Math.floor(x / this.cellSize);
+        const cy = Math.floor(y / this.cellSize);
+        for (let dx = -radius; dx <= radius; dx++) {
+            for (let dy = -radius; dy <= radius; dy++) {
+                const key = `${cx + dx},${cy + dy}`;
+                if (this.grid.has(key)) results.push(...this.grid.get(key));
+            }
+        }
+        return results;
+    }
+}
+
+const spatialGrid = new SpatialGrid(120);
+
+// ========== NODE CLASS ==========
+// METAPHOR: Nodes represent "events" or "degrees of freedom"
+// NOT: literal particles or spacetime points
+class Node {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.baseX = x;
+        this.baseY = y;
+        this.connections = [];
+        this.energy = 0;
+        this.age = 0;
+        this.phase = Math.random() * Math.PI * 2;
+        // For entanglement-based positioning
+        this.targetX = x;
+        this.targetY = y;
+    }
+    
+    update(dt) {
+        this.age += dt;
+        this.phase += 0.02 * dt;
+        
+        const regime = getCurrentRegime();
+        
+        // HONEST JITTER: Not random noise, but coherent fluctuation
+        // At Planck scale, geometry "breathes" rather than randomizes
+        if (regime === REGIMES.PLANCK && !config.reducedMotion) {
+            // Coherent, slow fluctuation - not chaotic noise
+            const breatheAmplitude = 5 + config.causalJitter * 0.1;
+            const breatheSpeed = 0.03;
+            this.x = this.baseX + Math.sin(this.phase * breatheSpeed + this.baseX * 0.01) * breatheAmplitude;
+            this.y = this.baseY + Math.cos(this.phase * breatheSpeed * 1.3 + this.baseY * 0.01) * breatheAmplitude;
+        } else if (regime === REGIMES.TRANSITION && !config.reducedMotion) {
+            // Subtle hint of fluctuation
+            const amp = 2 * (config.causalJitter / 100);
+            this.x = this.baseX + Math.sin(this.phase * 0.02) * amp;
+            this.y = this.baseY + Math.cos(this.phase * 0.025) * amp;
+        } else {
+            this.x = this.baseX;
+            this.y = this.baseY;
+        }
+        
+        // ENTANGLEMENT → GEOMETRY: Stronger entanglement pulls nodes toward clusters
+        if (config.entanglementStrength > 60) {
+            const pullStrength = (config.entanglementStrength - 60) / 400;
+            // Calculate centroid of connected nodes
+            let cx = 0, cy = 0, count = 0;
+            for (const edge of this.connections) {
+                const other = edge.nodeA === this ? edge.nodeB : edge.nodeA;
+                cx += other.baseX;
+                cy += other.baseY;
+                count++;
+            }
+            if (count > 0) {
+                cx /= count;
+                cy /= count;
+                // Slowly drift toward cluster center
+                this.baseX += (cx - this.baseX) * pullStrength * dt;
+                this.baseY += (cy - this.baseY) * pullStrength * dt;
+            }
+        }
+        
+        this.energy *= 0.995;
+    }
+    
+    draw(ctx) {
+        const alpha = 0.3 + this.energy * 0.5;
+        const size = 3 + this.energy * 4;
+        
+        // Glow
+        const glow = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, size * 3);
+        glow.addColorStop(0, `rgba(0, 229, 255, ${alpha})`);
+        glow.addColorStop(0.5, `rgba(0, 229, 255, ${alpha * 0.3})`);
+        glow.addColorStop(1, 'rgba(0, 229, 255, 0)');
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, size * 3, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
+        ctx.fill();
+        
+        // Core
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.fill();
+    }
+}
+
+// ========== EDGE CLASS ==========
+// METAPHOR: Edges represent "entanglement" or "correlations"
+// The idea: if geometry emerges from entanglement, link strength → distance
+class Edge {
+    constructor(nodeA, nodeB) {
+        this.nodeA = nodeA;
+        this.nodeB = nodeB;
+        this.weight = 0.3 + Math.random() * 0.7;
+        this.baseWeight = this.weight;
+        this.pulsePhase = Math.random() * Math.PI * 2;
+        this.crossesHorizon = false;
+        this.propagationDelay = 0;
+        nodeA.connections.push(this);
+        nodeB.connections.push(this);
+    }
+    
+    update(dt, horizon) {
+        this.pulsePhase += 0.02 * dt * (1 + config.entanglementStrength * 0.01);
+        
+        // Weight increases with entanglement strength
+        const targetWeight = 0.3 + config.entanglementStrength * 0.007;
+        this.weight += (targetWeight - this.weight) * 0.01;
+        
+        // Check if edge crosses horizon
+        if (horizon && horizon.active) {
+            const midX = (this.nodeA.x + this.nodeB.x) / 2;
+            const midY = (this.nodeA.y + this.nodeB.y) / 2;
+            const dx = midX - horizon.x;
+            const dy = midY - horizon.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            this.crossesHorizon = dist < horizon.radius * 1.2;
+            
+            // Delay propagation across horizon boundary
+            if (this.crossesHorizon) {
+                this.propagationDelay = Math.min(1, (horizon.radius * 1.2 - dist) / horizon.radius);
+            } else {
+                this.propagationDelay = 0;
+            }
+        } else {
+            this.crossesHorizon = false;
+            this.propagationDelay = 0;
+        }
+    }
+    
+    draw(ctx) {
+        const pulse = 0.5 + Math.sin(this.pulsePhase) * 0.3;
+        let alpha = this.weight * pulse * (isPlanckRegime() ? 0.6 : 0.35);
+        
+        // Dim links that cross horizon (information flow restricted)
+        if (this.crossesHorizon) {
+            alpha *= 0.3;
+        }
+        
+        const avgEnergy = (this.nodeA.energy + this.nodeB.energy) / 2;
+        const r = Math.floor(255 * avgEnergy);
+        const g = Math.floor(229 * (1 - avgEnergy * 0.5));
+        const b = 255;
+        
+        ctx.beginPath();
+        ctx.moveTo(this.nodeA.x, this.nodeA.y);
+        ctx.lineTo(this.nodeB.x, this.nodeB.y);
+        ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        ctx.lineWidth = 1 + avgEnergy * 2;
+        
+        // Dashed line if crosses horizon
+        if (this.crossesHorizon) {
+            ctx.setLineDash([4, 4]);
+        } else {
+            ctx.setLineDash([]);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+    
+    getDistance() {
+        const dx = this.nodeB.x - this.nodeA.x;
+        const dy = this.nodeB.y - this.nodeA.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+    
+    // EMERGENCE: effective distance is inverse of correlation strength
+    getEffectiveDistance() {
+        return this.getDistance() / (this.weight * config.entanglementStrength / 50);
+    }
+}
+
+// ========== PACKET CLASS ==========
+// METAPHOR: Packets represent "information" propagating through the network
+class Packet {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.vx = (Math.random() - 0.5) * 3;
+        this.vy = (Math.random() - 0.5) * 3;
+        this.age = 0;
+        this.maxAge = 200 + Math.random() * 200;
+        this.size = 4 + Math.random() * 3;
+        this.hue = 45 + Math.random() * 30;
+        this.trail = [];
+        this.energy = 1;
+        this.trapped = false;
+        this.redshiftFactor = 1;
+        this.lastNode = null;
+    }
+    
+    update(dt, nodes, horizon) {
+        this.age += dt;
+        if (this.age > this.maxAge) return false;
+        
+        // Check if trapped in horizon
+        if (horizon && horizon.active) {
+            const dx = this.x - horizon.x;
+            const dy = this.y - horizon.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < horizon.radius) {
+                this.trapped = true;
+                this.redshiftFactor = Math.max(0.1, 1 - (horizon.radius - dist) / horizon.radius);
+                this.vx *= 0.92;
+                this.vy *= 0.92;
+                this.energy *= 0.97;
+            } else if (dist < horizon.radius * 1.5) {
+                this.redshiftFactor = 1 - (horizon.radius * 1.5 - dist) / (horizon.radius * 0.5) * 0.3;
+            }
+        }
+        
+        this.trail.unshift({ x: this.x, y: this.y });
+        if (this.trail.length > 15) this.trail.pop();
+        
+        // Move toward nearby nodes along network (respecting causality)
+        if (!this.trapped && nodes.length > 0) {
+            const nearby = spatialGrid.getNearby(this.x, this.y, 1);
+            let closest = null;
+            let closestDist = Infinity;
+            
+            for (const node of nearby) {
+                if (node === this.lastNode) continue;
+                const dx = node.x - this.x;
+                const dy = node.y - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < closestDist && dist > 10) {
+                    closestDist = dist;
+                    closest = node;
+                }
+            }
+            
+            if (closest && closestDist < 150) {
+                const dx = closest.x - this.x;
+                const dy = closest.y - this.y;
+                this.vx += dx * 0.001;
+                this.vy += dy * 0.001;
+                
+                if (closestDist < 20) {
+                    closest.energy = Math.min(1, closest.energy + 0.3);
+                    this.lastNode = closest;
+                    if (Math.random() < 0.08 && packets.length < MAX_PACKETS) {
+                        packets.push(new Packet(this.x, this.y));
+                    }
+                }
+            }
+        }
+        
+        this.x += this.vx * dt * config.timeScale * this.redshiftFactor;
+        this.y += this.vy * dt * config.timeScale * this.redshiftFactor;
+        
+        if (this.x < 0) this.x = W;
+        if (this.x > W) this.x = 0;
+        if (this.y < 0) this.y = H;
+        if (this.y > H) this.y = 0;
+        
+        return true;
+    }
+    
+    draw(ctx) {
+        const lifeRatio = 1 - this.age / this.maxAge;
+        const alpha = lifeRatio * this.energy * this.redshiftFactor;
+        
+        // Trail
+        for (let i = 0; i < this.trail.length - 1; i++) {
+            const t = this.trail[i];
+            const tAlpha = (1 - i / this.trail.length) * alpha * 0.4;
+            ctx.beginPath();
+            ctx.arc(t.x, t.y, this.size * (1 - i / this.trail.length) * 0.5, 0, Math.PI * 2);
+            ctx.fillStyle = `hsla(${this.hue * this.redshiftFactor}, 100%, 60%, ${tAlpha})`;
+            ctx.fill();
+        }
+        
+        // Glow
+        const glow = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 4);
+        glow.addColorStop(0, `hsla(${this.hue * this.redshiftFactor}, 100%, 70%, ${alpha * 0.8})`);
+        glow.addColorStop(0.5, `hsla(${this.hue * this.redshiftFactor}, 100%, 50%, ${alpha * 0.3})`);
+        glow.addColorStop(1, 'transparent');
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size * 4, 0, Math.PI * 2);
+        ctx.fillStyle = glow;
+        ctx.fill();
+        
+        // Core
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size * this.redshiftFactor, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${this.hue * this.redshiftFactor}, 100%, 80%, ${alpha})`;
+        ctx.fill();
+    }
+}
+
+// ========== HORIZON CLASS ==========
+// METAPHOR: Information horizon - NOT a black hole
+// Illustrates the idea that information scales with boundary, not volume
+class Horizon {
+    constructor() {
+        this.x = W / 2;
+        this.y = H / 2;
+        this.radius = 0;
+        this.targetRadius = 0;
+        this.active = false;
+        this.entropy = 0;
+        this.pulsePhase = 0;
+        this.formationTime = 0;
+    }
+    
+    update(dt, energyMap) {
+        this.pulsePhase += 0.03 * dt;
+        
+        const regime = getCurrentRegime();
+        if (!regime.horizonAllowed) {
+            this.active = false;
+            this.targetRadius = 0;
+            this.radius += (0 - this.radius) * 0.1;
+            this.entropy *= 0.9;
+            return;
+        }
+        
+        // Find highest energy concentration
+        let maxEnergy = 0;
+        let maxX = this.x, maxY = this.y;
+        for (const [key, val] of energyMap) {
+            if (val > maxEnergy) {
+                maxEnergy = val;
+                const [cx, cy] = key.split(',').map(Number);
+                maxX = cx * 100 + 50;
+                maxY = cy * 100 + 50;
+            }
+        }
+        
+        const threshold = isPlanckRegime() ? 0.2 : 0.4;
+        
+        if (maxEnergy > threshold && config.showHorizon) {
+            if (!this.active) {
+                this.formationTime = Date.now();
+                addEvent('horizon', 'Information horizon formed. At small scales, concentrating energy creates a boundary that limits information flow.');
+                playHorizonSound();
+            }
+            this.active = true;
+            this.x += (maxX - this.x) * 0.05;
+            this.y += (maxY - this.y) * 0.05;
+            this.targetRadius = 40 + maxEnergy * 80;
+        } else {
+            this.active = false;
+            this.targetRadius = 0;
+        }
+        
+        this.radius += (this.targetRadius - this.radius) * 0.08;
+        
+        // AREA LAW: Entropy proportional to PERIMETER (boundary in 2D)
+        // This is the 2D analog of entropy ∝ area in 3D
+        if (this.active && this.radius > 5) {
+            this.entropy = 2 * Math.PI * this.radius * 0.1; // S ∝ perimeter
+        } else {
+            this.entropy *= 0.95;
+        }
+    }
+    
+    draw(ctx) {
+        if (this.radius < 5) return;
+        
+        const pulse = 1 + Math.sin(this.pulsePhase) * 0.08;
+        const r = this.radius * pulse;
+        
+        // Outer indication region
+        const outerGlow = ctx.createRadialGradient(this.x, this.y, r * 0.8, this.x, this.y, r * 1.8);
+        outerGlow.addColorStop(0, 'rgba(255, 0, 128, 0)');
+        outerGlow.addColorStop(0.5, 'rgba(255, 0, 128, 0.08)');
+        outerGlow.addColorStop(1, 'rgba(255, 0, 128, 0)');
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, r * 1.8, 0, Math.PI * 2);
+        ctx.fillStyle = outerGlow;
+        ctx.fill();
+        
+        // Horizon boundary - dotted ring
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255, 0, 128, 0.8)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 6]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        
+        // Shimmering boundary points
+        for (let i = 0; i < 40; i++) {
+            const angle = (i / 40) * Math.PI * 2 + this.pulsePhase * 0.3;
+            const wobble = Math.sin(angle * 6 + this.pulsePhase * 2) * 2;
+            const px = this.x + Math.cos(angle) * (r + wobble);
+            const py = this.y + Math.sin(angle) * (r + wobble);
+            const alpha = 0.4 + Math.sin(angle * 3 + this.pulsePhase) * 0.2;
+            ctx.beginPath();
+            ctx.arc(px, py, 1.5, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 0, 128, ${alpha})`;
+            ctx.fill();
+        }
+        
+        // Inner dimming
+        const innerGrad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, r);
+        innerGrad.addColorStop(0, 'rgba(0, 0, 0, 0.6)');
+        innerGrad.addColorStop(0.7, 'rgba(0, 0, 0, 0.3)');
+        innerGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = innerGrad;
+        ctx.fill();
+        
+        // Area law label
+        if (this.active) {
+            ctx.font = '10px Space Grotesk, sans-serif';
+            ctx.fillStyle = 'rgba(255, 215, 0, 0.9)';
+            ctx.textAlign = 'center';
+            ctx.fillText(`S ∝ perimeter`, this.x, this.y + r + 18);
+            ctx.font = '9px Space Grotesk, sans-serif';
+            ctx.fillStyle = 'rgba(255, 215, 0, 0.6)';
+            ctx.fillText(`S = ${this.entropy.toFixed(1)}`, this.x, this.y + r + 30);
+        }
+    }
+    
+    containsPoint(x, y) {
+        const dx = x - this.x;
+        const dy = y - this.y;
+        return Math.sqrt(dx * dx + dy * dy) < this.radius;
+    }
+}
+
+// ========== CAUSAL CONE CLASS ==========
+// PEDAGOGICAL PURPOSE: Show that causality has structure
+// At Planck scale, this structure becomes uncertain (but NOT random)
+class CausalCone {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.age = 0;
+        this.maxAge = 150;
+        this.coherentJitter = 0; // Slowly varying, not random
+        this.jitterPhase = Math.random() * Math.PI * 2;
+    }
+    
+    update(dt) {
+        this.age += dt;
+        
+        const regime = getCurrentRegime();
+        if (regime.jitterAllowed && config.causalJitter > 10) {
+            // HONEST JITTER: Coherent, slow fluctuation
+            // NOT: random frame-by-frame noise
+            this.jitterPhase += 0.05 * dt;
+            const jitterStrength = config.causalJitter * 0.3 * (isPlanckRegime() ? 1 : 0.3);
+            this.coherentJitter = Math.sin(this.jitterPhase) * jitterStrength;
+        } else {
+            this.coherentJitter *= 0.95;
+        }
+        
+        return this.age < this.maxAge;
+    }
+    
+    draw(ctx) {
+        const alpha = (1 - this.age / this.maxAge) * 0.5;
+        const size = this.age * 2.5;
+        
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        
+        // Apply coherent rotation jitter
+        ctx.rotate(this.coherentJitter * 0.015);
+        
+        // Draw light cone structure
+        const coneAngle = Math.PI / 4 + this.coherentJitter * 0.01; // ~45 degrees = light speed
+        
+        // Future cone (upward)
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(-Math.tan(coneAngle) * size, -size);
+        ctx.lineTo(Math.tan(coneAngle) * size, -size);
+        ctx.closePath();
+        ctx.fillStyle = `rgba(0, 255, 136, ${alpha * 0.25})`;
+        ctx.fill();
+        ctx.strokeStyle = `rgba(0, 255, 136, ${alpha * 0.8})`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        
+        // Past cone (downward)
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(-Math.tan(coneAngle) * size, size);
+        ctx.lineTo(Math.tan(coneAngle) * size, size);
+        ctx.closePath();
+        ctx.fillStyle = `rgba(255, 100, 50, ${alpha * 0.25})`;
+        ctx.fill();
+        ctx.strokeStyle = `rgba(255, 100, 50, ${alpha * 0.8})`;
+        ctx.stroke();
+        
+        // Show forbidden region if paths toggle is on
+        if (config.showPaths) {
+            // Spacelike region (forbidden for causal influence)
+            ctx.fillStyle = `rgba(255, 0, 0, ${alpha * 0.08})`;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-size * 1.5, -size * 0.3);
+            ctx.lineTo(-size * 1.5, size * 0.3);
+            ctx.closePath();
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(size * 1.5, -size * 0.3);
+            ctx.lineTo(size * 1.5, size * 0.3);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Labels
+            ctx.font = '8px Space Grotesk';
+            ctx.fillStyle = `rgba(0, 255, 136, ${alpha})`;
+            ctx.textAlign = 'center';
+            ctx.fillText('future', 0, -size - 8);
+            ctx.fillStyle = `rgba(255, 100, 50, ${alpha})`;
+            ctx.fillText('past', 0, size + 14);
+            ctx.fillStyle = `rgba(255, 100, 100, ${alpha * 0.7})`;
+            ctx.fillText('spacelike', -size - 20, 0);
+            ctx.fillText('(no causal)', -size - 20, 10);
+        }
+        
+        // Jitter indicator at Planck scale
+        if (isPlanckRegime() && Math.abs(this.coherentJitter) > 3) {
+            ctx.font = '9px Space Grotesk';
+            ctx.fillStyle = `rgba(255, 180, 0, ${alpha})`;
+            ctx.textAlign = 'center';
+            ctx.fillText('causal structure uncertain', 0, -size - 20);
+        }
+        
+        ctx.restore();
+    }
+}
+
+// ========== METRIC FIELD VISUALIZATION ==========
+// METAPHOR: Warped grid shows "emergent geometry from connectivity"
+// At Planck scale, grid becomes statistical rather than smooth
+function drawMetricField(ctx, nodes) {
+    if (!config.showMetric || nodes.length < 5) return;
+    
+    const gridSize = 60;
+    const cols = Math.ceil(W / gridSize);
+    const rows = Math.ceil(H / gridSize);
+    const regime = getCurrentRegime();
+    
+    // Grid color varies by regime
+    let gridAlpha = 0.08;
+    if (isPlanckRegime()) gridAlpha = 0.04; // Fades at Planck scale
+    
+    ctx.strokeStyle = `rgba(100, 150, 255, ${gridAlpha})`;
+    ctx.lineWidth = 0.5;
+    
+    // At Planck scale: grid becomes "statistical" (faded, occasional)
+    // NOT random noise - structured uncertainty
+    const drawProbability = isPlanckRegime() ? 0.6 : 1;
+    
+    // Vertical lines
+    for (let i = 0; i <= cols; i++) {
+        if (isPlanckRegime() && Math.random() > drawProbability) continue;
+        
+        ctx.beginPath();
+        for (let j = 0; j <= rows; j++) {
+            let x = i * gridSize;
+            let y = j * gridSize;
+            
+            // Warp based on node density (emergent geometry)
+            const nearby = spatialGrid.getNearby(x, y, 1);
+            let warpX = 0, warpY = 0;
+            for (const node of nearby) {
+                const dx = node.x - x;
+                const dy = node.y - y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > 0 && dist < 100) {
+                    const strength = (1 - dist / 100) * config.entanglementStrength * 0.003;
+                    warpX += dx * strength;
+                    warpY += dy * strength;
+                }
+            }
+            
+            if (j === 0) ctx.moveTo(x + warpX, y + warpY);
+            else ctx.lineTo(x + warpX, y + warpY);
+        }
+        ctx.stroke();
+    }
+    
+    // Horizontal lines
+    for (let j = 0; j <= rows; j++) {
+        if (isPlanckRegime() && Math.random() > drawProbability) continue;
+        
+        ctx.beginPath();
+        for (let i = 0; i <= cols; i++) {
+            let x = i * gridSize;
+            let y = j * gridSize;
+            
+            const nearby = spatialGrid.getNearby(x, y, 1);
+            let warpX = 0, warpY = 0;
+            for (const node of nearby) {
+                const dx = node.x - x;
+                const dy = node.y - y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist > 0 && dist < 100) {
+                    const strength = (1 - dist / 100) * config.entanglementStrength * 0.003;
+                    warpX += dx * strength;
+                    warpY += dy * strength;
+                }
+            }
+            
+            if (i === 0) ctx.moveTo(x + warpX, y + warpY);
+            else ctx.lineTo(x + warpX, y + warpY);
+        }
+        ctx.stroke();
+    }
+}
+
+// ========== GRAPH SYSTEM ==========
+let nodes = [];
+let edges = [];
+let packets = [];
+let causalCones = [];
+let horizon = null;
+let energyMap = new Map();
+const MAX_NODES = 80;
+const MAX_EDGES = 200;
+const MAX_PACKETS = 80;
+
+function initGraph() {
+    nodes = [];
+    edges = [];
+    horizon = new Horizon();
+    horizon.x = W / 2;
+    horizon.y = H / 2;
+    
+    const count = 40 + Math.floor(Math.random() * 20);
+    for (let i = 0; i < count; i++) {
+        nodes.push(new Node(
+            100 + Math.random() * (W - 200),
+            100 + Math.random() * (H - 200)
+        ));
+    }
+    
+    // Create edges based on proximity
+    for (let i = 0; i < nodes.length; i++) {
+        const distances = [];
+        for (let j = 0; j < nodes.length; j++) {
+            if (i === j) continue;
+            const dx = nodes[j].x - nodes[i].x;
+            const dy = nodes[j].y - nodes[i].y;
+            distances.push({ idx: j, dist: Math.sqrt(dx * dx + dy * dy) });
+        }
+        distances.sort((a, b) => a.dist - b.dist);
+        
+        const connectCount = 2 + Math.floor(Math.random() * 3);
+        for (let k = 0; k < Math.min(connectCount, distances.length); k++) {
+            if (distances[k].dist < 250 && edges.length < MAX_EDGES) {
+                const exists = edges.some(e => 
+                    (e.nodeA === nodes[i] && e.nodeB === nodes[distances[k].idx]) ||
+                    (e.nodeB === nodes[i] && e.nodeA === nodes[distances[k].idx])
+                );
+                if (!exists) {
+                    edges.push(new Edge(nodes[i], nodes[distances[k].idx]));
+                }
+            }
+        }
+    }
+}
+
+// ========== SOUND SYSTEM ==========
+let audioCtx = null;
+
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+}
+
+function playTone(freq, duration, type = 'sine', volume = 0.1) {
+    if (!config.soundEnabled || !audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+}
+
+function playClickSound() {
+    playTone(600, 0.08, 'sine', 0.04);
+    setTimeout(() => playTone(800, 0.1, 'sine', 0.02), 30);
+}
+
+function playHorizonSound() {
+    playTone(80, 0.5, 'sine', 0.1);
+    setTimeout(() => playTone(60, 0.7, 'sine', 0.08), 100);
+}
+
+// ========== EVENT FEED ==========
+const MAX_EVENTS = 5;
+let lastEventTime = 0;
+
+function addEvent(type, message) {
+    const now = Date.now();
+    if (now - lastEventTime < 2000) return;
+    lastEventTime = now;
+    
+    const eventList = document.getElementById('eventList');
+    const eventDiv = document.createElement('div');
+    eventDiv.className = `event-item ${type}`;
+    
+    const titles = {
+        horizon: '🔮 HORIZON',
+        causal: '⚡ CAUSALITY',
+        entropy: '📊 ENTROPY',
+        epistemic: '⚠️ LIMIT',
+        info: '✨ INFO'
+    };
+    
+    eventDiv.innerHTML = `<div class="event-type">${titles[type] || '✨ INFO'}</div>${message}`;
+    eventList.insertBefore(eventDiv, eventList.firstChild);
+    
+    while (eventList.children.length > MAX_EVENTS) {
+        eventList.removeChild(eventList.lastChild);
+    }
+}
+
+// ========== CONCEPT EXPLANATIONS (REWRITTEN FOR CLARITY) ==========
+const CONCEPTS = {
+    quantum: {
+        tag: 'ESTABLISHED PHYSICS',
+        title: '🌊 Quantum Mechanics',
+        text: 'At small scales, nature is probabilistic. Particles do not have definite positions until measured. This is not a limitation of our knowledge—it is a feature of reality.',
+        why: 'Explains atoms, chemistry, and electronics. One of the most precisely tested theories in physics.',
+        visual: 'Nodes jitter because quantum mechanics makes position inherently uncertain.'
+    },
+    relativity: {
+        tag: 'ESTABLISHED PHYSICS',
+        title: '🕐 General Relativity',
+        text: 'Mass and energy curve spacetime. What we experience as gravity is geometry. Time passes differently depending on where you are.',
+        why: 'Explains orbits, black holes, gravitational lensing, and GPS corrections.',
+        visual: 'The warped grid shows how matter/energy distorts the geometry of space.'
+    },
+    gravity: {
+        tag: 'WHY PLANCK SCALE MATTERS',
+        title: '🌀 Gravity at Small Scales',
+        text: 'Gravity is usually weak. But concentrating energy in tiny volumes makes it dominate. At the Planck scale, quantum mechanics and gravity are BOTH important—and they conflict.',
+        why: 'This is why we need a theory of quantum gravity.',
+        visual: 'High energy density (bright regions) can create horizons at small scales.'
+    },
+    entanglement: {
+        tag: 'ESTABLISHED + SPECULATIVE',
+        title: '🔗 Quantum Entanglement',
+        text: 'Two particles can be correlated in ways that persist regardless of distance. Measuring one instantly affects the statistics of the other. This is experimentally verified. Some theories suggest entanglement might be the foundation of spacetime geometry.',
+        why: 'The "ER=EPR" conjecture connects entanglement to wormholes.',
+        visual: 'Links between nodes represent correlations. Stronger entanglement → more coherent geometry.'
+    },
+    causality: {
+        tag: 'ESTABLISHED + SPECULATIVE',
+        title: '➡️ Causality & Light Cones',
+        text: 'Nothing travels faster than light. This creates a "causal structure"—some events can influence others, some cannot. At the Planck scale, this structure may fluctuate.',
+        why: 'If spacetime itself fluctuates, so does the definition of "before" and "after."',
+        visual: 'Click to see causal cones. At Planck scale, they wobble—causality becomes uncertain.'
+    },
+    horizon: {
+        tag: 'CONCEPTUAL VISUALIZATION',
+        title: '🔮 Information Horizons',
+        text: 'When enough energy concentrates in a small region, it creates a boundary that limits information flow. Inside, information is trapped. This is related to black holes, but the visualization is a metaphor.',
+        why: 'Horizons reveal deep connections between gravity, thermodynamics, and information.',
+        visual: 'The pink dotted ring is an "information horizon." Packets slow and get trapped inside.'
+    },
+    entropy: {
+        tag: 'PHYSICALLY MOTIVATED',
+        title: '📊 Entropy & the Area Law',
+        text: 'Black hole entropy is proportional to the horizon AREA, not volume. This is strange: normally, entropy scales with volume. It suggests physics may be "holographic."',
+        why: 'This was one of the first hints that spacetime might be emergent.',
+        visual: 'S ∝ perimeter (the 2D version of area). Entropy tracks the boundary, not the interior.'
+    },
+    emergence: {
+        tag: 'SPECULATIVE RESEARCH',
+        title: '🏗️ Emergent Spacetime',
+        text: 'Maybe smooth spacetime is not fundamental. It might "emerge" from something deeper—like entanglement patterns or quantum information networks. Distance could be derived, not given.',
+        why: 'If true, this would resolve the conflict between quantum mechanics and gravity.',
+        visual: 'The network IS the geometry. Distances emerge from link strengths. Increase entanglement to see clustering.'
+    },
+    holography: {
+        tag: 'SPECULATIVE RESEARCH',
+        title: '🖼️ Holographic Principle',
+        text: 'All information about a 3D region might be encoded on its 2D boundary. This is inspired by black hole thermodynamics and the AdS/CFT correspondence.',
+        why: 'If true, our 3D experience might be a projection of 2D physics.',
+        visual: 'Entropy tracking perimeter (not area) illustrates holographic encoding.'
+    }
+};
+
+const IDEAS = {
+    planck: {
+        tag: 'DIMENSIONAL ANALYSIS',
+        title: 'ℓP = √(ℏG/c³) — Planck Length',
+        text: 'Combine the constants of quantum mechanics (ℏ), gravity (G), and relativity (c). The ONLY length scale you can construct is ℓP ≈ 10⁻³⁵ m.',
+        why: 'This is the scale where all three theories become simultaneously important.',
+        visual: 'Below the Planck length, probing with enough energy to resolve it would create a black hole.'
+    },
+    resolution: {
+        tag: 'QUANTUM MECHANICS',
+        title: 'λ ~ ℏ/p — Resolution Limit',
+        text: 'To see small things, you need short wavelengths. But wavelength is inversely proportional to momentum. Higher momentum = more energy. So probing smaller scales requires more energy.',
+        why: 'This is why particle accelerators are so large.',
+        visual: 'The scale slider shows the connection: smaller length ↔ higher energy.'
+    },
+    schwarzschild: {
+        tag: 'GENERAL RELATIVITY',
+        title: 'rs ~ GE/c⁴ — Horizon Scale',
+        text: 'If you concentrate energy E in a region smaller than rs ~ GE/c⁴, gravity dominates and a horizon forms. At Planck energy, rs ≈ λ—you cannot probe smaller without creating a black hole.',
+        why: 'This is the fundamental barrier to sub-Planck probing.',
+        visual: 'The horizon forms when energy density is high at small scales.'
+    },
+    arealaw: {
+        tag: 'BLACK HOLE PHYSICS',
+        title: 'S ∝ A — Bekenstein-Hawking',
+        text: 'Black hole entropy is proportional to horizon AREA, not volume. In 2D, this becomes entropy ∝ perimeter. This is radically different from normal thermodynamics.',
+        why: 'Suggests that spacetime degrees of freedom live on boundaries.',
+        visual: 'The entropy counter tracks boundary size, not interior.'
+    },
+    emergence: {
+        tag: 'ACTIVE RESEARCH',
+        title: 'geometry ← correlations',
+        text: 'Some quantum gravity approaches suggest that the metric (geometry) is not fundamental. Instead, it might emerge from patterns of entanglement or quantum correlations.',
+        why: 'Could explain how continuous spacetime arises from discrete quantum structure.',
+        visual: 'The network topology determines the effective geometry. More entanglement → more coherent space.'
+    }
+};
+
+function showExplanation(type, data) {
+    const card = document.getElementById('explanationCard');
+    document.getElementById('expTag').textContent = data.tag || 'CONCEPT';
+    document.getElementById('expTitle').textContent = data.title;
+    document.getElementById('expText').textContent = data.text;
+    document.getElementById('expWhy').textContent = data.why ? `Why it matters: ${data.why}` : '';
+    document.getElementById('expVisual').textContent = data.visual ? `👁 ${data.visual}` : '';
+    card.classList.add('visible');
+}
+
+// ========== DRAWING ==========
+function drawBackground() {
+    const grad = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W, H));
+    grad.addColorStop(0, '#0a0a15');
+    grad.addColorStop(0.5, '#050510');
+    grad.addColorStop(1, '#000005');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+    
+    // Star dust
+    const time = Date.now() * 0.00005;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    for (let i = 0; i < 60; i++) {
+        const x = ((i * 137.5 + time * (i % 3 + 1) * 40) % W);
+        const y = ((i * 97.3 + time * (i % 2 + 1) * 25) % H);
+        ctx.beginPath();
+        ctx.arc(x, y, 0.5 + (i % 3) * 0.3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+function updateStats() {
+    const exp = getScaleExponent();
+    const regime = getCurrentRegime();
+    
+    document.getElementById('statScale').innerHTML = `10<sup>${exp.toFixed(0)}</sup> m`;
+    document.getElementById('statResolution').innerHTML = `~10<sup>${exp.toFixed(0)}</sup> m`;
+    
+    // Symbolic energy (not a real calculation)
+    const energyExp = -exp - 10;
+    let energyLabel = '';
+    if (energyExp < 3) energyLabel = `~${Math.pow(10, energyExp).toFixed(0)} eV`;
+    else if (energyExp < 6) energyLabel = `~${Math.pow(10, energyExp-3).toFixed(0)} keV`;
+    else if (energyExp < 9) energyLabel = `~${Math.pow(10, energyExp-6).toFixed(0)} MeV`;
+    else if (energyExp < 12) energyLabel = `~${Math.pow(10, energyExp-9).toFixed(0)} GeV`;
+    else if (energyExp < 15) energyLabel = `~${Math.pow(10, energyExp-12).toFixed(0)} TeV`;
+    else energyLabel = `~10<sup>${energyExp-9}</sup> GeV`;
+    document.getElementById('statEnergy').innerHTML = energyLabel;
+    
+    document.getElementById('statEntropy').textContent = horizon.entropy.toFixed(1);
+    const perimeter = horizon.active ? (2 * Math.PI * horizon.radius).toFixed(0) : '0';
+    document.getElementById('statPerimeter').textContent = perimeter;
+    document.getElementById('areaLawNote').style.display = horizon.active ? 'block' : 'none';
+    document.getElementById('statHorizon').textContent = horizon.active ? `ON (r=${horizon.radius.toFixed(0)})` : 'OFF';
+    document.getElementById('statHorizon').className = `stat-value ${horizon.active ? 'warning' : 'cyan'}`;
+    document.getElementById('statCounts').textContent = `${packets.length} / ${edges.length}`;
+    
+    document.getElementById('scaleDisplay').innerHTML = `10<sup>${exp.toFixed(0)}</sup> m`;
+    document.getElementById('scaleValueCtrl').innerHTML = `10<sup>${exp.toFixed(0)}</sup> m`;
+    
+    // Update regime indicator
+    const regimeIndicator = document.getElementById('regimeIndicator');
+    regimeIndicator.className = 'regime-indicator';
+    if (regime === REGIMES.QUANTUM) regimeIndicator.classList.add('quantum');
+    else if (regime === REGIMES.TRANSITION) regimeIndicator.classList.add('transition');
+    else if (regime === REGIMES.PLANCK) regimeIndicator.classList.add('planck');
+    
+    document.getElementById('regimeName').textContent = regime.name;
+    document.getElementById('regimeDesc').textContent = regime.desc;
+    
+    // Scale stage text
+    let stageText = regime.name;
+    if (exp <= -19 && exp > -20) stageText += ' (LHC frontier)';
+    document.getElementById('scaleStage').textContent = stageText;
+    
+    // Epistemic banner
+    const banner = document.getElementById('epistemicBanner');
+    if (isPlanckRegime()) {
+        banner.classList.add('visible');
+    } else {
+        banner.classList.remove('visible');
+    }
+    
+    // Update control availability based on regime
+    updateControlStates(regime);
+}
+
+function updateControlStates(regime) {
+    const energyGroup = document.getElementById('energyGroup');
+    const jitterGroup = document.getElementById('jitterGroup');
+    
+    // At classical scale, some controls don't apply
+    if (regime === REGIMES.CLASSICAL) {
+        jitterGroup.classList.add('disabled');
+        jitterGroup.querySelector('.control-note').textContent = 'Causal structure is stable at classical scales';
+    } else {
+        jitterGroup.classList.remove('disabled');
+    }
+    
+    // Horizon only makes sense at small scales
+    if (!regime.horizonAllowed) {
+        energyGroup.classList.add('disabled');
+        energyGroup.querySelector('.control-note').textContent = 'Horizon formation requires small scales + high energy';
+    } else {
+        energyGroup.classList.remove('disabled');
+    }
+}
+
+// ========== UNIFYING MOMENT ==========
+function triggerUnifyingMoment() {
+    if (unifyingMomentTriggered) return;
+    unifyingMomentTriggered = true;
+    
+    const overlay = document.getElementById('unifyingMoment');
+    const textElements = overlay.querySelectorAll('p');
+    
+    // Slow down time
+    config.timeScale = 0.2;
+    
+    overlay.classList.add('active');
+    
+    // Stagger text appearance
+    setTimeout(() => textElements[0].classList.add('visible'), 500);
+    setTimeout(() => textElements[1].classList.add('visible'), 2000);
+    setTimeout(() => textElements[2].classList.add('visible'), 4000);
+    
+    // Allow dismissal
+    overlay.onclick = () => {
+        overlay.classList.remove('active');
+        textElements.forEach(el => el.classList.remove('visible'));
+        config.timeScale = 1.0;
+        document.getElementById('timeSlider').value = 10;
+        document.getElementById('timeValue').textContent = '1.0×';
+        unifyingMomentShown = true;
+    };
+}
+
+// ========== MAIN LOOP ==========
+function update(dt) {
+    spatialGrid.clear();
+    for (const node of nodes) {
+        node.update(dt);
+        spatialGrid.insert(node);
+    }
+    
+    for (const edge of edges) {
+        edge.update(dt, horizon);
+    }
+    
+    // Update energy map
+    energyMap.clear();
+    for (const node of nodes) {
+        const key = `${Math.floor(node.x / 100)},${Math.floor(node.y / 100)}`;
+        energyMap.set(key, (energyMap.get(key) || 0) + node.energy);
+    }
+    for (const packet of packets) {
+        const key = `${Math.floor(packet.x / 100)},${Math.floor(packet.y / 100)}`;
+        energyMap.set(key, (energyMap.get(key) || 0) + 0.1);
+    }
+    
+    horizon.update(dt, energyMap);
+    
+    packets = packets.filter(p => p.update(dt, nodes, horizon));
+    causalCones = causalCones.filter(c => c.update(dt));
+    
+    // Entropy event
+    if (horizon.active && horizon.entropy > 5 && Math.random() < 0.0008) {
+        addEvent('entropy', `Area law: S = ${horizon.entropy.toFixed(1)} scales with perimeter = ${(2 * Math.PI * horizon.radius).toFixed(0)}, not area of interior.`);
+    }
+    
+    // Check for unifying moment trigger
+    if (isPlanckRegime() && !unifyingMomentShown && config.scale >= 95) {
+        const timeSinceStart = Date.now() - (window.sessionStart || Date.now());
+        if (timeSinceStart > 5000) { // At least 5 seconds in
+            triggerUnifyingMoment();
+        }
+    }
+    
+    // Entanglement → geometry event
+    if (config.entanglementStrength > 75 && Math.random() < 0.001) {
+        addEvent('info', 'Strong entanglement → coherent geometry. If geometry emerges from correlations, distance is derived, not fundamental.');
+    }
+}
+
+function draw() {
+    drawBackground();
+    drawMetricField(ctx, nodes);
+    
+    for (const edge of edges) edge.draw(ctx);
+    for (const node of nodes) node.draw(ctx);
+    for (const packet of packets) packet.draw(ctx);
+    
+    if (config.showHorizon) horizon.draw(ctx);
+    if (config.showCones) {
+        for (const cone of causalCones) cone.draw(ctx);
+    }
+    
+    updateStats();
+}
+
+function animate(currentTime = 0) {
+    const dt = Math.min((currentTime - lastTime) / 16.67, 3);
+    lastTime = currentTime;
+    
+    update(dt * config.timeScale);
+    draw();
+    
+    animationId = requestAnimationFrame(animate);
+}
+
+// ========== INTERACTIONS ==========
+function handleClick(e) {
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    playClickSound();
+    
+    // Add energy to nearby nodes
+    const nearby = spatialGrid.getNearby(x, y, 2);
+    for (const node of nearby) {
+        const dx = node.x - x;
+        const dy = node.y - y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 150) {
+            node.energy = Math.min(1, node.energy + (1 - dist / 150) * 0.5);
+        }
+    }
+    
+    // Spawn packets
+    const count = 2 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < count && packets.length < MAX_PACKETS; i++) {
+        packets.push(new Packet(
+            x + (Math.random() - 0.5) * 30,
+            y + (Math.random() - 0.5) * 30
+        ));
+    }
+    
+    // Create causal cone
+    if (config.showCones) {
+        causalCones.push(new CausalCone(x, y));
+    }
+    
+    addEvent('info', 'Information injected. Watch packets propagate through the network along entanglement links.');
+}
+
+let isDragging = false;
+
+function handleMouseDown(e) {
+    isDragging = true;
+}
+
+function handleMouseMove(e) {
+    if (!isDragging) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Check hover over horizon for tooltip
+    if (horizon.active && horizon.containsPoint(x, y)) {
+        const tooltip = document.getElementById('horizonTooltip');
+        tooltip.style.left = (e.clientX + 15) + 'px';
+        tooltip.style.top = (e.clientY - 30) + 'px';
+        tooltip.classList.add('visible');
+    } else {
+        document.getElementById('horizonTooltip').classList.remove('visible');
+    }
+    
+    // Concentrate energy
+    const nearby = spatialGrid.getNearby(x, y, 1);
+    for (const node of nearby) {
+        const dx = node.x - x;
+        const dy = node.y - y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 100) {
+            node.energy = Math.min(1, node.energy + 0.02 * config.energyDensity * 0.01);
+        }
+    }
+}
+
+function handleMouseUp() {
+    isDragging = false;
+}
+
+// Horizon hover (without dragging)
+canvas.addEventListener('mousemove', (e) => {
+    if (isDragging) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    if (horizon && horizon.active && horizon.containsPoint(x, y)) {
+        const tooltip = document.getElementById('horizonTooltip');
+        tooltip.style.left = (e.clientX + 15) + 'px';
+        tooltip.style.top = (e.clientY - 30) + 'px';
+        tooltip.classList.add('visible');
+    } else {
+        document.getElementById('horizonTooltip').classList.remove('visible');
+    }
+});
+
+// ========== UI SETUP ==========
+function setupUI() {
+    // Scale slider
+    document.getElementById('scaleSlider').addEventListener('input', (e) => {
+        config.scale = parseInt(e.target.value);
+        const regime = getCurrentRegime();
+        
+        // Auto-adjust jitter at Planck scale (epistemic, not decorative)
+        if (regime === REGIMES.PLANCK) {
+            const minJitter = 30;
+            if (config.causalJitter < minJitter) {
+                document.getElementById('jitterSlider').value = minJitter;
+                config.causalJitter = minJitter;
+                document.getElementById('jitterValue').textContent = minJitter + '%';
+                addEvent('epistemic', 'At Planck scale, causal structure is inherently uncertain. Jitter increased to represent this.');
+            }
+        } else if (regime === REGIMES.TRANSITION) {
+            if (config.causalJitter < 15) {
+                document.getElementById('jitterSlider').value = 15;
+                config.causalJitter = 15;
+                document.getElementById('jitterValue').textContent = '15%';
+            }
+        }
+    });
+    
+    document.getElementById('energySlider').addEventListener('input', (e) => {
+        config.energyDensity = parseInt(e.target.value);
+        document.getElementById('energyValue').textContent = config.energyDensity + '%';
+    });
+    
+    document.getElementById('entangleSlider').addEventListener('input', (e) => {
+        config.entanglementStrength = parseInt(e.target.value);
+        document.getElementById('entangleValue').textContent = config.entanglementStrength + '%';
+        
+        if (config.entanglementStrength > 70) {
+            addEvent('info', 'Entanglement strengthened. Nodes cluster—geometry becomes more coherent as correlations increase.');
+        }
+    });
+    
+    document.getElementById('jitterSlider').addEventListener('input', (e) => {
+        const regime = getCurrentRegime();
+        if (!regime.jitterAllowed) {
+            e.target.value = 0;
+            return;
+        }
+        config.causalJitter = parseInt(e.target.value);
+        document.getElementById('jitterValue').textContent = config.causalJitter + '%';
+    });
+    
+    document.getElementById('timeSlider').addEventListener('input', (e) => {
+        config.timeScale = parseInt(e.target.value) / 10;
+        document.getElementById('timeValue').textContent = config.timeScale.toFixed(1) + '×';
+    });
+    
+    // Toggles
+    document.getElementById('toggleCones').addEventListener('click', (e) => {
+        config.showCones = !config.showCones;
+        e.target.classList.toggle('active', config.showCones);
+    });
+    
+    document.getElementById('togglePaths').addEventListener('click', (e) => {
+        config.showPaths = !config.showPaths;
+        e.target.classList.toggle('active', config.showPaths);
+        if (config.showPaths) {
+            addEvent('causal', 'Showing allowed vs forbidden paths. Spacelike regions (red) cannot be causally connected.');
+        }
+    });
+    
+    document.getElementById('toggleHorizon').addEventListener('click', (e) => {
+        config.showHorizon = !config.showHorizon;
+        e.target.classList.toggle('active', config.showHorizon);
+    });
+    
+    document.getElementById('toggleMetric').addEventListener('click', (e) => {
+        config.showMetric = !config.showMetric;
+        e.target.classList.toggle('active', config.showMetric);
+    });
+    
+    document.getElementById('toggleSound').addEventListener('click', (e) => {
+        initAudio();
+        config.soundEnabled = !config.soundEnabled;
+        e.target.classList.toggle('active', config.soundEnabled);
+        if (config.soundEnabled) playTone(440, 0.1, 'sine', 0.03);
+    });
+    
+    // Concept tiles
+    document.querySelectorAll('.concept-tile').forEach(tile => {
+        tile.addEventListener('click', () => {
+            document.querySelectorAll('.concept-tile').forEach(t => t.classList.remove('active'));
+            tile.classList.add('active');
+            const concept = tile.dataset.concept;
+            if (CONCEPTS[concept]) {
+                showExplanation('concept', CONCEPTS[concept]);
+            }
+        });
+    });
+    
+    // Idea cards
+    document.querySelectorAll('.idea-card').forEach(card => {
+        card.addEventListener('click', () => {
+            document.querySelectorAll('.idea-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            const idea = card.dataset.idea;
+            if (IDEAS[idea]) {
+                showExplanation('idea', IDEAS[idea]);
+            }
+        });
+    });
+    
+    document.getElementById('closeExplanation').addEventListener('click', () => {
+        document.getElementById('explanationCard').classList.remove('visible');
+        document.querySelectorAll('.concept-tile, .idea-card').forEach(el => el.classList.remove('active'));
+    });
+    
+    // Disclaimer
+    document.getElementById('disclaimerBtn').addEventListener('click', () => {
+        document.getElementById('disclaimerModal').classList.add('active');
+    });
+    
+    document.getElementById('closeDisclaimer').addEventListener('click', () => {
+        document.getElementById('disclaimerModal').classList.remove('active');
+    });
+}
+
+// ========== GUIDED TOUR (REVISED FOR PRECISION) ==========
+const TOUR_STEPS = [
+    {
+        title: 'Welcome to the Planck Horizon',
+        text: 'This is a conceptual visualization of ideas from quantum gravity research. You are seeing a network where geometry emerges from connections—a metaphor for how spacetime might arise from quantum information.'
+    },
+    {
+        title: 'The Network IS the Geometry',
+        text: 'Each node represents a "degree of freedom." Links represent correlations (entanglement). The warped grid shows how geometry follows the network structure. This illustrates the idea of "emergent spacetime."'
+    },
+    {
+        title: 'Click to Inject Information',
+        text: 'Click anywhere to send information through the network. Packets propagate along links, energizing nodes. At large scales, propagation is smooth. At the Planck scale, geometry fluctuates.'
+    },
+    {
+        title: 'Scale Changes Everything',
+        text: 'Use the Scale slider to zoom from human to Planck scales. Notice how the visualization changes: controls that make sense at large scales lose meaning at small scales. This reflects real epistemic limitations.'
+    },
+    {
+        title: 'Horizons and Information',
+        text: 'Drag to concentrate energy. At small scales, high energy creates an "information horizon." Packets slow down and get trapped. Entropy scales with the BOUNDARY (area law), not the interior.'
+    },
+    {
+        title: 'Causal Structure',
+        text: 'Click to see causal cones—the regions that can be causally connected. Toggle "Paths" to see forbidden (spacelike) regions. At Planck scale, cones wobble—causality itself becomes uncertain.'
+    },
+    {
+        title: 'Important: This is a Metaphor',
+        text: 'Nobody knows exactly what happens at the Planck scale. This visualization teaches concepts, not predictions. Click "Accuracy & Limits" anytime to learn what is established vs. speculative.'
+    }
+];
+
+let tourIndex = 0;
+
+function showTour() {
+    tourIndex = 0;
+    updateTourContent();
+    document.getElementById('tourOverlay').classList.add('active');
+}
+
+function updateTourContent() {
+    document.getElementById('tourStep').textContent = `Step ${tourIndex + 1} of ${TOUR_STEPS.length}`;
+    document.getElementById('tourTitle').textContent = TOUR_STEPS[tourIndex].title;
+    document.getElementById('tourText').textContent = TOUR_STEPS[tourIndex].text;
+    document.getElementById('tourNext').textContent = tourIndex < TOUR_STEPS.length - 1 ? 'Next →' : 'Start Exploring!';
+}
+
+function setupTour() {
+    document.getElementById('tourNext').addEventListener('click', () => {
+        tourIndex++;
+        if (tourIndex >= TOUR_STEPS.length) {
+            document.getElementById('tourOverlay').classList.remove('active');
+            localStorage.setItem('planckTourSeen', 'true');
+        } else {
+            updateTourContent();
+        }
+    });
+    
+    document.getElementById('tourSkip').addEventListener('click', () => {
+        document.getElementById('tourOverlay').classList.remove('active');
+        localStorage.setItem('planckTourSeen', 'true');
+    });
+}
+
+// ========== ZOOM JOURNEY ==========
+let zoomStage = 0;
+const TOTAL_ZOOM_STAGES = 8;
+
+function showZoomStage(index) {
+    document.querySelectorAll('.zoom-stage').forEach((stage, i) => {
+        stage.classList.remove('active', 'zooming-out');
+        if (i === index) stage.classList.add('active');
+    });
+    document.querySelectorAll('.zoom-dot').forEach((dot, i) => {
+        dot.classList.toggle('active', i <= index);
+    });
+}
+
+function advanceZoom() {
+    if (zoomStage < TOTAL_ZOOM_STAGES - 1) {
+        const current = document.querySelector(`.zoom-stage[data-stage="${zoomStage}"]`);
+        if (current) {
+            current.classList.add('zooming-out');
+            current.classList.remove('active');
+        }
+        zoomStage++;
+        setTimeout(() => showZoomStage(zoomStage), 300);
+    } else {
+        endZoomJourney();
+    }
+}
+
+function endZoomJourney() {
+    document.getElementById('zoomJourney').classList.add('hidden');
+    localStorage.setItem('planckZoomSeen', 'true');
+    if (!localStorage.getItem('planckTourSeen')) {
+        setTimeout(() => showTour(), 500);
+    }
+}
+
+function setupZoomJourney() {
+    const journey = document.getElementById('zoomJourney');
+    
+    if (localStorage.getItem('planckZoomSeen')) {
+        journey.classList.add('hidden');
+        if (!localStorage.getItem('planckTourSeen')) {
+            setTimeout(() => showTour(), 500);
+        }
+        return;
+    }
+    
+    showZoomStage(0);
+    
+    journey.addEventListener('click', (e) => {
+        if (e.target.id === 'zoomSkip') return;
+        advanceZoom();
+    });
+    
+    document.getElementById('zoomSkip').addEventListener('click', endZoomJourney);
+    
+    document.getElementById('replayBtn').addEventListener('click', () => {
+        zoomStage = 0;
+        unifyingMomentShown = false;
+        unifyingMomentTriggered = false;
+        document.getElementById('zoomJourney').classList.remove('hidden');
+        document.querySelectorAll('.zoom-stage').forEach(s => s.classList.remove('active', 'zooming-out'));
+        showZoomStage(0);
+    });
+}
+
+// ========== RESIZE ==========
+function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    if (horizon) {
+        horizon.x = W / 2;
+        horizon.y = H / 2;
+    }
+}
+
+// ========== INIT ==========
+function init() {
+    window.sessionStart = Date.now();
+    
+    resize();
+    window.addEventListener('resize', resize);
+    
+    canvas.addEventListener('click', handleClick);
+    canvas.addEventListener('mousedown', handleMouseDown);
+    canvas.addEventListener('mousemove', handleMouseMove);
+    canvas.addEventListener('mouseup', handleMouseUp);
+    canvas.addEventListener('mouseleave', handleMouseUp);
+    
+    initGraph();
+    setupUI();
+    setupTour();
+    setupZoomJourney();
+    
+    addEvent('info', 'Welcome. This visualization teaches concepts from quantum gravity research. It is a metaphor, not a simulation.');
+    
+    animate();
+}
+
+init();
+</script>
+</body>
+</html>
