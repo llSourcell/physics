@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Dilation - Your Personal Time Is Yours Alone</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #020617;
+            --bg-card: rgba(15, 23, 42, 0.85);
+            --accent-cyan: #00f3ff;
+            --accent-magenta: #ff0080;
+            --accent-gold: #ffd700;
+            --accent-purple: #a855f7;
+            --accent-blue: #3b82f6;
+            --text-bright: #f0f0f0;
+            --text-dim: #94a3b8;
+            --border-glow: rgba(0, 243, 255, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-bright);
+        }
+
+        /* Main Canvas */
+        #mainCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Vignette */
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* UI Layer */
+        .ui-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .ui-panel {
+            pointer-events: auto;
+            position: absolute;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.1), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
+
+        /* Header */
+        .header-panel {
+            top: 20px;
+            left: 20px;
+            max-width: 400px;
+        }
+
+        .sector-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent-purple);
+            margin-bottom: 8px;
+        }
+
+        .title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        /* Controls Panel */
+        .controls-panel {
+            top: 20px;
+            right: 20px;
+            width: 320px;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .control-name {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+        }
+
+        .control-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-gold);
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(90deg, var(--accent-cyan) 0%, var(--accent-magenta) 100%);
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--accent-cyan);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 0 15px var(--accent-cyan);
+        }
+
+        /* Equation Display */
+        .equation-panel {
+            bottom: 20px;
+            left: 20px;
+            max-width: 500px;
+        }
+
+        .equation-title {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-magenta);
+            margin-bottom: 12px;
+        }
+
+        .equation {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.4rem;
+            color: var(--text-bright);
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+        }
+
+        .equation .highlight {
+            color: var(--accent-gold);
+        }
+
+        .equation .cyan {
+            color: var(--accent-cyan);
+        }
+
+        .equation .magenta {
+            color: var(--accent-magenta);
+        }
+
+        .equation-explanation {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Twin Comparison Panel */
+        .twins-panel {
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+        }
+
+        .twin-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .twin-row:last-child {
+            border-bottom: none;
+        }
+
+        .twin-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 12px;
+        }
+
+        .twin-earth .twin-icon {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+        }
+
+        .twin-traveler .twin-icon {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+        }
+
+        .twin-info {
+            flex: 1;
+        }
+
+        .twin-name {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+        }
+
+        .twin-age {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            color: var(--text-bright);
+        }
+
+        .twin-age .unit {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .age-difference {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .age-difference-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+            margin-bottom: 5px;
+        }
+
+        .age-difference-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.3rem;
+            color: var(--accent-gold);
+        }
+
+        /* Mode Buttons */
+        .mode-panel {
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+        }
+
+        .mode-btn {
+            display: block;
+            width: 100%;
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: var(--text-dim);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .mode-btn:last-child {
+            margin-bottom: 0;
+        }
+
+        .mode-btn:hover {
+            background: rgba(0, 243, 255, 0.1);
+            border-color: var(--accent-cyan);
+            color: var(--text-bright);
+        }
+
+        .mode-btn.active {
+            background: rgba(0, 243, 255, 0.15);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+
+        /* Info Panel (Center Bottom) */
+        .info-panel {
+            bottom: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 600px;
+            text-align: center;
+            background: rgba(15, 23, 42, 0.95);
+        }
+
+        .info-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
+        }
+
+        .info-text {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .info-text strong {
+            color: var(--accent-gold);
+        }
+
+        /* Lorentz Factor Display */
+        .gamma-display {
+            position: absolute;
+            top: 50%;
+            right: 360px;
+            transform: translateY(-50%);
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .gamma-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-purple);
+            margin-bottom: 8px;
+        }
+
+        .gamma-value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 60px rgba(0, 243, 255, 0.5);
+        }
+
+        .gamma-meaning {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-top: 5px;
+        }
+
+        /* Play/Pause Button */
+        .play-btn {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: auto;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .play-btn:hover {
+            transform: translateX(-50%) scale(1.1);
+            box-shadow: 0 0 60px rgba(0, 243, 255, 0.6);
+        }
+
+        .play-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        /* Reset Button */
+        .reset-btn {
+            position: absolute;
+            bottom: 40px;
+            left: calc(50% + 50px);
+            pointer-events: auto;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: var(--text-dim);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: var(--accent-cyan);
+            color: var(--text-bright);
+        }
+
+        /* Intro Overlay */
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.98);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 1s ease;
+        }
+
+        .intro-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .intro-content {
+            max-width: 700px;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .intro-eyebrow {
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--accent-purple);
+            margin-bottom: 20px;
+        }
+
+        .intro-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .intro-quote {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--text-dim);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .intro-quote cite {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--accent-gold);
+            font-style: normal;
+        }
+
+        .intro-text {
+            font-size: 1rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+
+        .intro-btn {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            border: none;
+            border-radius: 30px;
+            padding: 15px 40px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            letter-spacing: 0.1em;
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .intro-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 60px rgba(0, 243, 255, 0.6);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .gamma-display {
+                display: none;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .mode-panel {
+                display: none;
+            }
+            .info-panel {
+                display: none;
+            }
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); }
+            50% { box-shadow: 0 0 40px rgba(0, 243, 255, 0.8); }
+        }
+
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="mainCanvas"></canvas>
+<div class="vignette"></div>
+
+<!-- Intro Overlay -->
+<div class="intro-overlay" id="introOverlay">
+    <div class="intro-content">
+        <div class="intro-eyebrow">Sector 07 · Special Relativity</div>
+        <h1 class="intro-title">Time Dilation</h1>
+        <p class="intro-quote">
+            "The distinction between past, present, and future is only a stubbornly persistent illusion."
+            <cite>- Albert Einstein</cite>
+        </p>
+        <p class="intro-text">
+            In 1905, a 26-year-old patent clerk named Albert Einstein discovered something that would shatter our understanding of reality: <strong>time is not absolute</strong>. Your personal time - the ticking of your heart, the aging of your cells, the flow of your thoughts - depends on how fast you're moving.<br><br>
+            What you're about to experience is not science fiction. GPS satellites must correct for time dilation or your maps would be wrong by <strong>10 kilometers per day</strong>. Muons from cosmic rays reach Earth's surface only because their clocks run slow. This is real.
+        </p>
+        <button class="intro-btn" onclick="startExperience()">BEGIN JOURNEY</button>
+    </div>
+</div>
+
+<!-- UI Layer -->
+<div class="ui-layer" id="uiLayer" style="opacity: 0; transition: opacity 1s ease;">
+
+    <!-- Header -->
+    <div class="ui-panel header-panel">
+        <div class="sector-label">Sector 07 · Special Relativity</div>
+        <h1 class="title">Time Dilation</h1>
+        <p class="subtitle">Watch how time flows differently for observers moving at different velocities through spacetime.</p>
+    </div>
+
+    <!-- Controls -->
+    <div class="ui-panel controls-panel">
+        <div class="control-group">
+            <div class="control-label">
+                <span class="control-name">Traveler Velocity</span>
+                <span class="control-value" id="velocityDisplay">0.00c</span>
+            </div>
+            <input type="range" class="slider" id="velocitySlider" min="0" max="0.9999" step="0.0001" value="0">
+        </div>
+        <div class="control-group">
+            <div class="control-label">
+                <span class="control-name">Journey Distance</span>
+                <span class="control-value" id="distanceDisplay">4.37 ly</span>
+            </div>
+            <input type="range" class="slider" id="distanceSlider" min="1" max="100" step="0.1" value="4.37">
+        </div>
+        <div class="control-group">
+            <div class="control-label">
+                <span class="control-name">Time Scale</span>
+                <span class="control-value" id="timeScaleDisplay">1x</span>
+            </div>
+            <input type="range" class="slider" id="timeScaleSlider" min="0.1" max="10" step="0.1" value="1">
+        </div>
+    </div>
+
+    <!-- Lorentz Factor Display -->
+    <div class="gamma-display" id="gammaDisplay">
+        <div class="gamma-label">Lorentz Factor (γ)</div>
+        <div class="gamma-value" id="gammaValue">1.00</div>
+        <div class="gamma-meaning" id="gammaMeaning">Time flows normally</div>
+    </div>
+
+    <!-- Mode Buttons -->
+    <div class="ui-panel mode-panel">
+        <button class="mode-btn active" id="modeMinkowski" onclick="setMode('minkowski')">Minkowski Diagram</button>
+        <button class="mode-btn" id="modeLightClock" onclick="setMode('lightclock')">Light Clock</button>
+        <button class="mode-btn" id="modeTwinParadox" onclick="setMode('twins')">Twin Paradox</button>
+        <button class="mode-btn" id="modeSpaceship" onclick="setMode('spaceship')">Spaceship Journey</button>
+    </div>
+
+    <!-- Equation Panel -->
+    <div class="ui-panel equation-panel">
+        <div class="equation-title">The Time Dilation Equation</div>
+        <div class="equation">
+            <span class="cyan">τ</span> = <span class="highlight">t</span> × √(1 - <span class="magenta">v²</span>/<span class="cyan">c²</span>)
+        </div>
+        <div class="equation-explanation" id="equationExplanation">
+            <strong>τ (tau)</strong> = proper time (what the moving observer experiences)<br>
+            <strong>t</strong> = coordinate time (what the stationary observer measures)<br>
+            <strong>v</strong> = velocity of the moving observer<br>
+            <strong>c</strong> = speed of light (299,792,458 m/s)
+        </div>
+    </div>
+
+    <!-- Twins Panel -->
+    <div class="ui-panel twins-panel">
+        <div class="twin-row twin-earth">
+            <div class="twin-icon">🌍</div>
+            <div class="twin-info">
+                <div class="twin-name">Earth Twin (Stationary)</div>
+                <div class="twin-age"><span id="earthAge">0.00</span> <span class="unit">years</span></div>
+            </div>
+        </div>
+        <div class="twin-row twin-traveler">
+            <div class="twin-icon">🚀</div>
+            <div class="twin-info">
+                <div class="twin-name">Traveler Twin (Moving)</div>
+                <div class="twin-age"><span id="travelerAge">0.00</span> <span class="unit">years</span></div>
+            </div>
+        </div>
+        <div class="age-difference">
+            <div class="age-difference-label">Age Difference</div>
+            <div class="age-difference-value" id="ageDifference">0.00 years</div>
+        </div>
+    </div>
+
+    <!-- Info Panel -->
+    <div class="ui-panel info-panel" id="infoPanel">
+        <div class="info-title" id="infoTitle">Minkowski Spacetime Diagram</div>
+        <div class="info-text" id="infoText">
+            This diagram shows <strong>space</strong> horizontally and <strong>time</strong> vertically. The yellow diagonal lines are <strong>light cones</strong> - nothing can travel faster than these. The vertical blue line is the Earth twin's worldline. Watch how the traveler's worldline tilts as velocity increases.
+        </div>
+    </div>
+
+    <!-- Play Button -->
+    <button class="play-btn" id="playBtn" onclick="togglePlay()">
+        <svg id="playIcon" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+        <svg id="pauseIcon" viewBox="0 0 24 24" style="display: none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+    </button>
+
+    <!-- Reset Button -->
+    <button class="reset-btn" onclick="resetSimulation()">Reset</button>
+
+</div>
+
+<script>
+// ============================================
+// TIME DILATION VISUALIZATION
+// Nobel Prize-Worthy Interactive Experience
+// ============================================
+
+const canvas = document.getElementById('mainCanvas');
+const ctx = canvas.getContext('2d');
+
+// === STATE ===
+const STATE = {
+    mode: 'minkowski', // minkowski, lightclock, twins, spaceship
+    velocity: 0,       // fraction of c (0 to 0.9999)
+    gamma: 1,          // Lorentz factor
+    distance: 4.37,    // light years (default: Alpha Centauri)
+    timeScale: 1,      // simulation speed multiplier
+    isPlaying: false,
+    time: 0,           // simulation time (Earth frame)
+    earthAge: 0,
+    travelerAge: 0,
+    journeyProgress: 0, // 0 to 1
+    journeyPhase: 'outbound', // outbound, return, complete
+    stars: [],
+    particles: []
+};
+
+// === CONSTANTS ===
+const C = 1; // Speed of light = 1 (natural units)
+const COLORS = {
+    cyan: '#00f3ff',
+    magenta: '#ff0080',
+    gold: '#ffd700',
+    purple: '#a855f7',
+    blue: '#3b82f6',
+    green: '#22c55e',
+    white: '#ffffff',
+    dimWhite: 'rgba(255, 255, 255, 0.3)',
+    gridLine: 'rgba(255, 255, 255, 0.08)',
+    lightCone: 'rgba(255, 215, 0, 0.4)'
+};
+
+// === INITIALIZATION ===
+function init() {
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Generate stars
+    for (let i = 0; i < 300; i++) {
+        STATE.stars.push({
+            x: Math.random() * 2 - 1,
+            y: Math.random() * 2 - 1,
+            z: Math.random(),
+            size: Math.random() * 2 + 0.5
+        });
+    }
+
+    // Setup controls
+    setupControls();
+
+    // Start animation
+    requestAnimationFrame(loop);
+}
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+function setupControls() {
+    const velocitySlider = document.getElementById('velocitySlider');
+    const distanceSlider = document.getElementById('distanceSlider');
+    const timeScaleSlider = document.getElementById('timeScaleSlider');
+
+    velocitySlider.addEventListener('input', (e) => {
+        STATE.velocity = parseFloat(e.target.value);
+        updateGamma();
+        updateDisplays();
+    });
+
+    distanceSlider.addEventListener('input', (e) => {
+        STATE.distance = parseFloat(e.target.value);
+        updateDisplays();
+    });
+
+    timeScaleSlider.addEventListener('input', (e) => {
+        STATE.timeScale = parseFloat(e.target.value);
+        updateDisplays();
+    });
+}
+
+function updateGamma() {
+    // γ = 1 / √(1 - v²/c²)
+    const v = STATE.velocity;
+    if (v >= 1) {
+        STATE.gamma = Infinity;
+    } else {
+        STATE.gamma = 1 / Math.sqrt(1 - v * v);
+    }
+}
+
+function updateDisplays() {
+    document.getElementById('velocityDisplay').textContent = (STATE.velocity).toFixed(4) + 'c';
+    document.getElementById('distanceDisplay').textContent = STATE.distance.toFixed(2) + ' ly';
+    document.getElementById('timeScaleDisplay').textContent = STATE.timeScale.toFixed(1) + 'x';
+
+    // Gamma display
+    const gammaStr = STATE.gamma === Infinity ? '∞' : STATE.gamma.toFixed(2);
+    document.getElementById('gammaValue').textContent = gammaStr;
+
+    // Gamma meaning
+    let meaning = '';
+    if (STATE.gamma < 1.01) meaning = 'Time flows normally';
+    else if (STATE.gamma < 1.1) meaning = 'Slight time difference';
+    else if (STATE.gamma < 2) meaning = 'Noticeable slowing';
+    else if (STATE.gamma < 5) meaning = 'Significant dilation';
+    else if (STATE.gamma < 10) meaning = 'Dramatic slowdown';
+    else if (STATE.gamma < 100) meaning = 'Extreme time dilation';
+    else meaning = 'Time nearly frozen';
+    document.getElementById('gammaMeaning').textContent = meaning;
+}
+
+// === MODES ===
+function setMode(mode) {
+    STATE.mode = mode;
+
+    // Update buttons
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('mode' + mode.charAt(0).toUpperCase() + mode.slice(1).replace('clock', 'Clock').replace('twins', 'TwinParadox').replace('spaceship', 'Spaceship')).classList.add('active');
+
+    // Update info panel
+    updateInfoPanel();
+
+    // Reset simulation when changing modes
+    resetSimulation();
+}
+
+function updateInfoPanel() {
+    const titles = {
+        minkowski: 'Minkowski Spacetime Diagram',
+        lightclock: 'The Light Clock Proof',
+        twins: 'The Twin Paradox',
+        spaceship: 'Journey to the Stars'
+    };
+
+    const texts = {
+        minkowski: 'This diagram shows <strong>space</strong> horizontally and <strong>time</strong> vertically. The yellow diagonal lines are <strong>light cones</strong> - nothing can travel faster than these. The vertical blue line is the Earth twin\'s worldline. Watch how the traveler\'s worldline tilts as velocity increases.',
+        lightclock: 'A light clock bounces a photon between two mirrors. For a stationary observer, the light travels further in a moving clock (diagonal path vs vertical path). Since light speed is constant, more distance = more time. <strong>Moving clocks run slow.</strong>',
+        twins: 'One twin stays on Earth. The other travels to a distant star and back. When they reunite, <strong>the traveler is younger</strong>. This isn\'t an illusion - it\'s been confirmed with atomic clocks on jets and GPS satellites.',
+        spaceship: 'Experience a journey to <strong>Alpha Centauri</strong> (4.37 light-years). At high velocities, the trip that takes years from Earth\'s perspective passes in mere months for the travelers. The stars will streak as we approach light speed.'
+    };
+
+    document.getElementById('infoTitle').textContent = titles[STATE.mode];
+    document.getElementById('infoText').innerHTML = texts[STATE.mode];
+}
+
+// === SIMULATION CONTROL ===
+function togglePlay() {
+    STATE.isPlaying = !STATE.isPlaying;
+    document.getElementById('playIcon').style.display = STATE.isPlaying ? 'none' : 'block';
+    document.getElementById('pauseIcon').style.display = STATE.isPlaying ? 'block' : 'none';
+}
+
+function resetSimulation() {
+    STATE.isPlaying = false;
+    STATE.time = 0;
+    STATE.earthAge = 0;
+    STATE.travelerAge = 0;
+    STATE.journeyProgress = 0;
+    STATE.journeyPhase = 'outbound';
+    document.getElementById('playIcon').style.display = 'block';
+    document.getElementById('pauseIcon').style.display = 'none';
+    updateAgeDisplays();
+}
+
+function updateAgeDisplays() {
+    document.getElementById('earthAge').textContent = STATE.earthAge.toFixed(2);
+    document.getElementById('travelerAge').textContent = STATE.travelerAge.toFixed(2);
+    document.getElementById('ageDifference').textContent = Math.abs(STATE.earthAge - STATE.travelerAge).toFixed(2) + ' years';
+}
+
+// === INTRO ===
+function startExperience() {
+    document.getElementById('introOverlay').classList.add('hidden');
+    document.getElementById('uiLayer').style.opacity = '1';
+}
+
+// === MAIN LOOP ===
+let lastTime = 0;
+function loop(timestamp) {
+    const dt = (timestamp - lastTime) / 1000;
+    lastTime = timestamp;
+
+    update(dt);
+    draw();
+
+    requestAnimationFrame(loop);
+}
+
+function update(dt) {
+    if (STATE.isPlaying && STATE.velocity > 0) {
+        const scaledDt = dt * STATE.timeScale;
+
+        // Calculate journey time
+        // Round trip distance = 2 * distance
+        // Earth time = distance / velocity (one way)
+        // Proper time = Earth time / gamma
+
+        const totalEarthTime = (2 * STATE.distance) / STATE.velocity;
+        const totalProperTime = totalEarthTime / STATE.gamma;
+
+        // Update times
+        STATE.earthAge += scaledDt;
+        STATE.travelerAge += scaledDt / STATE.gamma;
+
+        // Update journey progress
+        STATE.journeyProgress = STATE.earthAge / totalEarthTime;
+
+        if (STATE.journeyProgress >= 1) {
+            STATE.journeyProgress = 1;
+            STATE.journeyPhase = 'complete';
+            STATE.isPlaying = false;
+            document.getElementById('playIcon').style.display = 'block';
+            document.getElementById('pauseIcon').style.display = 'none';
+        } else if (STATE.journeyProgress >= 0.5) {
+            STATE.journeyPhase = 'return';
+        }
+
+        updateAgeDisplays();
+    }
+}
+
+// === DRAWING ===
+function draw() {
+    // Clear
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Draw stars
+    drawStars();
+
+    // Draw mode-specific visualization
+    switch(STATE.mode) {
+        case 'minkowski':
+            drawMinkowski();
+            break;
+        case 'lightclock':
+            drawLightClock();
+            break;
+        case 'twins':
+            drawTwinParadox();
+            break;
+        case 'spaceship':
+            drawSpaceship();
+            break;
+    }
+}
+
+function drawStars() {
+    ctx.fillStyle = '#ffffff';
+    STATE.stars.forEach(star => {
+        const x = (star.x + 1) * 0.5 * canvas.width;
+        const y = (star.y + 1) * 0.5 * canvas.height;
+        const alpha = 0.3 + star.z * 0.5;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        ctx.arc(x, y, star.size, 0, Math.PI * 2);
+        ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+}
+
+// === MINKOWSKI DIAGRAM ===
+function drawMinkowski() {
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const scale = Math.min(canvas.width, canvas.height) * 0.35;
+
+    // Grid
+    ctx.strokeStyle = COLORS.gridLine;
+    ctx.lineWidth = 1;
+    for (let i = -5; i <= 5; i++) {
+        // Horizontal (space)
+        ctx.beginPath();
+        ctx.moveTo(cx - scale, cy - i * scale / 5);
+        ctx.lineTo(cx + scale, cy - i * scale / 5);
+        ctx.stroke();
+        // Vertical (time)
+        ctx.beginPath();
+        ctx.moveTo(cx + i * scale / 5, cy - scale);
+        ctx.lineTo(cx + i * scale / 5, cy + scale);
+        ctx.stroke();
+    }
+
+    // Axes
+    ctx.strokeStyle = COLORS.dimWhite;
+    ctx.lineWidth = 2;
+    // Space axis
+    ctx.beginPath();
+    ctx.moveTo(cx - scale, cy);
+    ctx.lineTo(cx + scale, cy);
+    ctx.stroke();
+    // Time axis
+    ctx.beginPath();
+    ctx.moveTo(cx, cy + scale);
+    ctx.lineTo(cx, cy - scale);
+    ctx.stroke();
+
+    // Labels
+    ctx.fillStyle = COLORS.dimWhite;
+    ctx.font = '14px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText('Space (x)', cx + scale - 30, cy + 25);
+    ctx.save();
+    ctx.translate(cx - 25, cy - scale + 40);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Time (t)', 0, 0);
+    ctx.restore();
+
+    // Light cones
+    ctx.strokeStyle = COLORS.lightCone;
+    ctx.lineWidth = 3;
+    ctx.setLineDash([5, 5]);
+    // Future light cone
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + scale, cy - scale);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx - scale, cy - scale);
+    ctx.stroke();
+    // Past light cone
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + scale, cy + scale);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx - scale, cy + scale);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Light cone label
+    ctx.fillStyle = COLORS.gold;
+    ctx.font = '12px Inter';
+    ctx.fillText('Light Cone (v=c)', cx + scale * 0.6, cy - scale * 0.6);
+
+    // Earth worldline (vertical, stationary)
+    ctx.strokeStyle = COLORS.blue;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy + scale * 0.8);
+    ctx.lineTo(cx, cy - scale * 0.8);
+    ctx.stroke();
+
+    // Earth worldline label
+    ctx.fillStyle = COLORS.blue;
+    ctx.fillText('Earth Twin', cx, cy + scale * 0.9);
+
+    // Traveler worldline (tilted based on velocity)
+    if (STATE.velocity > 0) {
+        const v = STATE.velocity;
+        const angle = Math.atan(v); // Angle from vertical
+
+        // Outbound journey
+        const dx = Math.sin(angle) * scale * 0.8;
+        const dy = -Math.cos(angle) * scale * 0.8;
+
+        ctx.strokeStyle = COLORS.cyan;
+        ctx.lineWidth = 4;
+
+        // Draw worldline based on journey progress
+        if (STATE.journeyPhase === 'outbound') {
+            const progress = Math.min(STATE.journeyProgress * 2, 1);
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + dx * progress, cy + dy * progress);
+            ctx.stroke();
+        } else {
+            // Full outbound
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.lineTo(cx + dx, cy + dy);
+            ctx.stroke();
+
+            // Return journey
+            const returnProgress = (STATE.journeyProgress - 0.5) * 2;
+            ctx.beginPath();
+            ctx.moveTo(cx + dx, cy + dy);
+            ctx.lineTo(cx + dx - dx * returnProgress, cy + dy + dy * returnProgress);
+            ctx.stroke();
+        }
+
+        // Draw destination point
+        ctx.fillStyle = COLORS.magenta;
+        ctx.beginPath();
+        ctx.arc(cx + dx, cy + dy, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = COLORS.magenta;
+        ctx.font = '12px Inter';
+        ctx.textAlign = 'left';
+        ctx.fillText('Destination', cx + dx + 15, cy + dy);
+
+        // Traveler label
+        ctx.fillStyle = COLORS.cyan;
+        ctx.textAlign = 'center';
+        ctx.fillText('Traveler Twin', cx + dx * 0.5 + 50, cy + dy * 0.5);
+
+        // Show proper time along worldline
+        const properTimeRatio = 1 / STATE.gamma;
+        ctx.fillStyle = COLORS.cyan;
+        ctx.font = '11px Space Mono';
+        ctx.fillText(`τ = ${properTimeRatio.toFixed(3)}t`, cx + dx * 0.3 + 60, cy + dy * 0.3 + 15);
+    }
+
+    // Origin point
+    ctx.fillStyle = COLORS.white;
+    ctx.beginPath();
+    ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = COLORS.dimWhite;
+    ctx.font = '12px Inter';
+    ctx.textAlign = 'left';
+    ctx.fillText('Now (origin)', cx + 12, cy + 5);
+}
+
+// === LIGHT CLOCK ===
+function drawLightClock() {
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    // Two light clocks side by side
+    const clockWidth = 150;
+    const clockHeight = 300;
+    const spacing = 300;
+
+    // Stationary clock (left)
+    drawSingleLightClock(cx - spacing, cy, clockWidth, clockHeight, 0, 'Stationary Clock');
+
+    // Moving clock (right)
+    drawSingleLightClock(cx + spacing, cy, clockWidth, clockHeight, STATE.velocity, 'Moving Clock');
+
+    // Explanation in center
+    if (STATE.velocity > 0) {
+        const pathRatio = STATE.gamma;
+
+        ctx.fillStyle = COLORS.gold;
+        ctx.font = '16px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillText('Light travels a LONGER path in the moving clock', cx, cy - 200);
+
+        ctx.fillStyle = COLORS.cyan;
+        ctx.font = '14px Space Mono';
+        ctx.fillText(`Path ratio: ${pathRatio.toFixed(3)}x longer`, cx, cy - 170);
+
+        ctx.fillStyle = COLORS.magenta;
+        ctx.fillText(`Since c is constant, time must slow by ${pathRatio.toFixed(3)}x`, cx, cy - 140);
+    }
+}
+
+function drawSingleLightClock(x, y, w, h, velocity, label) {
+    const time = Date.now() / 1000;
+
+    // Clock frame
+    ctx.strokeStyle = COLORS.dimWhite;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x - w/2, y - h/2, w, h);
+
+    // Mirrors
+    ctx.fillStyle = COLORS.cyan;
+    ctx.fillRect(x - w/2 + 10, y - h/2 + 5, w - 20, 8);
+    ctx.fillRect(x - w/2 + 10, y + h/2 - 13, w - 20, 8);
+
+    // Photon
+    const period = 2; // seconds for one bounce
+    const adjustedPeriod = period * (velocity > 0 ? STATE.gamma : 1);
+    const phase = (time % adjustedPeriod) / adjustedPeriod;
+
+    // Photon y position (bouncing)
+    const photonY = phase < 0.5
+        ? y - h/2 + 20 + (h - 40) * (phase * 2)
+        : y + h/2 - 20 - (h - 40) * ((phase - 0.5) * 2);
+
+    // Photon x position (moving with clock if velocity > 0)
+    const horizontalShift = velocity * (h - 40) * (phase < 0.5 ? phase * 2 : 1 - (phase - 0.5) * 2);
+    const photonX = x + horizontalShift * 0.5;
+
+    // Draw photon path (diagonal for moving clock)
+    ctx.strokeStyle = velocity > 0 ? COLORS.magenta : COLORS.gold;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([4, 4]);
+    if (velocity > 0) {
+        // Diagonal path
+        ctx.beginPath();
+        ctx.moveTo(x - horizontalShift * 0.8, y - h/2 + 20);
+        ctx.lineTo(x + horizontalShift * 0.8, y + h/2 - 20);
+        ctx.stroke();
+    } else {
+        // Vertical path
+        ctx.beginPath();
+        ctx.moveTo(x, y - h/2 + 20);
+        ctx.lineTo(x, y + h/2 - 20);
+        ctx.stroke();
+    }
+    ctx.setLineDash([]);
+
+    // Photon
+    const gradient = ctx.createRadialGradient(photonX, photonY, 0, photonX, photonY, 15);
+    gradient.addColorStop(0, COLORS.gold);
+    gradient.addColorStop(0.5, 'rgba(255, 215, 0, 0.5)');
+    gradient.addColorStop(1, 'transparent');
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(photonX, photonY, 15, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = COLORS.white;
+    ctx.beginPath();
+    ctx.arc(photonX, photonY, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Label
+    ctx.fillStyle = velocity > 0 ? COLORS.cyan : COLORS.blue;
+    ctx.font = '14px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, x, y + h/2 + 30);
+
+    if (velocity > 0) {
+        ctx.fillStyle = COLORS.magenta;
+        ctx.font = '12px Space Mono';
+        ctx.fillText(`v = ${velocity.toFixed(2)}c`, x, y + h/2 + 50);
+        ctx.fillText(`γ = ${STATE.gamma.toFixed(2)}`, x, y + h/2 + 70);
+    }
+
+    // Tick counter
+    const ticks = Math.floor(time / (velocity > 0 ? adjustedPeriod : period));
+    ctx.fillStyle = COLORS.gold;
+    ctx.font = '20px Space Mono';
+    ctx.fillText(`Ticks: ${ticks % 100}`, x, y);
+}
+
+// === TWIN PARADOX ===
+function drawTwinParadox() {
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    // Draw Earth
+    const earthX = cx - 250;
+    const earthY = cy;
+    const earthRadius = 60;
+
+    // Earth glow
+    const earthGlow = ctx.createRadialGradient(earthX, earthY, earthRadius * 0.5, earthX, earthY, earthRadius * 2);
+    earthGlow.addColorStop(0, 'rgba(34, 197, 94, 0.3)');
+    earthGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = earthGlow;
+    ctx.beginPath();
+    ctx.arc(earthX, earthY, earthRadius * 2, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Earth
+    const earthGradient = ctx.createRadialGradient(earthX - 20, earthY - 20, 0, earthX, earthY, earthRadius);
+    earthGradient.addColorStop(0, '#4ade80');
+    earthGradient.addColorStop(0.5, '#22c55e');
+    earthGradient.addColorStop(1, '#15803d');
+    ctx.fillStyle = earthGradient;
+    ctx.beginPath();
+    ctx.arc(earthX, earthY, earthRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Earth label
+    ctx.fillStyle = COLORS.green;
+    ctx.font = '14px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText('EARTH', earthX, earthY + earthRadius + 25);
+
+    // Draw destination star
+    const starX = cx + 250;
+    const starY = cy - 100;
+
+    // Star glow
+    const starGlow = ctx.createRadialGradient(starX, starY, 5, starX, starY, 40);
+    starGlow.addColorStop(0, 'rgba(255, 215, 0, 0.8)');
+    starGlow.addColorStop(0.3, 'rgba(255, 215, 0, 0.3)');
+    starGlow.addColorStop(1, 'transparent');
+    ctx.fillStyle = starGlow;
+    ctx.beginPath();
+    ctx.arc(starX, starY, 40, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Star core
+    ctx.fillStyle = COLORS.gold;
+    ctx.beginPath();
+    ctx.arc(starX, starY, 15, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Star label
+    ctx.fillStyle = COLORS.gold;
+    ctx.font = '14px Inter';
+    ctx.fillText(`Destination: ${STATE.distance.toFixed(1)} ly`, starX, starY + 50);
+
+    // Earth Twin (stays on Earth)
+    const earthTwinAge = 25 + STATE.earthAge;
+    drawTwin(earthX, earthY - earthRadius - 60, earthTwinAge, COLORS.green, 'Earth Twin');
+
+    // Calculate traveler position based on journey progress
+    let travelerX, travelerY;
+    if (STATE.journeyPhase === 'outbound') {
+        const progress = STATE.journeyProgress * 2;
+        travelerX = earthX + (starX - earthX) * progress;
+        travelerY = earthY + (starY - earthY) * progress - 60;
+    } else if (STATE.journeyPhase === 'return') {
+        const progress = (STATE.journeyProgress - 0.5) * 2;
+        travelerX = starX + (earthX - starX) * progress;
+        travelerY = starY + (earthY - starY) * progress - 60;
+    } else {
+        travelerX = earthX + 80;
+        travelerY = earthY - earthRadius - 60;
+    }
+
+    // Traveler Twin
+    const travelerTwinAge = 25 + STATE.travelerAge;
+    drawTwin(travelerX, travelerY, travelerTwinAge, COLORS.cyan, 'Traveler Twin');
+
+    // Draw spaceship trail
+    if (STATE.isPlaying && STATE.velocity > 0) {
+        ctx.strokeStyle = COLORS.cyan;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([5, 10]);
+        ctx.beginPath();
+        ctx.moveTo(earthX, earthY - earthRadius - 60);
+        if (STATE.journeyProgress < 0.5) {
+            ctx.lineTo(travelerX, travelerY);
+        } else {
+            ctx.lineTo(starX, starY - 60);
+            ctx.lineTo(travelerX, travelerY);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+
+    // Journey info
+    if (STATE.velocity > 0) {
+        const earthTime = (2 * STATE.distance) / STATE.velocity;
+        const travelerTime = earthTime / STATE.gamma;
+
+        ctx.fillStyle = COLORS.dimWhite;
+        ctx.font = '14px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Round trip at ${(STATE.velocity * 100).toFixed(1)}% speed of light:`, cx, cy + 150);
+
+        ctx.fillStyle = COLORS.blue;
+        ctx.fillText(`Earth time: ${earthTime.toFixed(2)} years`, cx - 120, cy + 180);
+
+        ctx.fillStyle = COLORS.cyan;
+        ctx.fillText(`Traveler time: ${travelerTime.toFixed(2)} years`, cx + 120, cy + 180);
+
+        ctx.fillStyle = COLORS.magenta;
+        ctx.font = '16px Space Mono';
+        ctx.fillText(`Traveler ages ${(earthTime - travelerTime).toFixed(2)} years LESS`, cx, cy + 220);
+    }
+}
+
+function drawTwin(x, y, age, color, label) {
+    // Simple stick figure representation
+    const headRadius = 15;
+
+    // Head
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, headRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Body
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(x, y + headRadius);
+    ctx.lineTo(x, y + headRadius + 30);
+    ctx.stroke();
+
+    // Arms
+    ctx.beginPath();
+    ctx.moveTo(x - 20, y + headRadius + 10);
+    ctx.lineTo(x + 20, y + headRadius + 10);
+    ctx.stroke();
+
+    // Legs
+    ctx.beginPath();
+    ctx.moveTo(x, y + headRadius + 30);
+    ctx.lineTo(x - 15, y + headRadius + 50);
+    ctx.moveTo(x, y + headRadius + 30);
+    ctx.lineTo(x + 15, y + headRadius + 50);
+    ctx.stroke();
+
+    // Age
+    ctx.fillStyle = COLORS.white;
+    ctx.font = '12px Space Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText(`Age: ${age.toFixed(1)}`, x, y + headRadius + 70);
+
+    // Label
+    ctx.fillStyle = color;
+    ctx.font = '11px Inter';
+    ctx.fillText(label, x, y - headRadius - 10);
+}
+
+// === SPACESHIP JOURNEY ===
+function drawSpaceship() {
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    // Star field with length contraction effect
+    const contractionFactor = STATE.gamma;
+
+    STATE.stars.forEach(star => {
+        let x = star.x;
+        let y = star.y;
+
+        // Apply velocity effect - stars streak past
+        if (STATE.isPlaying && STATE.velocity > 0) {
+            // Shift stars based on journey progress
+            x -= STATE.journeyProgress * 2;
+            // Wrap around
+            if (x < -1) x += 2;
+        }
+
+        const screenX = (x + 1) * 0.5 * canvas.width;
+        const screenY = (y + 1) * 0.5 * canvas.height;
+
+        // Star streaking effect at high velocity
+        if (STATE.velocity > 0.5 && STATE.isPlaying) {
+            const streakLength = STATE.velocity * 50 * star.z;
+
+            const gradient = ctx.createLinearGradient(
+                screenX - streakLength, screenY,
+                screenX, screenY
+            );
+            gradient.addColorStop(0, 'transparent');
+            gradient.addColorStop(1, `rgba(255, 255, 255, ${0.3 + star.z * 0.5})`);
+
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = star.size;
+            ctx.beginPath();
+            ctx.moveTo(screenX - streakLength, screenY);
+            ctx.lineTo(screenX, screenY);
+            ctx.stroke();
+        } else {
+            ctx.fillStyle = `rgba(255, 255, 255, ${0.3 + star.z * 0.5})`;
+            ctx.beginPath();
+            ctx.arc(screenX, screenY, star.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    });
+
+    // Draw spaceship
+    drawSpaceshipVessel(cx, cy);
+
+    // Journey progress bar
+    const barWidth = 400;
+    const barHeight = 20;
+    const barX = cx - barWidth / 2;
+    const barY = cy + 200;
+
+    // Bar background
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.fillRect(barX, barY, barWidth, barHeight);
+
+    // Bar progress
+    const progressGradient = ctx.createLinearGradient(barX, barY, barX + barWidth, barY);
+    progressGradient.addColorStop(0, COLORS.cyan);
+    progressGradient.addColorStop(0.5, COLORS.magenta);
+    progressGradient.addColorStop(1, COLORS.gold);
+    ctx.fillStyle = progressGradient;
+    ctx.fillRect(barX, barY, barWidth * STATE.journeyProgress, barHeight);
+
+    // Border
+    ctx.strokeStyle = COLORS.dimWhite;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(barX, barY, barWidth, barHeight);
+
+    // Labels
+    ctx.fillStyle = COLORS.blue;
+    ctx.font = '12px Inter';
+    ctx.textAlign = 'left';
+    ctx.fillText('Earth', barX, barY - 8);
+
+    ctx.fillStyle = COLORS.gold;
+    ctx.textAlign = 'center';
+    ctx.fillText(`${STATE.distance.toFixed(1)} ly`, cx, barY - 8);
+
+    ctx.textAlign = 'right';
+    ctx.fillText('Destination', barX + barWidth, barY - 8);
+
+    // Journey phase
+    ctx.fillStyle = COLORS.cyan;
+    ctx.font = '14px Orbitron';
+    ctx.textAlign = 'center';
+    const phaseText = STATE.journeyPhase === 'outbound' ? 'OUTBOUND' :
+                      STATE.journeyPhase === 'return' ? 'RETURNING' : 'JOURNEY COMPLETE';
+    ctx.fillText(phaseText, cx, barY + 50);
+
+    // Velocity display
+    ctx.fillStyle = COLORS.magenta;
+    ctx.font = '24px Space Mono';
+    ctx.fillText(`${(STATE.velocity * 100).toFixed(1)}% c`, cx, cy - 180);
+
+    // Time comparison
+    ctx.fillStyle = COLORS.dimWhite;
+    ctx.font = '14px Inter';
+    ctx.fillText('Ship Clock vs Earth Clock', cx, cy + 100);
+
+    ctx.fillStyle = COLORS.cyan;
+    ctx.font = '20px Space Mono';
+    ctx.fillText(`Ship: ${STATE.travelerAge.toFixed(2)} yr`, cx - 100, cy + 130);
+
+    ctx.fillStyle = COLORS.blue;
+    ctx.fillText(`Earth: ${STATE.earthAge.toFixed(2)} yr`, cx + 100, cy + 130);
+}
+
+function drawSpaceshipVessel(x, y) {
+    ctx.save();
+    ctx.translate(x, y);
+
+    // Engine glow
+    if (STATE.isPlaying && STATE.velocity > 0) {
+        const glowIntensity = STATE.velocity;
+        const engineGlow = ctx.createRadialGradient(-80, 0, 0, -80, 0, 100 * glowIntensity);
+        engineGlow.addColorStop(0, `rgba(0, 243, 255, ${glowIntensity})`);
+        engineGlow.addColorStop(0.3, `rgba(255, 0, 128, ${glowIntensity * 0.5})`);
+        engineGlow.addColorStop(1, 'transparent');
+        ctx.fillStyle = engineGlow;
+        ctx.beginPath();
+        ctx.arc(-80, 0, 100 * glowIntensity, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Ship body
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.moveTo(60, 0);
+    ctx.lineTo(20, -20);
+    ctx.lineTo(-50, -25);
+    ctx.lineTo(-70, -15);
+    ctx.lineTo(-70, 15);
+    ctx.lineTo(-50, 25);
+    ctx.lineTo(20, 20);
+    ctx.closePath();
+    ctx.fill();
+
+    // Ship outline
+    ctx.strokeStyle = COLORS.cyan;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Cockpit
+    ctx.fillStyle = 'rgba(0, 243, 255, 0.3)';
+    ctx.beginPath();
+    ctx.ellipse(30, 0, 20, 12, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = COLORS.cyan;
+    ctx.stroke();
+
+    // Engine ports
+    ctx.fillStyle = STATE.isPlaying && STATE.velocity > 0 ? COLORS.cyan : '#475569';
+    ctx.beginPath();
+    ctx.arc(-65, -8, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(-65, 8, 6, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+}
+
+// === START ===
+init();
+updateGamma();
+updateDisplays();
+updateInfoPanel();
+
+</script>
+
+</body>
+</html>
