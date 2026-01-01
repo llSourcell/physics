@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delayed Choice Quantum Eraser - Does the Future Affect the Past?</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #020617;
+            --bg-card: rgba(15, 23, 42, 0.85);
+            --accent-cyan: #00f3ff;
+            --accent-magenta: #ff0080;
+            --accent-gold: #ffd700;
+            --accent-purple: #a855f7;
+            --accent-blue: #3b82f6;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --text-bright: #f0f0f0;
+            --text-dim: #94a3b8;
+            --border-glow: rgba(0, 243, 255, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-bright);
+        }
+
+        #mainCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.7) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .ui-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .ui-panel {
+            pointer-events: auto;
+            position: absolute;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.1);
+        }
+
+        .header-panel {
+            top: 20px;
+            left: 20px;
+            max-width: 400px;
+        }
+
+        .sector-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+        }
+
+        .title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        /* Controls */
+        .controls-panel {
+            top: 20px;
+            right: 20px;
+            width: 280px;
+        }
+
+        .toggle-group {
+            margin-bottom: 20px;
+        }
+
+        .toggle-label {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .toggle-btn {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: var(--text-dim);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toggle-btn:hover {
+            background: rgba(0, 243, 255, 0.1);
+            border-color: var(--accent-cyan);
+        }
+
+        .toggle-btn.active {
+            background: rgba(0, 243, 255, 0.2);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .toggle-indicator {
+            width: 50px;
+            height: 24px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .toggle-btn.active .toggle-indicator {
+            background: var(--accent-cyan);
+        }
+
+        .toggle-indicator::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+        }
+
+        .toggle-btn.active .toggle-indicator::after {
+            left: 28px;
+        }
+
+        /* Pattern display */
+        .pattern-panel {
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+        }
+
+        .pattern-title {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-magenta);
+            margin-bottom: 15px;
+        }
+
+        .pattern-display {
+            height: 150px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pattern-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .pattern-label {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--accent-gold);
+        }
+
+        /* Equation Panel */
+        .equation-panel {
+            bottom: 20px;
+            left: 20px;
+            max-width: 450px;
+        }
+
+        .equation-title {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-purple);
+            margin-bottom: 12px;
+        }
+
+        .equation {
+            font-family: 'Space Mono', monospace;
+            font-size: 1rem;
+            color: var(--text-bright);
+            margin-bottom: 8px;
+        }
+
+        .equation .highlight { color: var(--accent-gold); }
+        .equation .cyan { color: var(--accent-cyan); }
+        .equation .magenta { color: var(--accent-magenta); }
+        .equation .purple { color: var(--accent-purple); }
+
+        .equation-explanation {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Info panel */
+        .info-panel {
+            top: 180px;
+            left: 20px;
+            max-width: 350px;
+        }
+
+        .info-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95rem;
+            color: var(--accent-cyan);
+            margin-bottom: 10px;
+        }
+
+        .info-text {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.7;
+        }
+
+        .info-text strong {
+            color: var(--accent-gold);
+        }
+
+        /* Timeline panel */
+        .timeline-panel {
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            text-align: center;
+        }
+
+        .timeline-title {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-gold);
+            margin-bottom: 15px;
+        }
+
+        .timeline-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .timeline-bar::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: rgba(255,255,255,0.2);
+            z-index: 0;
+        }
+
+        .timeline-step {
+            background: var(--bg-card);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .timeline-step.active {
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+        }
+
+        .timeline-step.past {
+            border-color: var(--accent-green);
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        .step-label {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+
+        /* Action buttons */
+        .action-panel {
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border: none;
+            border-radius: 25px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.4);
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .action-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            box-shadow: none;
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Photon counter */
+        .counter-panel {
+            top: 120px;
+            right: 20px;
+            width: 280px;
+        }
+
+        .counter-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .counter-row:last-child {
+            border-bottom: none;
+        }
+
+        .counter-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .counter-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-cyan);
+        }
+
+        /* Intro */
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.98);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s;
+        }
+
+        .intro-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .intro-content {
+            max-width: 750px;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .intro-eyebrow {
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            margin-bottom: 20px;
+        }
+
+        .intro-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple), var(--accent-magenta));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+
+        .intro-quote {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--text-dim);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .intro-quote cite {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--accent-gold);
+            font-style: normal;
+        }
+
+        .intro-text {
+            font-size: 1rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+
+        .intro-btn {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            border: none;
+            border-radius: 30px;
+            padding: 15px 40px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 0 40px rgba(0, 243, 255, 0.4);
+            transition: all 0.3s;
+        }
+
+        .intro-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Paradox indicator */
+        .paradox-panel {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .paradox-panel.visible {
+            opacity: 1;
+        }
+
+        .paradox-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--accent-magenta);
+            text-shadow: 0 0 30px var(--accent-magenta);
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="mainCanvas"></canvas>
+<div class="vignette"></div>
+
+<!-- Intro -->
+<div class="intro-overlay" id="introOverlay">
+    <div class="intro-content">
+        <div class="intro-eyebrow">Sector 11 · Quantum Foundations</div>
+        <h1 class="intro-title">Delayed Choice Quantum Eraser</h1>
+        <p class="intro-quote">
+            "We have a strange inversion of the normal order of time. We, now, by moving the mirror in or out have an unavoidable effect on what we have a right to say about the already past history of that photon."
+            <cite>— John Wheeler, 1978</cite>
+        </p>
+        <p class="intro-text">
+            This is the most mind-bending experiment in physics. A photon passes through a double slit, but whether it shows <strong>interference or not depends on a measurement made AFTER it has already hit the screen</strong>.<br><br>
+            In this experiment, we create entangled photon pairs. One photon ("signal") goes to a screen. Its partner ("idler") goes to a detector where we choose whether to <strong>preserve or erase the which-path information</strong>. The pattern on the screen depends on our choice—even though the signal photon arrived first.<br><br>
+            Does the future affect the past? Or is something stranger happening?
+        </p>
+        <button class="intro-btn" onclick="startExperience()">ENTER THE PARADOX</button>
+    </div>
+</div>
+
+<!-- UI -->
+<div class="ui-layer" id="uiLayer" style="opacity: 0; transition: opacity 1s;">
+
+    <div class="ui-panel header-panel">
+        <div class="sector-label">Sector 11 · Quantum Foundations</div>
+        <h1 class="title">Delayed Choice Quantum Eraser</h1>
+        <p class="subtitle">Choose to erase which-path information AFTER the photon has already been detected. Watch the interference pattern appear or vanish.</p>
+    </div>
+
+    <div class="ui-panel timeline-panel">
+        <div class="timeline-title">Experiment Timeline</div>
+        <div class="timeline-bar">
+            <div class="timeline-step" id="step1" style="position: relative;">
+                🔬
+                <span class="step-label">Photon Created</span>
+            </div>
+            <div class="timeline-step" id="step2" style="position: relative;">
+                🎭
+                <span class="step-label">Double Slit</span>
+            </div>
+            <div class="timeline-step" id="step3" style="position: relative;">
+                📍
+                <span class="step-label">Signal Detected</span>
+            </div>
+            <div class="timeline-step" id="step4" style="position: relative;">
+                ❓
+                <span class="step-label">Idler Choice</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-panel controls-panel">
+        <div class="toggle-group">
+            <span class="toggle-label">Which-Path Detector</span>
+            <button class="toggle-btn" id="eraserToggle" onclick="toggleEraser()">
+                <span id="eraserLabel">MEASURE PATH</span>
+                <div class="toggle-indicator"></div>
+            </button>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-dim); line-height: 1.5;">
+            <strong style="color: var(--accent-gold);">MEASURE:</strong> Know which slit → No interference<br>
+            <strong style="color: var(--accent-cyan);">ERASE:</strong> Destroy info → Interference returns
+        </div>
+    </div>
+
+    <div class="ui-panel counter-panel">
+        <div class="equation-title">Detection Statistics</div>
+        <div class="counter-row">
+            <span class="counter-label">Total Photon Pairs</span>
+            <span class="counter-value" id="totalCount">0</span>
+        </div>
+        <div class="counter-row">
+            <span class="counter-label">Slit A Detections</span>
+            <span class="counter-value" id="slitACount">0</span>
+        </div>
+        <div class="counter-row">
+            <span class="counter-label">Slit B Detections</span>
+            <span class="counter-value" id="slitBCount">0</span>
+        </div>
+        <div class="counter-row">
+            <span class="counter-label">Erased Pairs</span>
+            <span class="counter-value" id="erasedCount">0</span>
+        </div>
+    </div>
+
+    <div class="ui-panel info-panel">
+        <div class="info-title" id="infoTitle">The Paradox</div>
+        <div class="info-text" id="infoText">
+            The signal photon hits the screen <strong>before</strong> we decide whether to erase which-path information on its partner. Yet the pattern we see depends on that future choice. Each photon seems to "know" what we will choose—but the full pattern only emerges when we correlate the data.
+        </div>
+    </div>
+
+    <div class="ui-panel pattern-panel">
+        <div class="pattern-title">Detection Pattern (D0 Screen)</div>
+        <div class="pattern-display">
+            <canvas id="patternCanvas" class="pattern-canvas"></canvas>
+        </div>
+        <div class="pattern-label" id="patternLabel">Waiting for photons...</div>
+    </div>
+
+    <div class="ui-panel equation-panel">
+        <div class="equation-title">Quantum State</div>
+        <div class="equation">
+            |ψ⟩ = <span class="cyan">|A⟩|a⟩</span> + <span class="magenta">|B⟩|b⟩</span>
+        </div>
+        <div class="equation-explanation">
+            The entangled state: if signal went through slit A, idler is in state |a⟩. If slit B, state |b⟩. Measuring the idler can <strong>erase</strong> this distinction or <strong>reveal</strong> it—changing what pattern we see when we correlate the data.
+        </div>
+    </div>
+
+    <div class="ui-panel paradox-panel" id="paradoxPanel">
+        <div class="paradox-text" id="paradoxText"></div>
+    </div>
+
+    <div class="action-panel">
+        <button class="action-btn" onclick="firePhoton()">FIRE PHOTON PAIR</button>
+        <button class="action-btn secondary" onclick="runExperiment()">RUN 100 PAIRS</button>
+        <button class="action-btn secondary" onclick="resetExperiment()">RESET</button>
+    </div>
+
+</div>
+
+<script>
+// ============================================
+// DELAYED CHOICE QUANTUM ERASER
+// Does the Future Affect the Past?
+// ============================================
+
+const canvas = document.getElementById('mainCanvas');
+const ctx = canvas.getContext('2d');
+const patternCanvas = document.getElementById('patternCanvas');
+const patternCtx = patternCanvas.getContext('2d');
+
+// === STATE ===
+const STATE = {
+    eraserMode: false,  // false = measure path, true = erase
+    photonPairs: [],
+    detections: [],
+    stats: {
+        total: 0,
+        slitA: 0,
+        slitB: 0,
+        erased: 0
+    },
+    patternData: new Array(300).fill(0),
+    erasedPatternData: new Array(300).fill(0),
+    measuredPatternData: new Array(300).fill(0),
+    step: 0,
+    animatingPhoton: null
+};
+
+const COLORS = {
+    cyan: '#00f3ff',
+    magenta: '#ff0080',
+    gold: '#ffd700',
+    purple: '#a855f7',
+    green: '#22c55e',
+    red: '#ef4444',
+    white: '#ffffff',
+    dim: 'rgba(255, 255, 255, 0.3)'
+};
+
+// Layout positions
+let LAYOUT = {};
+
+function updateLayout() {
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    LAYOUT = {
+        source: { x: cx - 300, y: cy },
+        bbo: { x: cx - 200, y: cy },      // BBO crystal (creates entangled pairs)
+        slits: { x: cx - 50, y: cy },      // Double slit
+        screen: { x: cx + 150, y: cy },    // D0 detection screen
+        idlerPath: { x: cx, y: cy + 150 }, // Idler photon path
+        eraser: { x: cx + 200, y: cy + 150 } // Eraser/detector
+    };
+}
+
+// === INIT ===
+function init() {
+    resize();
+    window.addEventListener('resize', resize);
+    requestAnimationFrame(loop);
+}
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    patternCanvas.width = patternCanvas.parentElement.clientWidth;
+    patternCanvas.height = patternCanvas.parentElement.clientHeight;
+    updateLayout();
+}
+
+// === CONTROLS ===
+function toggleEraser() {
+    STATE.eraserMode = !STATE.eraserMode;
+    const btn = document.getElementById('eraserToggle');
+    const label = document.getElementById('eraserLabel');
+
+    if (STATE.eraserMode) {
+        btn.classList.add('active');
+        label.textContent = 'ERASE PATH';
+    } else {
+        btn.classList.remove('active');
+        label.textContent = 'MEASURE PATH';
+    }
+
+    updateInfo();
+}
+
+function updateInfo() {
+    if (STATE.eraserMode) {
+        document.getElementById('infoTitle').textContent = 'Eraser Mode Active';
+        document.getElementById('infoText').innerHTML =
+            'Which-path information is being <strong>destroyed</strong>. When we correlate signal photons with erased idlers, we see an <strong>interference pattern</strong>. The photon "went through both slits" even though it was detected first!';
+    } else {
+        document.getElementById('infoTitle').textContent = 'Measurement Mode Active';
+        document.getElementById('infoText').innerHTML =
+            'We are <strong>measuring which slit</strong> the idler\'s partner went through. When we correlate these, we see <strong>no interference</strong>—just two bands. Knowing the path destroys the wave behavior.';
+    }
+}
+
+function firePhoton() {
+    if (STATE.animatingPhoton) return;
+
+    STATE.animatingPhoton = {
+        phase: 'source',
+        progress: 0,
+        slit: Math.random() > 0.5 ? 'A' : 'B',
+        erased: STATE.eraserMode,
+        signalX: 0,
+        signalY: 0,
+        idlerX: 0,
+        idlerY: 0
+    };
+
+    STATE.step = 1;
+    updateTimeline();
+}
+
+function runExperiment() {
+    // Run 100 photon pairs quickly
+    for (let i = 0; i < 100; i++) {
+        const slit = Math.random() > 0.5 ? 'A' : 'B';
+        const erased = STATE.eraserMode;
+
+        // Calculate detection position
+        let screenPos;
+        if (erased) {
+            // Interference pattern
+            const interference = Math.sin(Math.random() * Math.PI * 8) * 0.5 + 0.5;
+            screenPos = 150 + (Math.random() - 0.5) * 200 * interference;
+        } else {
+            // Two-band pattern
+            const offset = slit === 'A' ? -40 : 40;
+            screenPos = 150 + offset + (Math.random() - 0.5) * 60;
+        }
+
+        // Record detection
+        const idx = Math.floor(screenPos);
+        if (idx >= 0 && idx < 300) {
+            STATE.patternData[idx]++;
+            if (erased) {
+                STATE.erasedPatternData[idx]++;
+            } else {
+                STATE.measuredPatternData[idx]++;
+            }
+        }
+
+        STATE.stats.total++;
+        if (slit === 'A') STATE.stats.slitA++;
+        else STATE.stats.slitB++;
+        if (erased) STATE.stats.erased++;
+    }
+
+    updateStats();
+    updatePatternDisplay();
+}
+
+function resetExperiment() {
+    STATE.stats = { total: 0, slitA: 0, slitB: 0, erased: 0 };
+    STATE.patternData = new Array(300).fill(0);
+    STATE.erasedPatternData = new Array(300).fill(0);
+    STATE.measuredPatternData = new Array(300).fill(0);
+    STATE.animatingPhoton = null;
+    STATE.step = 0;
+    updateStats();
+    updatePatternDisplay();
+    updateTimeline();
+}
+
+function updateStats() {
+    document.getElementById('totalCount').textContent = STATE.stats.total;
+    document.getElementById('slitACount').textContent = STATE.stats.slitA;
+    document.getElementById('slitBCount').textContent = STATE.stats.slitB;
+    document.getElementById('erasedCount').textContent = STATE.stats.erased;
+}
+
+function updateTimeline() {
+    for (let i = 1; i <= 4; i++) {
+        const step = document.getElementById('step' + i);
+        step.classList.remove('active', 'past');
+        if (i < STATE.step) step.classList.add('past');
+        else if (i === STATE.step) step.classList.add('active');
+    }
+}
+
+function updatePatternDisplay() {
+    const w = patternCanvas.width;
+    const h = patternCanvas.height;
+
+    patternCtx.fillStyle = '#0a0a0f';
+    patternCtx.fillRect(0, 0, w, h);
+
+    // Find max for scaling
+    const max = Math.max(...STATE.patternData, 1);
+
+    // Draw pattern
+    patternCtx.fillStyle = STATE.eraserMode ? COLORS.cyan : COLORS.magenta;
+
+    for (let i = 0; i < 300; i++) {
+        const x = (i / 300) * w;
+        const barHeight = (STATE.patternData[i] / max) * h * 0.9;
+        patternCtx.fillRect(x, h - barHeight, w / 300 + 1, barHeight);
+    }
+
+    // Update label
+    const label = document.getElementById('patternLabel');
+    if (STATE.stats.total === 0) {
+        label.textContent = 'Waiting for photons...';
+    } else if (STATE.stats.erased > STATE.stats.total * 0.8) {
+        label.textContent = 'INTERFERENCE PATTERN (path erased)';
+        label.style.color = COLORS.cyan;
+    } else if (STATE.stats.erased < STATE.stats.total * 0.2) {
+        label.textContent = 'TWO-BAND PATTERN (path known)';
+        label.style.color = COLORS.magenta;
+    } else {
+        label.textContent = 'MIXED PATTERN (try consistent settings)';
+        label.style.color = COLORS.gold;
+    }
+}
+
+function showParadox(text) {
+    const panel = document.getElementById('paradoxPanel');
+    const textEl = document.getElementById('paradoxText');
+    textEl.textContent = text;
+    panel.classList.add('visible');
+    setTimeout(() => panel.classList.remove('visible'), 2000);
+}
+
+function startExperience() {
+    document.getElementById('introOverlay').classList.add('hidden');
+    document.getElementById('uiLayer').style.opacity = '1';
+}
+
+// === MAIN LOOP ===
+let lastTime = 0;
+function loop(timestamp) {
+    const dt = (timestamp - lastTime) / 1000;
+    lastTime = timestamp;
+
+    update(dt);
+    draw();
+    requestAnimationFrame(loop);
+}
+
+function update(dt) {
+    if (STATE.animatingPhoton) {
+        const p = STATE.animatingPhoton;
+        p.progress += dt * 2;
+
+        if (p.phase === 'source' && p.progress > 0.5) {
+            p.phase = 'bbo';
+            STATE.step = 2;
+            updateTimeline();
+        } else if (p.phase === 'bbo' && p.progress > 1) {
+            p.phase = 'slits';
+        } else if (p.phase === 'slits' && p.progress > 1.5) {
+            p.phase = 'detection';
+            STATE.step = 3;
+            updateTimeline();
+        } else if (p.phase === 'detection' && p.progress > 2) {
+            p.phase = 'idler';
+            STATE.step = 4;
+            updateTimeline();
+        } else if (p.phase === 'idler' && p.progress > 2.5) {
+            // Complete detection
+            let screenPos;
+            if (p.erased) {
+                const interference = Math.sin(Math.random() * Math.PI * 8) * 0.5 + 0.5;
+                screenPos = 150 + (Math.random() - 0.5) * 200 * interference;
+            } else {
+                const offset = p.slit === 'A' ? -40 : 40;
+                screenPos = 150 + offset + (Math.random() - 0.5) * 60;
+            }
+
+            const idx = Math.floor(screenPos);
+            if (idx >= 0 && idx < 300) {
+                STATE.patternData[idx]++;
+            }
+
+            STATE.stats.total++;
+            if (p.slit === 'A') STATE.stats.slitA++;
+            else STATE.stats.slitB++;
+            if (p.erased) STATE.stats.erased++;
+
+            updateStats();
+            updatePatternDisplay();
+
+            if (p.erased) {
+                showParadox('PATH ERASED → INTERFERENCE RESTORED');
+            } else {
+                showParadox('PATH KNOWN → NO INTERFERENCE');
+            }
+
+            STATE.animatingPhoton = null;
+            STATE.step = 0;
+            updateTimeline();
+        }
+    }
+}
+
+function draw() {
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Stars
+    drawStars();
+
+    // Draw apparatus
+    drawApparatus();
+
+    // Draw photon animation
+    if (STATE.animatingPhoton) {
+        drawPhotonAnimation();
+    }
+}
+
+function drawStars() {
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+    for (let i = 0; i < 100; i++) {
+        const x = (Math.sin(i * 123.456) * 0.5 + 0.5) * canvas.width;
+        const y = (Math.cos(i * 789.012) * 0.5 + 0.5) * canvas.height;
+        ctx.beginPath();
+        ctx.arc(x, y, Math.random() + 0.5, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+function drawApparatus() {
+    const L = LAYOUT;
+
+    // Laser source
+    drawComponent(L.source.x, L.source.y, 'LASER', COLORS.red);
+
+    // BBO Crystal
+    drawComponent(L.bbo.x, L.bbo.y, 'BBO CRYSTAL', COLORS.purple);
+    ctx.fillStyle = COLORS.dim;
+    ctx.font = '10px Inter';
+    ctx.textAlign = 'center';
+    ctx.fillText('Creates entangled pairs', L.bbo.x, L.bbo.y + 40);
+
+    // Double slits
+    drawSlits(L.slits.x, L.slits.y);
+
+    // Detection screen D0
+    drawScreen(L.screen.x, L.screen.y);
+
+    // Idler path
+    ctx.strokeStyle = COLORS.dim;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    ctx.moveTo(L.bbo.x, L.bbo.y);
+    ctx.lineTo(L.bbo.x, L.idlerPath.y);
+    ctx.lineTo(L.eraser.x, L.idlerPath.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Eraser/Detector
+    drawEraser(L.eraser.x, L.eraser.y);
+
+    // Signal path
+    ctx.strokeStyle = COLORS.cyan;
+    ctx.lineWidth = 2;
+    ctx.setLineDash([10, 5]);
+    ctx.beginPath();
+    ctx.moveTo(L.bbo.x, L.bbo.y);
+    ctx.lineTo(L.slits.x, L.slits.y);
+    ctx.lineTo(L.screen.x, L.screen.y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Path labels
+    ctx.fillStyle = COLORS.cyan;
+    ctx.font = '12px Space Mono';
+    ctx.fillText('Signal Photon →', L.bbo.x + 50, L.bbo.y - 20);
+
+    ctx.fillStyle = COLORS.magenta;
+    ctx.fillText('Idler Photon ↓', L.bbo.x - 30, L.idlerPath.y - 30);
+}
+
+function drawComponent(x, y, label, color) {
+    // Glow
+    const gradient = ctx.createRadialGradient(x, y, 0, x, y, 40);
+    gradient.addColorStop(0, color + '40');
+    gradient.addColorStop(1, 'transparent');
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(x, y, 40, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Box
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x - 25, y - 15, 50, 30);
+
+    // Label
+    ctx.fillStyle = color;
+    ctx.font = '10px Orbitron';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, x, y + 5);
+}
+
+function drawSlits(x, y) {
+    const slitHeight = 80;
+    const slitGap = 30;
+    const slitWidth = 8;
+
+    // Barrier
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(x - slitWidth/2, y - slitHeight, slitWidth, slitHeight * 2);
+
+    // Slits (holes)
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(x - slitWidth/2, y - slitGap/2 - 15, slitWidth, 15); // Slit A
+    ctx.fillRect(x - slitWidth/2, y + slitGap/2, slitWidth, 15); // Slit B
+
+    // Slit glow
+    ctx.fillStyle = COLORS.cyan + '60';
+    ctx.fillRect(x - slitWidth/2 - 2, y - slitGap/2 - 15, slitWidth + 4, 15);
+    ctx.fillRect(x - slitWidth/2 - 2, y + slitGap/2, slitWidth + 4, 15);
+
+    // Labels
+    ctx.fillStyle = COLORS.gold;
+    ctx.font = '11px Space Mono';
+    ctx.textAlign = 'right';
+    ctx.fillText('A', x - 15, y - slitGap/2 - 5);
+    ctx.fillText('B', x - 15, y + slitGap/2 + 10);
+
+    ctx.fillStyle = COLORS.dim;
+    ctx.textAlign = 'center';
+    ctx.fillText('DOUBLE SLIT', x, y + slitHeight + 20);
+}
+
+function drawScreen(x, y) {
+    const screenHeight = 120;
+    const screenWidth = 10;
+
+    // Screen
+    ctx.fillStyle = '#1e3a5f';
+    ctx.fillRect(x - screenWidth/2, y - screenHeight/2, screenWidth, screenHeight);
+
+    // Glow
+    ctx.strokeStyle = COLORS.cyan;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(x - screenWidth/2, y - screenHeight/2, screenWidth, screenHeight);
+
+    // Label
+    ctx.fillStyle = COLORS.cyan;
+    ctx.font = '11px Orbitron';
+    ctx.textAlign = 'center';
+    ctx.fillText('D0', x, y + screenHeight/2 + 20);
+    ctx.fillStyle = COLORS.dim;
+    ctx.font = '10px Inter';
+    ctx.fillText('(Signal detector)', x, y + screenHeight/2 + 35);
+}
+
+function drawEraser(x, y) {
+    const size = 40;
+
+    // Different appearance based on mode
+    if (STATE.eraserMode) {
+        // Eraser mode - beam splitter
+        ctx.fillStyle = 'rgba(0, 243, 255, 0.2)';
+        ctx.strokeStyle = COLORS.cyan;
+    } else {
+        // Measure mode - which-path detector
+        ctx.fillStyle = 'rgba(255, 0, 128, 0.2)';
+        ctx.strokeStyle = COLORS.magenta;
+    }
+
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(x, y, size, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Label
+    ctx.fillStyle = STATE.eraserMode ? COLORS.cyan : COLORS.magenta;
+    ctx.font = '10px Orbitron';
+    ctx.textAlign = 'center';
+    ctx.fillText(STATE.eraserMode ? 'ERASER' : 'DETECTOR', x, y + 5);
+
+    ctx.fillStyle = COLORS.dim;
+    ctx.font = '9px Inter';
+    ctx.fillText(STATE.eraserMode ? 'Path info destroyed' : 'Path info preserved', x, y + size + 15);
+}
+
+function drawPhotonAnimation() {
+    const p = STATE.animatingPhoton;
+    const L = LAYOUT;
+
+    // Calculate positions based on phase
+    let signalPos = { x: L.source.x, y: L.source.y };
+    let idlerPos = null;
+
+    if (p.phase === 'source') {
+        const t = p.progress / 0.5;
+        signalPos.x = L.source.x + (L.bbo.x - L.source.x) * t;
+    } else if (p.phase === 'bbo') {
+        const t = (p.progress - 0.5) / 0.5;
+        signalPos.x = L.bbo.x + (L.slits.x - L.bbo.x) * t;
+        idlerPos = {
+            x: L.bbo.x,
+            y: L.bbo.y + (L.idlerPath.y - L.bbo.y) * t
+        };
+    } else if (p.phase === 'slits') {
+        const t = (p.progress - 1) / 0.5;
+        signalPos.x = L.slits.x + (L.screen.x - L.slits.x) * t;
+        // Wave through slits
+        const slitOffset = p.slit === 'A' ? -20 : 20;
+        signalPos.y = L.slits.y + slitOffset * (1 - t);
+
+        idlerPos = {
+            x: L.bbo.x + (L.eraser.x - L.bbo.x) * t * 0.5,
+            y: L.idlerPath.y
+        };
+    } else if (p.phase === 'detection') {
+        signalPos.x = L.screen.x;
+        const t = (p.progress - 1.5) / 0.5;
+        idlerPos = {
+            x: L.bbo.x + (L.eraser.x - L.bbo.x) * (0.5 + t * 0.5),
+            y: L.idlerPath.y
+        };
+    } else if (p.phase === 'idler') {
+        signalPos.x = L.screen.x;
+        idlerPos = { x: L.eraser.x, y: L.eraser.y };
+    }
+
+    // Draw signal photon
+    drawPhoton(signalPos.x, signalPos.y, COLORS.cyan, 'Signal');
+
+    // Draw idler photon
+    if (idlerPos) {
+        drawPhoton(idlerPos.x, idlerPos.y, COLORS.magenta, 'Idler');
+
+        // Entanglement line
+        ctx.strokeStyle = 'rgba(168, 85, 247, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 6]);
+        ctx.beginPath();
+        ctx.moveTo(signalPos.x, signalPos.y);
+        ctx.lineTo(idlerPos.x, idlerPos.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+
+    // Wave visualization at slits
+    if (p.phase === 'slits' || p.phase === 'detection') {
+        drawWaveInterference(L.slits.x, L.slits.y, L.screen.x, p.erased);
+    }
+}
+
+function drawPhoton(x, y, color, label) {
+    // Glow
+    const gradient = ctx.createRadialGradient(x, y, 0, x, y, 20);
+    gradient.addColorStop(0, color);
+    gradient.addColorStop(0.5, color + '60');
+    gradient.addColorStop(1, 'transparent');
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(x, y, 20, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Core
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+function drawWaveInterference(slitX, slitY, screenX, erased) {
+    const slitGap = 30;
+
+    ctx.globalAlpha = 0.3;
+
+    // Waves from each slit
+    for (let slit = 0; slit < 2; slit++) {
+        const slitYPos = slitY + (slit === 0 ? -slitGap/2 - 7 : slitGap/2 + 7);
+
+        ctx.strokeStyle = slit === 0 ? COLORS.cyan : COLORS.magenta;
+        ctx.lineWidth = 1;
+
+        for (let wave = 0; wave < 5; wave++) {
+            const radius = 20 + wave * 25;
+            ctx.beginPath();
+            ctx.arc(slitX, slitYPos, radius, -Math.PI/3, Math.PI/3);
+            ctx.stroke();
+        }
+    }
+
+    ctx.globalAlpha = 1;
+}
+
+// === START ===
+init();
+updateInfo();
+</script>
+
+</body>
+</html>
