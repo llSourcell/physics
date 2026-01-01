@@ -519,12 +519,376 @@
             color: var(--accent-magenta);
             text-shadow: 0 0 30px var(--accent-magenta);
         }
+
+        /* ==================== MOBILE STYLES ==================== */
+        .mobile-panel {
+            display: none;
+        }
+
+        .mobile-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-glow);
+            z-index: 100;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .mobile-header .title {
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+
+        .mobile-header .sector-label {
+            font-size: 0.6rem;
+            margin-bottom: 0;
+        }
+
+        .mobile-stats {
+            position: fixed;
+            top: 70px;
+            left: 10px;
+            right: 10px;
+            padding: 10px 14px;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            z-index: 90;
+            flex-direction: row;
+            justify-content: space-around;
+        }
+
+        .mobile-stats .stat-item {
+            text-align: center;
+        }
+
+        .mobile-stats .stat-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-cyan);
+        }
+
+        .mobile-stats .stat-label {
+            color: var(--text-dim);
+            font-size: 0.55rem;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            width: 44px;
+            height: 44px;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            color: var(--accent-cyan);
+            font-size: 1.3rem;
+            cursor: pointer;
+            z-index: 150;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid var(--border-glow);
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 200;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .slide-panel.open {
+            transform: translateY(0);
+        }
+
+        .slide-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .slide-panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: var(--accent-cyan);
+        }
+
+        .slide-panel-close {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .mobile-info-text {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .mobile-info-text strong {
+            color: var(--accent-gold);
+        }
+
+        .mobile-pattern-display {
+            position: fixed;
+            bottom: 140px;
+            left: 10px;
+            right: 10px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            padding: 10px;
+            z-index: 85;
+            display: none;
+        }
+
+        .mobile-pattern-display .pattern-display {
+            height: 80px;
+        }
+
+        .mobile-pattern-display .pattern-title {
+            font-size: 0.6rem;
+            margin-bottom: 8px;
+        }
+
+        .mobile-pattern-display .pattern-label {
+            font-size: 0.7rem;
+            margin-top: 5px;
+        }
+
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid var(--border-glow);
+            padding: 10px 8px;
+            z-index: 100;
+            display: none;
+            justify-content: space-around;
+            gap: 6px;
+        }
+
+        .mobile-nav-btn {
+            flex: 1;
+            padding: 12px 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: var(--text-dim);
+            font-size: 0.65rem;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .mobile-nav-btn.primary {
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            color: white;
+            border: none;
+        }
+
+        .mobile-eraser-toggle {
+            position: fixed;
+            top: 130px;
+            left: 10px;
+            right: 10px;
+            padding: 12px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            z-index: 90;
+            display: none;
+        }
+
+        .mobile-eraser-toggle .toggle-btn {
+            font-size: 0.8rem;
+            padding: 10px;
+        }
+
+        @media (max-width: 900px) {
+            .header-panel {
+                max-width: 280px;
+                padding: 15px;
+            }
+            .title {
+                font-size: 1.1rem;
+            }
+            .subtitle {
+                font-size: 0.75rem;
+            }
+            .timeline-panel {
+                width: 380px;
+                padding: 15px;
+            }
+            .timeline-step {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2rem;
+            }
+            .controls-panel {
+                width: 220px;
+                padding: 15px;
+            }
+            .counter-panel {
+                width: 220px;
+                padding: 15px;
+            }
+            .pattern-panel {
+                width: 260px;
+                padding: 15px;
+            }
+            .equation-panel {
+                max-width: 320px;
+                padding: 15px;
+            }
+            .info-panel {
+                max-width: 280px;
+                padding: 15px;
+            }
+            .action-panel {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-panel, .timeline-panel, .controls-panel, .counter-panel,
+            .pattern-panel, .equation-panel, .info-panel, .action-panel {
+                display: none !important;
+            }
+
+            .mobile-header, .mobile-stats, .mobile-nav,
+            .mobile-pattern-display, .mobile-eraser-toggle {
+                display: flex;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .intro-content {
+                padding: 20px;
+            }
+
+            .intro-title {
+                font-size: 1.6rem;
+            }
+
+            .intro-quote {
+                font-size: 0.95rem;
+            }
+
+            .intro-text {
+                font-size: 0.85rem;
+            }
+
+            #mainCanvas {
+                touch-action: none;
+            }
+        }
     </style>
 </head>
 <body>
 
 <canvas id="mainCanvas"></canvas>
 <div class="vignette"></div>
+
+<!-- Mobile UI Elements -->
+<div class="mobile-header mobile-panel">
+    <div class="sector-label">Sector 11 · Quantum Foundations</div>
+    <h1 class="title">Quantum Eraser</h1>
+</div>
+
+<button class="mobile-menu-toggle" onclick="toggleMobilePanel()">ℹ️</button>
+
+<div class="mobile-stats mobile-panel">
+    <div class="stat-item">
+        <div class="stat-value" id="mobileTotalCount">0</div>
+        <div class="stat-label">Total Pairs</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value" id="mobileErasedCount">0</div>
+        <div class="stat-label">Erased</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value" id="mobileMode">MEASURE</div>
+        <div class="stat-label">Mode</div>
+    </div>
+</div>
+
+<div class="mobile-eraser-toggle mobile-panel">
+    <button class="toggle-btn" id="mobileEraserToggle" onclick="toggleEraser()">
+        <span id="mobileEraserLabel">MEASURE PATH</span>
+        <div class="toggle-indicator"></div>
+    </button>
+</div>
+
+<div class="mobile-pattern-display mobile-panel">
+    <div class="pattern-title">Detection Pattern (D0 Screen)</div>
+    <div class="pattern-display">
+        <canvas id="mobilePatternCanvas" class="pattern-canvas"></canvas>
+    </div>
+    <div class="pattern-label" id="mobilePatternLabel">Waiting for photons...</div>
+</div>
+
+<!-- Mobile Info Panel -->
+<div class="slide-panel" id="mobileSettingsPanel">
+    <div class="slide-panel-header">
+        <span class="slide-panel-title" id="mobileInfoTitle">The Paradox</span>
+        <button class="slide-panel-close" onclick="toggleMobilePanel()">×</button>
+    </div>
+    <div class="mobile-info-text" id="mobileInfoText">
+        The signal photon hits the screen <strong>before</strong> we decide whether to erase which-path information on its partner. Yet the pattern we see depends on that future choice.
+    </div>
+    <div class="equation-title">Quantum State</div>
+    <div class="equation" style="font-size: 0.9rem;">
+        |ψ⟩ = <span class="cyan">|A⟩|a⟩</span> + <span class="magenta">|B⟩|b⟩</span>
+    </div>
+</div>
+
+<!-- Mobile Navigation -->
+<nav class="mobile-nav">
+    <button class="mobile-nav-btn primary" onclick="firePhoton()">FIRE<br>PHOTON</button>
+    <button class="mobile-nav-btn" onclick="runExperiment()">RUN<br>100</button>
+    <button class="mobile-nav-btn" onclick="resetExperiment()">RESET</button>
+</nav>
 
 <!-- Intro -->
 <div class="intro-overlay" id="introOverlay">
@@ -1240,9 +1604,135 @@ function drawWaveInterference(slitX, slitY, screenX, erased) {
     ctx.globalAlpha = 1;
 }
 
+// === MOBILE FUNCTIONS ===
+let mobilePatternCanvas, mobilePatternCtx;
+
+function initMobileCanvas() {
+    mobilePatternCanvas = document.getElementById('mobilePatternCanvas');
+    if (mobilePatternCanvas && mobilePatternCanvas.parentElement) {
+        mobilePatternCtx = mobilePatternCanvas.getContext('2d');
+        mobilePatternCanvas.width = mobilePatternCanvas.parentElement.clientWidth;
+        mobilePatternCanvas.height = mobilePatternCanvas.parentElement.clientHeight;
+    }
+}
+
+function toggleMobilePanel() {
+    const panel = document.getElementById('mobileSettingsPanel');
+    panel.classList.toggle('open');
+}
+
+function updateMobileDisplays() {
+    document.getElementById('mobileTotalCount').textContent = STATE.stats.total;
+    document.getElementById('mobileErasedCount').textContent = STATE.stats.erased;
+    document.getElementById('mobileMode').textContent = STATE.eraserMode ? 'ERASE' : 'MEASURE';
+
+    // Update mobile eraser toggle
+    const mobileBtn = document.getElementById('mobileEraserToggle');
+    const mobileLabel = document.getElementById('mobileEraserLabel');
+    if (mobileBtn && mobileLabel) {
+        if (STATE.eraserMode) {
+            mobileBtn.classList.add('active');
+            mobileLabel.textContent = 'ERASE PATH';
+        } else {
+            mobileBtn.classList.remove('active');
+            mobileLabel.textContent = 'MEASURE PATH';
+        }
+    }
+
+    // Update mobile pattern display
+    updateMobilePatternDisplay();
+
+    // Update mobile info
+    updateMobileInfo();
+}
+
+function updateMobilePatternDisplay() {
+    if (!mobilePatternCtx) return;
+
+    const w = mobilePatternCanvas.width;
+    const h = mobilePatternCanvas.height;
+
+    mobilePatternCtx.fillStyle = '#0a0a0f';
+    mobilePatternCtx.fillRect(0, 0, w, h);
+
+    const max = Math.max(...STATE.patternData, 1);
+    mobilePatternCtx.fillStyle = STATE.eraserMode ? COLORS.cyan : COLORS.magenta;
+
+    for (let i = 0; i < 300; i++) {
+        const x = (i / 300) * w;
+        const barHeight = (STATE.patternData[i] / max) * h * 0.9;
+        mobilePatternCtx.fillRect(x, h - barHeight, w / 300 + 1, barHeight);
+    }
+
+    // Update label
+    const label = document.getElementById('mobilePatternLabel');
+    if (STATE.stats.total === 0) {
+        label.textContent = 'Waiting for photons...';
+        label.style.color = COLORS.dim;
+    } else if (STATE.stats.erased > STATE.stats.total * 0.8) {
+        label.textContent = 'INTERFERENCE (path erased)';
+        label.style.color = COLORS.cyan;
+    } else if (STATE.stats.erased < STATE.stats.total * 0.2) {
+        label.textContent = 'TWO-BAND (path known)';
+        label.style.color = COLORS.magenta;
+    } else {
+        label.textContent = 'MIXED PATTERN';
+        label.style.color = COLORS.gold;
+    }
+}
+
+function updateMobileInfo() {
+    if (STATE.eraserMode) {
+        document.getElementById('mobileInfoTitle').textContent = 'Eraser Mode';
+        document.getElementById('mobileInfoText').innerHTML =
+            'Which-path info is <strong>destroyed</strong>. Interference pattern appears. The photon "went through both slits"!';
+    } else {
+        document.getElementById('mobileInfoTitle').textContent = 'Measurement Mode';
+        document.getElementById('mobileInfoText').innerHTML =
+            'We <strong>measure which slit</strong>. No interference—just two bands. Knowing the path destroys wave behavior.';
+    }
+}
+
+// Wrap original toggleEraser
+const originalToggleEraser = toggleEraser;
+toggleEraser = function() {
+    originalToggleEraser();
+    updateMobileDisplays();
+};
+
+// Wrap original updateStats
+const originalUpdateStats = updateStats;
+updateStats = function() {
+    originalUpdateStats();
+    updateMobileDisplays();
+};
+
+// Wrap original updatePatternDisplay
+const originalUpdatePatternDisplay = updatePatternDisplay;
+updatePatternDisplay = function() {
+    originalUpdatePatternDisplay();
+    updateMobilePatternDisplay();
+};
+
+// Wrap original resetExperiment
+const originalResetExperiment = resetExperiment;
+resetExperiment = function() {
+    originalResetExperiment();
+    updateMobileDisplays();
+};
+
+// Wrap resize to handle mobile canvas
+const originalResize = resize;
+resize = function() {
+    originalResize();
+    initMobileCanvas();
+};
+
 // === START ===
 init();
+initMobileCanvas();
 updateInfo();
+updateMobileDisplays();
 </script>
 
 </body>

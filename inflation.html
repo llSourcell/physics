@@ -477,12 +477,379 @@
         .intro-btn:hover {
             transform: scale(1.05);
         }
+
+        /* ==================== MOBILE STYLES ==================== */
+        .mobile-panel {
+            display: none;
+        }
+
+        .mobile-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-glow);
+            z-index: 100;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .mobile-header .title {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .mobile-header .sector-label {
+            font-size: 0.6rem;
+            margin-bottom: 0;
+        }
+
+        .mobile-time-display {
+            position: fixed;
+            top: 70px;
+            left: 10px;
+            right: 10px;
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            z-index: 90;
+            text-align: center;
+        }
+
+        .mobile-time-display .time-display {
+            font-size: 1.3rem;
+            margin-bottom: 8px;
+        }
+
+        .mobile-time-display .timeline-bar {
+            height: 6px;
+        }
+
+        .mobile-time-display .timeline-markers {
+            font-size: 0.5rem;
+            margin-top: 5px;
+        }
+
+        .mobile-stats {
+            position: fixed;
+            top: 155px;
+            left: 10px;
+            right: 10px;
+            padding: 10px 14px;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            z-index: 90;
+            flex-direction: row;
+            justify-content: space-around;
+        }
+
+        .mobile-stats .stat-item {
+            text-align: center;
+        }
+
+        .mobile-stats .stat-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-cyan);
+        }
+
+        .mobile-stats .stat-label {
+            color: var(--text-dim);
+            font-size: 0.55rem;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            width: 44px;
+            height: 44px;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            color: var(--accent-pink);
+            font-size: 1.3rem;
+            cursor: pointer;
+            z-index: 150;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid var(--border-glow);
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 200;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .slide-panel.open {
+            transform: translateY(0);
+        }
+
+        .slide-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .slide-panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: var(--accent-pink);
+        }
+
+        .slide-panel-close {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .mobile-info-text {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .mobile-info-text strong {
+            color: var(--accent-gold);
+        }
+
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid var(--border-glow);
+            padding: 10px 8px;
+            z-index: 100;
+            display: none;
+            justify-content: space-around;
+            gap: 5px;
+        }
+
+        .mobile-nav-btn {
+            flex: 1;
+            padding: 10px 4px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: var(--text-dim);
+            font-size: 0.6rem;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .mobile-nav-btn.active {
+            background: rgba(236, 72, 153, 0.3);
+            border-color: var(--accent-pink);
+            color: var(--accent-pink);
+        }
+
+        .mobile-action-btns {
+            position: fixed;
+            bottom: 75px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 10px;
+            z-index: 90;
+        }
+
+        .mobile-action-btn {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, var(--accent-pink), var(--accent-orange));
+            border: none;
+            border-radius: 25px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+            white-space: nowrap;
+        }
+
+        .mobile-action-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            box-shadow: none;
+        }
+
+        @media (max-width: 900px) {
+            .header-panel {
+                max-width: 300px;
+                padding: 15px;
+            }
+            .title {
+                font-size: 1.2rem;
+            }
+            .subtitle {
+                font-size: 0.75rem;
+            }
+            .timeline-panel {
+                width: 400px;
+                padding: 15px;
+            }
+            .stats-panel {
+                width: 260px;
+                padding: 15px;
+            }
+            .equation-panel {
+                max-width: 350px;
+                padding: 15px;
+            }
+            .scale-panel {
+                width: 220px;
+            }
+            .info-panel {
+                max-width: 400px;
+                padding: 15px;
+            }
+            .action-panel {
+                flex-direction: column;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-panel, .timeline-panel, .controls-panel, .stats-panel, .equation-panel,
+            .mode-panel, .info-panel, .scale-panel, .action-panel {
+                display: none !important;
+            }
+
+            .mobile-header, .mobile-time-display, .mobile-stats, .mobile-nav,
+            .mobile-action-btns {
+                display: flex;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .intro-content {
+                padding: 20px;
+            }
+
+            .intro-title {
+                font-size: 1.8rem;
+            }
+
+            .intro-quote {
+                font-size: 1rem;
+            }
+
+            .intro-text {
+                font-size: 0.9rem;
+            }
+
+            #mainCanvas {
+                touch-action: none;
+            }
+        }
     </style>
 </head>
 <body>
 
 <canvas id="mainCanvas"></canvas>
 <div class="vignette"></div>
+
+<!-- Mobile UI Elements -->
+<div class="mobile-header mobile-panel">
+    <div class="sector-label">Sector 10 · Cosmology</div>
+    <h1 class="title">Cosmic Inflation</h1>
+</div>
+
+<button class="mobile-menu-toggle" onclick="toggleMobilePanel()">ℹ️</button>
+
+<div class="mobile-time-display mobile-panel">
+    <div class="time-display" id="mobileTimeDisplay">t = 0</div>
+    <div class="timeline-bar">
+        <div class="timeline-fill" id="mobileTimelineFill" style="width: 0%"></div>
+    </div>
+    <div class="timeline-markers">
+        <span>Planck</span>
+        <span>Inflation</span>
+        <span>End</span>
+        <span>CMB</span>
+        <span>Today</span>
+    </div>
+</div>
+
+<div class="mobile-stats mobile-panel">
+    <div class="stat-item">
+        <div class="stat-value" id="mobileScaleValue">10⁻³⁵</div>
+        <div class="stat-label">Size (m)</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value" id="mobileTemp">10³² K</div>
+        <div class="stat-label">Temp</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value" id="mobilePhase">Planck</div>
+        <div class="stat-label">Era</div>
+    </div>
+</div>
+
+<div class="mobile-action-btns mobile-panel">
+    <button class="mobile-action-btn" onclick="toggleSimulation()" id="mobilePlayBtn">START</button>
+    <button class="mobile-action-btn secondary" onclick="resetSimulation()">RESET</button>
+</div>
+
+<!-- Mobile Info Panel -->
+<div class="slide-panel" id="mobileSettingsPanel">
+    <div class="slide-panel-header">
+        <span class="slide-panel-title" id="mobileInfoTitle">Exponential Expansion</span>
+        <button class="slide-panel-close" onclick="toggleMobilePanel()">×</button>
+    </div>
+    <div class="mobile-info-text" id="mobileInfoText">
+        During inflation, space doubled in size every 10⁻³⁷ seconds. In just 10⁻³² seconds, the universe expanded by a factor of at least <strong>10²⁶</strong>—a region the size of a proton became larger than the observable universe today.
+    </div>
+    <div class="equation-title">Inflation Equation</div>
+    <div class="equation" style="font-size: 1rem;">
+        <span class="pink">a(t)</span> = a₀ × <span class="highlight">e</span><sup><span class="cyan">Ht</span></sup>
+    </div>
+</div>
+
+<!-- Mobile Navigation -->
+<nav class="mobile-nav">
+    <button class="mobile-nav-btn active" id="mobileExpansion" onclick="setMobileMode('expansion')">Expan-<br>sion</button>
+    <button class="mobile-nav-btn" id="mobileFluctuations" onclick="setMobileMode('fluctuations')">Quantum<br>Seeds</button>
+    <button class="mobile-nav-btn" id="mobileHorizon" onclick="setMobileMode('horizon')">Causal<br>Horizon</button>
+    <button class="mobile-nav-btn" id="mobileCmb" onclick="setMobileMode('cmb')">CMB<br>Pattern</button>
+</nav>
 
 <!-- Intro -->
 <div class="intro-overlay" id="introOverlay">
@@ -1234,9 +1601,138 @@ function drawHorizon(cx, cy, maxRadius) {
     }
 }
 
+// === MOBILE FUNCTIONS ===
+function toggleMobilePanel() {
+    const panel = document.getElementById('mobileSettingsPanel');
+    panel.classList.toggle('open');
+}
+
+function setMobileMode(mode) {
+    STATE.mode = mode;
+
+    // Update desktop buttons
+    document.querySelectorAll('.mode-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', ['expansion', 'fluctuations', 'horizon', 'cmb'][i] === mode);
+    });
+
+    // Update mobile buttons
+    document.querySelectorAll('.mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
+    const modeMap = {
+        'expansion': 'mobileExpansion',
+        'fluctuations': 'mobileFluctuations',
+        'horizon': 'mobileHorizon',
+        'cmb': 'mobileCmb'
+    };
+    const mobileBtn = document.getElementById(modeMap[mode]);
+    if (mobileBtn) mobileBtn.classList.add('active');
+
+    updateInfoPanel();
+    updateMobileInfoPanel();
+}
+
+function updateMobileInfoPanel() {
+    const infos = {
+        expansion: {
+            title: 'Exponential Expansion',
+            text: 'During inflation, space doubled in size every 10⁻³⁷ seconds. In just 10⁻³² seconds, the universe expanded by a factor of at least <strong>10²⁶</strong>.'
+        },
+        fluctuations: {
+            title: 'Quantum Seeds',
+            text: 'Tiny quantum fluctuations were stretched to cosmic scales. These became density variations that eventually <strong>collapsed into galaxies</strong>.'
+        },
+        horizon: {
+            title: 'Causal Horizon',
+            text: 'Regions of the CMB on opposite sides of the sky have the same temperature—but they were never in causal contact! Inflation solves this puzzle.'
+        },
+        cmb: {
+            title: 'Cosmic Microwave Background',
+            text: 'The CMB is the oldest light in the universe, released 380,000 years after the Big Bang. Its temperature variations are the <strong>fingerprint of inflation</strong>.'
+        }
+    };
+
+    const info = infos[STATE.mode];
+    document.getElementById('mobileInfoTitle').textContent = info.title;
+    document.getElementById('mobileInfoText').innerHTML = info.text;
+}
+
+function updateMobileDisplays() {
+    // Time display
+    let timeStr = '';
+    if (STATE.phase === 'planck') timeStr = '10⁻⁴³ s';
+    else if (STATE.phase === 'inflation') timeStr = '10⁻³⁶ s';
+    else if (STATE.phase === 'postinflation') timeStr = '10⁻³² s';
+    else if (STATE.phase === 'cmb') timeStr = '380,000 yr';
+    else timeStr = '13.8 Gyr';
+
+    document.getElementById('mobileTimeDisplay').textContent = 't = ' + timeStr;
+
+    // Timeline
+    const progress = (STATE.time / 10) * 100;
+    document.getElementById('mobileTimelineFill').style.width = progress + '%';
+
+    // Scale
+    let scaleExp;
+    if (STATE.phase === 'planck') scaleExp = -35;
+    else if (STATE.phase === 'inflation') {
+        const prog = (STATE.time - 1) / 2;
+        scaleExp = -35 + prog * 30;
+    }
+    else if (STATE.phase === 'postinflation') scaleExp = -5;
+    else if (STATE.phase === 'cmb') scaleExp = 23;
+    else scaleExp = 26;
+
+    document.getElementById('mobileScaleValue').textContent = '10' + formatExponent(Math.round(scaleExp));
+
+    // Temperature
+    let temp;
+    if (STATE.phase === 'planck') temp = '10³² K';
+    else if (STATE.phase === 'inflation') temp = '10²⁷ K';
+    else if (STATE.phase === 'postinflation') temp = '10¹⁵ K';
+    else if (STATE.phase === 'cmb') temp = '3,000 K';
+    else temp = '2.7 K';
+    document.getElementById('mobileTemp').textContent = temp;
+
+    // Phase
+    const phaseNames = {
+        'planck': 'Planck',
+        'inflation': 'Inflate',
+        'postinflation': 'Radiation',
+        'cmb': 'CMB',
+        'present': 'Today'
+    };
+    document.getElementById('mobilePhase').textContent = phaseNames[STATE.phase];
+
+    // Play button
+    document.getElementById('mobilePlayBtn').textContent = STATE.isRunning ? 'PAUSE' : 'START';
+}
+
+// Wrap original updateDisplays
+const originalUpdateDisplays = updateDisplays;
+updateDisplays = function() {
+    originalUpdateDisplays();
+    updateMobileDisplays();
+};
+
+// Wrap toggleSimulation
+const originalToggleSimulation = toggleSimulation;
+toggleSimulation = function() {
+    originalToggleSimulation();
+    document.getElementById('mobilePlayBtn').textContent = STATE.isRunning ? 'PAUSE' : 'START';
+};
+
+// Wrap resetSimulation
+const originalResetSimulation = resetSimulation;
+resetSimulation = function() {
+    originalResetSimulation();
+    document.getElementById('mobilePlayBtn').textContent = 'START';
+    updateMobileDisplays();
+};
+
 // === START ===
 init();
 updateInfoPanel();
+updateMobileInfoPanel();
+updateMobileDisplays();
 </script>
 
 </body>
