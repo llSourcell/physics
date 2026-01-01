@@ -532,12 +532,419 @@
             0% { stroke-dashoffset: 1000; }
             100% { stroke-dashoffset: 0; }
         }
+
+        /* ==================== MOBILE STYLES ==================== */
+        .mobile-panel {
+            display: none;
+        }
+
+        .mobile-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-glow);
+            z-index: 100;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .mobile-header .title {
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .mobile-header .sector-label {
+            font-size: 0.6rem;
+            margin-bottom: 0;
+        }
+
+        .mobile-stats {
+            position: fixed;
+            top: 70px;
+            left: 10px;
+            right: 10px;
+            padding: 10px 14px;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            z-index: 90;
+            flex-direction: row;
+            justify-content: space-around;
+            font-size: 0.7rem;
+        }
+
+        .mobile-stats .stat-item {
+            text-align: center;
+        }
+
+        .mobile-stats .stat-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 1rem;
+            color: var(--accent-cyan);
+        }
+
+        .mobile-stats .stat-label {
+            color: var(--text-dim);
+            font-size: 0.6rem;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            width: 44px;
+            height: 44px;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            color: var(--accent-cyan);
+            font-size: 1.3rem;
+            cursor: pointer;
+            z-index: 150;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid var(--border-glow);
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            z-index: 200;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .slide-panel.open {
+            transform: translateY(0);
+        }
+
+        .slide-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .slide-panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: var(--accent-purple);
+        }
+
+        .slide-panel-close {
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .mobile-control-group {
+            margin-bottom: 20px;
+        }
+
+        .mobile-control-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .mobile-control-name {
+            font-size: 0.8rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+        }
+
+        .mobile-control-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--accent-gold);
+        }
+
+        .mobile-slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-magenta));
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .mobile-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 28px;
+            height: 28px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--accent-purple);
+        }
+
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-top: 1px solid var(--border-glow);
+            padding: 10px 8px;
+            z-index: 100;
+            display: none;
+            justify-content: space-around;
+            gap: 6px;
+        }
+
+        .mobile-nav-btn {
+            flex: 1;
+            padding: 12px 6px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: var(--text-dim);
+            font-size: 0.65rem;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .mobile-nav-btn.active {
+            background: rgba(168, 85, 247, 0.3);
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .mobile-action-btn {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-magenta));
+            border: none;
+            border-radius: 30px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.8rem;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+            z-index: 90;
+            display: none;
+            white-space: nowrap;
+        }
+
+        .mobile-bell-result {
+            position: fixed;
+            bottom: 140px;
+            left: 10px;
+            right: 10px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--accent-purple);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            z-index: 85;
+            display: none;
+        }
+
+        .mobile-bell-result .equation-title {
+            font-size: 0.65rem;
+            margin-bottom: 8px;
+        }
+
+        .mobile-bell-result .stat-value {
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 900px) {
+            .header-panel {
+                max-width: 300px;
+                padding: 15px;
+            }
+            .title {
+                font-size: 1.2rem;
+            }
+            .subtitle {
+                font-size: 0.75rem;
+            }
+            .controls-panel {
+                width: 240px;
+                padding: 15px;
+            }
+            .stats-panel {
+                width: 260px;
+                padding: 15px;
+            }
+            .equation-panel {
+                max-width: 350px;
+                padding: 15px;
+            }
+            .correlation-panel {
+                width: 240px;
+            }
+            .detector-panel {
+                width: 150px;
+                padding: 12px;
+            }
+            .detector-left {
+                left: 50px;
+            }
+            .detector-right {
+                right: 50px;
+            }
+            .action-panel {
+                flex-direction: column;
+                gap: 8px;
+            }
+            .action-btn {
+                padding: 12px 20px;
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-panel, .controls-panel, .stats-panel, .equation-panel,
+            .mode-panel, .correlation-panel, .detector-panel, .action-panel {
+                display: none !important;
+            }
+
+            .mobile-header, .mobile-stats, .mobile-nav,
+            .mobile-action-btn, .mobile-bell-result {
+                display: flex;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .intro-content {
+                padding: 20px;
+            }
+
+            .intro-title {
+                font-size: 1.8rem;
+            }
+
+            .intro-quote {
+                font-size: 1rem;
+            }
+
+            .intro-text {
+                font-size: 0.9rem;
+            }
+
+            #mainCanvas {
+                touch-action: none;
+            }
+        }
     </style>
 </head>
 <body>
 
 <canvas id="mainCanvas"></canvas>
 <div class="vignette"></div>
+
+<!-- Mobile UI Elements -->
+<div class="mobile-header mobile-panel">
+    <div class="sector-label">Sector 08 · Quantum Foundations</div>
+    <h1 class="title">Quantum Entanglement</h1>
+</div>
+
+<button class="mobile-menu-toggle" onclick="toggleMobilePanel()">⚙️</button>
+
+<div class="mobile-stats mobile-panel">
+    <div class="stat-item">
+        <div class="stat-value" id="mobileTotalPairs">0</div>
+        <div class="stat-label">Pairs</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value" id="mobileCorrelation">0.00</div>
+        <div class="stat-label">Correlation</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-value" id="mobileSValue">0.00</div>
+        <div class="stat-label">S Value</div>
+    </div>
+</div>
+
+<div class="mobile-bell-result mobile-panel" id="mobileBellResult">
+    <div class="equation-title">Bell Inequality Test</div>
+    <div class="stat-value" id="mobileBellStatus">Tap to create pairs</div>
+</div>
+
+<button class="mobile-action-btn mobile-panel" onclick="createEntangledPair()">CREATE PAIR</button>
+
+<!-- Mobile Settings Panel -->
+<div class="slide-panel" id="mobileSettingsPanel">
+    <div class="slide-panel-header">
+        <span class="slide-panel-title">Detector Settings</span>
+        <button class="slide-panel-close" onclick="toggleMobilePanel()">×</button>
+    </div>
+
+    <div class="mobile-control-group">
+        <div class="mobile-control-label">
+            <span class="mobile-control-name">Detector A Angle</span>
+            <span class="mobile-control-value" id="mobileAngleADisplay">0°</span>
+        </div>
+        <input type="range" class="mobile-slider" id="mobileAngleASlider" min="0" max="360" step="1" value="0">
+    </div>
+
+    <div class="mobile-control-group">
+        <div class="mobile-control-label">
+            <span class="mobile-control-name">Detector B Angle</span>
+            <span class="mobile-control-value" id="mobileAngleBDisplay">0°</span>
+        </div>
+        <input type="range" class="mobile-slider" id="mobileAngleBSlider" min="0" max="360" step="1" value="0">
+    </div>
+
+    <div class="mobile-control-group">
+        <div class="mobile-control-label">
+            <span class="mobile-control-name">Pair Separation</span>
+            <span class="mobile-control-value" id="mobileSeparationDisplay">1 km</span>
+        </div>
+        <input type="range" class="mobile-slider" id="mobileSeparationSlider" min="1" max="1000" step="1" value="1">
+    </div>
+
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="action-btn secondary" style="flex: 1; display: block;" onclick="runBellTest(); toggleMobilePanel();">BELL TEST</button>
+        <button class="action-btn secondary" style="flex: 1; display: block;" onclick="resetStats();">RESET</button>
+    </div>
+</div>
+
+<!-- Mobile Navigation -->
+<nav class="mobile-nav">
+    <button class="mobile-nav-btn active" id="mobileEPR" onclick="setMobileMode('epr')">EPR<br>Experiment</button>
+    <button class="mobile-nav-btn" id="mobileBell" onclick="setMobileMode('bell')">Bell<br>Test</button>
+    <button class="mobile-nav-btn" id="mobileCorrelationBtn" onclick="setMobileMode('correlation')">Correlation<br>Graph</button>
+</nav>
 
 <!-- Intro Overlay -->
 <div class="intro-overlay" id="introOverlay">
@@ -1355,9 +1762,101 @@ function drawSeparation() {
     ctx.fillText('(Entanglement works at ANY distance - even across the universe)', canvas.width / 2, y + 20);
 }
 
+// === MOBILE FUNCTIONS ===
+function toggleMobilePanel() {
+    const panel = document.getElementById('mobileSettingsPanel');
+    panel.classList.toggle('open');
+}
+
+function setMobileMode(mode) {
+    STATE.mode = mode;
+
+    // Update desktop buttons
+    document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+    const modeBtn = document.getElementById('mode' + mode.charAt(0).toUpperCase() + mode.slice(1));
+    if (modeBtn) modeBtn.classList.add('active');
+
+    // Update mobile buttons
+    document.querySelectorAll('.mobile-nav-btn').forEach(btn => btn.classList.remove('active'));
+    if (mode === 'epr') document.getElementById('mobileEPR').classList.add('active');
+    else if (mode === 'bell') document.getElementById('mobileBell').classList.add('active');
+    else if (mode === 'correlation') document.getElementById('mobileCorrelationBtn').classList.add('active');
+}
+
+function setupMobileControls() {
+    const mobileAngleA = document.getElementById('mobileAngleASlider');
+    const mobileAngleB = document.getElementById('mobileAngleBSlider');
+    const mobileSeparation = document.getElementById('mobileSeparationSlider');
+
+    if (mobileAngleA) {
+        mobileAngleA.addEventListener('input', (e) => {
+            STATE.angleA = parseInt(e.target.value);
+            document.getElementById('angleASlider').value = STATE.angleA;
+            updateDisplays();
+            updateMobileDisplays();
+        });
+    }
+
+    if (mobileAngleB) {
+        mobileAngleB.addEventListener('input', (e) => {
+            STATE.angleB = parseInt(e.target.value);
+            document.getElementById('angleBSlider').value = STATE.angleB;
+            updateDisplays();
+            updateMobileDisplays();
+        });
+    }
+
+    if (mobileSeparation) {
+        mobileSeparation.addEventListener('input', (e) => {
+            STATE.separation = parseInt(e.target.value);
+            document.getElementById('separationSlider').value = STATE.separation;
+            updateDisplays();
+            updateMobileDisplays();
+        });
+    }
+}
+
+function updateMobileDisplays() {
+    document.getElementById('mobileAngleADisplay').textContent = STATE.angleA + '°';
+    document.getElementById('mobileAngleBDisplay').textContent = STATE.angleB + '°';
+    document.getElementById('mobileSeparationDisplay').textContent = STATE.separation + ' km';
+    document.getElementById('mobileAngleASlider').value = STATE.angleA;
+    document.getElementById('mobileAngleBSlider').value = STATE.angleB;
+    document.getElementById('mobileSeparationSlider').value = STATE.separation;
+
+    document.getElementById('mobileTotalPairs').textContent = STATE.stats.total;
+
+    if (STATE.stats.total > 0) {
+        const correlation = (STATE.stats.same - STATE.stats.opposite) / STATE.stats.total;
+        document.getElementById('mobileCorrelation').textContent = correlation.toFixed(2);
+    }
+
+    const sValue = calculateSValue();
+    document.getElementById('mobileSValue').textContent = sValue.toFixed(2);
+
+    // Update mobile bell status
+    if (STATE.stats.total >= 10) {
+        const correlation = (STATE.stats.same - STATE.stats.opposite) / STATE.stats.total;
+        if (sValue > 2) {
+            document.getElementById('mobileBellStatus').innerHTML = '<span style="color: var(--accent-magenta);">BELL VIOLATED!</span> S=' + sValue.toFixed(2);
+        } else {
+            document.getElementById('mobileBellStatus').textContent = 'S = ' + sValue.toFixed(2) + ' (need >2)';
+        }
+    }
+}
+
+// Wrap original updateStats to also update mobile
+const originalUpdateStats = updateStats;
+updateStats = function() {
+    originalUpdateStats();
+    updateMobileDisplays();
+};
+
 // === START ===
 init();
+setupMobileControls();
 updateDisplays();
+updateMobileDisplays();
 </script>
 
 </body>

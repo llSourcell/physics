@@ -554,6 +554,140 @@
             box-shadow: 0 0 60px rgba(0, 243, 255, 0.6);
         }
 
+        /* Mobile Toggle Button */
+        .mobile-menu-toggle {
+            display: none;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: 12px;
+            color: var(--accent-cyan);
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 100;
+            pointer-events: auto;
+        }
+
+        .mobile-panel {
+            display: none;
+        }
+
+        /* Mobile Bottom Nav */
+        .mobile-nav {
+            display: none;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-glow);
+            padding: 10px;
+            pointer-events: auto;
+        }
+
+        .mobile-nav-modes {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 10px;
+        }
+
+        .mobile-mode-btn {
+            flex: 1;
+            padding: 10px 5px;
+            margin: 0 3px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: var(--text-dim);
+            font-size: 0.65rem;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .mobile-mode-btn.active {
+            background: rgba(0, 243, 255, 0.2);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        .mobile-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding-bottom: env(safe-area-inset-bottom, 10px);
+        }
+
+        .mobile-play-btn {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .mobile-play-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        /* Slide-up Panel */
+        .slide-panel {
+            display: none;
+            position: absolute;
+            bottom: 100px;
+            left: 10px;
+            right: 10px;
+            max-height: 50vh;
+            overflow-y: auto;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            padding: 20px;
+            pointer-events: auto;
+        }
+
+        .slide-panel.open {
+            display: block;
+        }
+
+        .slide-panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .slide-panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: var(--accent-cyan);
+        }
+
+        .slide-panel-close {
+            width: 30px;
+            height: 30px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            color: var(--text-dim);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .gamma-display {
@@ -567,6 +701,186 @@
             }
             .info-panel {
                 display: none;
+            }
+
+            .header-panel {
+                max-width: calc(100% - 80px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            /* Hide desktop panels */
+            .header-panel,
+            .controls-panel,
+            .equation-panel,
+            .twins-panel,
+            .mode-panel,
+            .info-panel,
+            .gamma-display,
+            .play-btn,
+            .reset-btn {
+                display: none !important;
+            }
+
+            /* Show mobile UI */
+            .mobile-menu-toggle,
+            .mobile-nav,
+            .mobile-panel {
+                display: flex;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            /* Mobile header */
+            .mobile-header {
+                display: block;
+                position: absolute;
+                top: 15px;
+                left: 15px;
+                right: 70px;
+                pointer-events: none;
+            }
+
+            .mobile-header .sector-label {
+                font-size: 0.6rem;
+                margin-bottom: 4px;
+            }
+
+            .mobile-header .title {
+                font-size: 1.2rem;
+                margin-bottom: 0;
+            }
+
+            /* Mobile twins display */
+            .mobile-twins {
+                position: absolute;
+                top: 80px;
+                left: 15px;
+                right: 15px;
+                display: flex;
+                justify-content: space-between;
+                pointer-events: none;
+            }
+
+            .mobile-twin {
+                background: var(--bg-card);
+                backdrop-filter: blur(10px);
+                border: 1px solid var(--border-glow);
+                border-radius: 10px;
+                padding: 10px 15px;
+                text-align: center;
+            }
+
+            .mobile-twin-icon {
+                font-size: 1.5rem;
+                margin-bottom: 5px;
+            }
+
+            .mobile-twin-age {
+                font-family: 'Space Mono', monospace;
+                font-size: 1.1rem;
+                color: var(--text-bright);
+            }
+
+            .mobile-twin-label {
+                font-size: 0.6rem;
+                color: var(--text-dim);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+
+            /* Mobile gamma display */
+            .mobile-gamma {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                text-align: center;
+                pointer-events: none;
+                z-index: 5;
+            }
+
+            .mobile-gamma-value {
+                font-family: 'Orbitron', sans-serif;
+                font-size: 3rem;
+                font-weight: 900;
+                background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .mobile-gamma-label {
+                font-size: 0.7rem;
+                color: var(--text-dim);
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+            }
+
+            /* Intro overlay mobile */
+            .intro-content {
+                padding: 20px;
+            }
+
+            .intro-title {
+                font-size: 2rem;
+            }
+
+            .intro-quote {
+                font-size: 1rem;
+            }
+
+            .intro-text {
+                font-size: 0.9rem;
+                margin-bottom: 30px;
+            }
+
+            .intro-btn {
+                padding: 12px 30px;
+                font-size: 0.9rem;
+            }
+
+            /* Slider improvements for touch */
+            .slider {
+                height: 8px;
+            }
+
+            .slider::-webkit-slider-thumb {
+                width: 28px;
+                height: 28px;
+            }
+
+            .slider::-moz-range-thumb {
+                width: 28px;
+                height: 28px;
+            }
+        }
+
+        /* Small phones */
+        @media (max-width: 400px) {
+            .mobile-header .title {
+                font-size: 1rem;
+            }
+
+            .mobile-twin {
+                padding: 8px 10px;
+            }
+
+            .mobile-twin-age {
+                font-size: 1rem;
+            }
+
+            .mobile-gamma-value {
+                font-size: 2.5rem;
+            }
+
+            .mobile-mode-btn {
+                font-size: 0.55rem;
+                padding: 8px 3px;
             }
         }
 
@@ -710,6 +1024,77 @@
 
     <!-- Reset Button -->
     <button class="reset-btn" onclick="resetSimulation()">Reset</button>
+
+    <!-- Mobile UI -->
+    <div class="mobile-header mobile-panel">
+        <div class="sector-label">Sector 07 · Special Relativity</div>
+        <h1 class="title">Time Dilation</h1>
+    </div>
+
+    <button class="mobile-menu-toggle" onclick="toggleMobilePanel()">⚙️</button>
+
+    <div class="mobile-twins mobile-panel">
+        <div class="mobile-twin">
+            <div class="mobile-twin-icon">🌍</div>
+            <div class="mobile-twin-age" id="mobileEarthAge">0.00</div>
+            <div class="mobile-twin-label">Earth Twin</div>
+        </div>
+        <div class="mobile-twin">
+            <div class="mobile-twin-icon">🚀</div>
+            <div class="mobile-twin-age" id="mobileTravelerAge">0.00</div>
+            <div class="mobile-twin-label">Traveler</div>
+        </div>
+    </div>
+
+    <div class="mobile-gamma mobile-panel">
+        <div class="mobile-gamma-label">γ (Lorentz Factor)</div>
+        <div class="mobile-gamma-value" id="mobileGammaValue">1.00</div>
+    </div>
+
+    <!-- Mobile Slide-up Settings Panel -->
+    <div class="slide-panel" id="mobileSettingsPanel">
+        <div class="slide-panel-header">
+            <span class="slide-panel-title">Settings</span>
+            <button class="slide-panel-close" onclick="toggleMobilePanel()">×</button>
+        </div>
+        <div class="control-group">
+            <div class="control-label">
+                <span class="control-name">Velocity</span>
+                <span class="control-value" id="mobileVelocityDisplay">0.00c</span>
+            </div>
+            <input type="range" class="slider" id="mobileVelocitySlider" min="0" max="0.9999" step="0.0001" value="0">
+        </div>
+        <div class="control-group">
+            <div class="control-label">
+                <span class="control-name">Distance</span>
+                <span class="control-value" id="mobileDistanceDisplay">4.37 ly</span>
+            </div>
+            <input type="range" class="slider" id="mobileDistanceSlider" min="1" max="100" step="0.1" value="4.37">
+        </div>
+        <div class="control-group">
+            <div class="control-label">
+                <span class="control-name">Time Scale</span>
+                <span class="control-value" id="mobileTimeScaleDisplay">1x</span>
+            </div>
+            <input type="range" class="slider" id="mobileTimeScaleSlider" min="0.1" max="10" step="0.1" value="1">
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="mobile-nav">
+        <div class="mobile-nav-modes">
+            <button class="mobile-mode-btn active" id="mobileModeMinkowski" onclick="setMobileMode('minkowski')">Minkowski</button>
+            <button class="mobile-mode-btn" id="mobileModeLightclock" onclick="setMobileMode('lightclock')">Light Clock</button>
+            <button class="mobile-mode-btn" id="mobileModeTwins" onclick="setMobileMode('twins')">Twin Paradox</button>
+            <button class="mobile-mode-btn" id="mobileModeSpaceship" onclick="setMobileMode('spaceship')">Spaceship</button>
+        </div>
+        <div class="mobile-controls">
+            <button class="mobile-play-btn" onclick="togglePlay()">
+                <svg id="mobilePlayIcon" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+                <svg id="mobilePauseIcon" viewBox="0 0 24 24" style="display: none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+            </button>
+        </div>
+    </div>
 
 </div>
 
@@ -1588,10 +1973,106 @@ function drawSpaceshipVessel(x, y) {
     ctx.restore();
 }
 
+// === MOBILE FUNCTIONS ===
+function toggleMobilePanel() {
+    const panel = document.getElementById('mobileSettingsPanel');
+    panel.classList.toggle('open');
+}
+
+function setMobileMode(mode) {
+    setMode(mode);
+    // Update mobile mode buttons
+    document.querySelectorAll('.mobile-mode-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('mobileMode' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
+}
+
+function setupMobileControls() {
+    const mobileVelocitySlider = document.getElementById('mobileVelocitySlider');
+    const mobileDistanceSlider = document.getElementById('mobileDistanceSlider');
+    const mobileTimeScaleSlider = document.getElementById('mobileTimeScaleSlider');
+
+    if (mobileVelocitySlider) {
+        mobileVelocitySlider.addEventListener('input', (e) => {
+            STATE.velocity = parseFloat(e.target.value);
+            document.getElementById('velocitySlider').value = e.target.value;
+            updateGamma();
+            updateDisplays();
+            updateMobileDisplays();
+        });
+    }
+
+    if (mobileDistanceSlider) {
+        mobileDistanceSlider.addEventListener('input', (e) => {
+            STATE.distance = parseFloat(e.target.value);
+            document.getElementById('distanceSlider').value = e.target.value;
+            updateDisplays();
+            updateMobileDisplays();
+        });
+    }
+
+    if (mobileTimeScaleSlider) {
+        mobileTimeScaleSlider.addEventListener('input', (e) => {
+            STATE.timeScale = parseFloat(e.target.value);
+            document.getElementById('timeScaleSlider').value = e.target.value;
+            updateDisplays();
+            updateMobileDisplays();
+        });
+    }
+}
+
+function updateMobileDisplays() {
+    const mobileVelocityDisplay = document.getElementById('mobileVelocityDisplay');
+    const mobileDistanceDisplay = document.getElementById('mobileDistanceDisplay');
+    const mobileTimeScaleDisplay = document.getElementById('mobileTimeScaleDisplay');
+    const mobileGammaValue = document.getElementById('mobileGammaValue');
+    const mobileEarthAge = document.getElementById('mobileEarthAge');
+    const mobileTravelerAge = document.getElementById('mobileTravelerAge');
+
+    if (mobileVelocityDisplay) {
+        mobileVelocityDisplay.textContent = STATE.velocity.toFixed(4) + 'c';
+    }
+    if (mobileDistanceDisplay) {
+        mobileDistanceDisplay.textContent = STATE.distance.toFixed(2) + ' ly';
+    }
+    if (mobileTimeScaleDisplay) {
+        mobileTimeScaleDisplay.textContent = STATE.timeScale.toFixed(1) + 'x';
+    }
+    if (mobileGammaValue) {
+        mobileGammaValue.textContent = STATE.gamma === Infinity ? '∞' : STATE.gamma.toFixed(2);
+    }
+    if (mobileEarthAge) {
+        mobileEarthAge.textContent = STATE.earthAge.toFixed(2);
+    }
+    if (mobileTravelerAge) {
+        mobileTravelerAge.textContent = STATE.travelerAge.toFixed(2);
+    }
+}
+
+// Update togglePlay to also update mobile icons
+const originalTogglePlay = togglePlay;
+togglePlay = function() {
+    originalTogglePlay();
+    const mobilePlayIcon = document.getElementById('mobilePlayIcon');
+    const mobilePauseIcon = document.getElementById('mobilePauseIcon');
+    if (mobilePlayIcon && mobilePauseIcon) {
+        mobilePlayIcon.style.display = STATE.isPlaying ? 'none' : 'block';
+        mobilePauseIcon.style.display = STATE.isPlaying ? 'block' : 'none';
+    }
+};
+
+// Update updateAgeDisplays to also update mobile displays
+const originalUpdateAgeDisplays = updateAgeDisplays;
+updateAgeDisplays = function() {
+    originalUpdateAgeDisplays();
+    updateMobileDisplays();
+};
+
 // === START ===
 init();
+setupMobileControls();
 updateGamma();
 updateDisplays();
+updateMobileDisplays();
 updateInfoPanel();
 
 </script>
