@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hawking Radiation - Black Holes Aren't Forever</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Inter:wght@300;400;500;600&family=Space+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #020617;
+            --bg-card: rgba(15, 23, 42, 0.85);
+            --accent-cyan: #00f3ff;
+            --accent-magenta: #ff0080;
+            --accent-gold: #ffd700;
+            --accent-purple: #a855f7;
+            --accent-orange: #f97316;
+            --accent-red: #ef4444;
+            --text-bright: #f0f0f0;
+            --text-dim: #94a3b8;
+            --border-glow: rgba(239, 68, 68, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-bright);
+        }
+
+        #mainCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.8) 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .ui-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .ui-panel {
+            pointer-events: auto;
+            position: absolute;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glow);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 0 40px rgba(239, 68, 68, 0.1);
+        }
+
+        .header-panel {
+            top: 20px;
+            left: 20px;
+            max-width: 400px;
+        }
+
+        .sector-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+            margin-bottom: 8px;
+        }
+
+        .title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        /* Controls */
+        .controls-panel {
+            top: 20px;
+            right: 20px;
+            width: 320px;
+        }
+
+        .control-group {
+            margin-bottom: 18px;
+        }
+
+        .control-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .control-name {
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+        }
+
+        .control-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent-gold);
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            -webkit-appearance: none;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-red));
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--accent-orange);
+        }
+
+        /* Black Hole Stats */
+        .bh-stats-panel {
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--accent-cyan);
+        }
+
+        .stat-value.temp {
+            color: var(--accent-orange);
+        }
+
+        .stat-value.time {
+            color: var(--accent-gold);
+        }
+
+        /* Equation Panel */
+        .equation-panel {
+            bottom: 20px;
+            left: 20px;
+            max-width: 500px;
+        }
+
+        .equation-title {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--accent-red);
+            margin-bottom: 12px;
+        }
+
+        .equation {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.1rem;
+            color: var(--text-bright);
+            margin-bottom: 8px;
+        }
+
+        .equation .highlight { color: var(--accent-gold); }
+        .equation .cyan { color: var(--accent-cyan); }
+        .equation .orange { color: var(--accent-orange); }
+        .equation .red { color: var(--accent-red); }
+
+        .equation-explanation {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        /* Mode buttons */
+        .mode-panel {
+            top: 180px;
+            left: 20px;
+        }
+
+        .mode-btn {
+            display: block;
+            width: 100%;
+            padding: 10px 16px;
+            margin-bottom: 8px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+
+        .mode-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--accent-red);
+        }
+
+        .mode-btn.active {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--accent-red);
+            color: var(--accent-orange);
+        }
+
+        /* Timeline */
+        .timeline-panel {
+            bottom: 180px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            text-align: center;
+        }
+
+        .timeline-bar {
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timeline-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-red));
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .timeline-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+
+        /* Info box */
+        .info-panel {
+            top: 50%;
+            right: 360px;
+            transform: translateY(-50%);
+            max-width: 280px;
+        }
+
+        .info-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--accent-orange);
+            margin-bottom: 10px;
+        }
+
+        .info-text {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+
+        .info-text strong {
+            color: var(--accent-gold);
+        }
+
+        /* Particle counter */
+        .particle-panel {
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            min-width: 250px;
+        }
+
+        .particle-count {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            color: var(--accent-cyan);
+        }
+
+        .particle-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+        }
+
+        /* Action buttons */
+        .action-panel {
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+        }
+
+        .action-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+            border: none;
+            border-radius: 25px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .action-btn.secondary {
+            background: rgba(255,255,255,0.1);
+            box-shadow: none;
+        }
+
+        /* Intro */
+        .intro-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(2, 6, 23, 0.98);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 1s;
+        }
+
+        .intro-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .intro-content {
+            max-width: 750px;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .intro-eyebrow {
+            font-size: 0.75rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--accent-orange);
+            margin-bottom: 20px;
+        }
+
+        .intro-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-red), var(--accent-gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+
+        .intro-quote {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--text-dim);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .intro-quote cite {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--accent-gold);
+            font-style: normal;
+        }
+
+        .intro-text {
+            font-size: 1rem;
+            color: var(--text-dim);
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+
+        .intro-btn {
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-red));
+            border: none;
+            border-radius: 30px;
+            padding: 15px 40px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 0 40px rgba(239, 68, 68, 0.4);
+            transition: all 0.3s;
+        }
+
+        .intro-btn:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes radiate {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="mainCanvas"></canvas>
+<div class="vignette"></div>
+
+<!-- Intro -->
+<div class="intro-overlay" id="introOverlay">
+    <div class="intro-content">
+        <div class="intro-eyebrow">Sector 09 · Quantum Gravity</div>
+        <h1 class="intro-title">Hawking Radiation</h1>
+        <p class="intro-quote">
+            "Black holes ain't so black."
+            <cite>— Stephen Hawking, A Brief History of Time</cite>
+        </p>
+        <p class="intro-text">
+            In 1974, Stephen Hawking made one of the most stunning discoveries in theoretical physics: <strong>black holes aren't eternal</strong>. Quantum mechanics causes them to slowly radiate particles and eventually evaporate completely.<br><br>
+            At the event horizon, virtual particle pairs constantly pop into existence. Normally they annihilate instantly, but at the horizon's edge, one can fall in while the other escapes. The escaping particle carries away energy—and <strong>the black hole slowly shrinks</strong>.<br><br>
+            A stellar black hole takes 10<sup>67</sup> years to evaporate. But in its final moments, it explodes with the energy of millions of nuclear bombs.
+        </p>
+        <button class="intro-btn" onclick="startExperience()">WITNESS EVAPORATION</button>
+    </div>
+</div>
+
+<!-- UI -->
+<div class="ui-layer" id="uiLayer" style="opacity: 0; transition: opacity 1s;">
+
+    <div class="ui-panel header-panel">
+        <div class="sector-label">Sector 09 · Quantum Gravity</div>
+        <h1 class="title">Hawking Radiation</h1>
+        <p class="subtitle">Watch virtual particles become real at the event horizon. The black hole slowly evaporates, getting hotter as it shrinks.</p>
+    </div>
+
+    <div class="ui-panel mode-panel">
+        <button class="mode-btn active" onclick="setMode('virtual')">Virtual Pairs</button>
+        <button class="mode-btn" onclick="setMode('evaporation')">Evaporation</button>
+        <button class="mode-btn" onclick="setMode('temperature')">Temperature</button>
+        <button class="mode-btn" onclick="setMode('information')">Info Paradox</button>
+    </div>
+
+    <div class="ui-panel controls-panel">
+        <div class="control-group">
+            <div class="control-label">
+                <span class="control-name">Black Hole Mass</span>
+                <span class="control-value" id="massDisplay">10 M☉</span>
+            </div>
+            <input type="range" class="slider" id="massSlider" min="0.1" max="100" step="0.1" value="10">
+        </div>
+        <div class="control-group">
+            <div class="control-label">
+                <span class="control-name">Time Acceleration</span>
+                <span class="control-value" id="timeDisplay">1x</span>
+            </div>
+            <input type="range" class="slider" id="timeSlider" min="1" max="100" step="1" value="1">
+        </div>
+        <div class="control-group">
+            <div class="control-label">
+                <span class="control-name">Virtual Pair Rate</span>
+                <span class="control-value" id="rateDisplay">Medium</span>
+            </div>
+            <input type="range" class="slider" id="rateSlider" min="1" max="10" step="1" value="5">
+        </div>
+    </div>
+
+    <div class="ui-panel particle-panel">
+        <div class="particle-label">Particles Radiated</div>
+        <div class="particle-count" id="particleCount">0</div>
+    </div>
+
+    <div class="ui-panel bh-stats-panel">
+        <div class="equation-title">Black Hole Properties</div>
+        <div class="stat-grid">
+            <div class="stat-box">
+                <div class="stat-label">Schwarzschild Radius</div>
+                <div class="stat-value" id="radiusValue">29.5 km</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Hawking Temperature</div>
+                <div class="stat-value temp" id="tempValue">6.2 nK</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Luminosity</div>
+                <div class="stat-value" id="luminosityValue">9×10⁻³¹ W</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Evaporation Time</div>
+                <div class="stat-value time" id="evapTimeValue">10⁶⁷ yr</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-panel info-panel" id="infoPanel">
+        <div class="info-title">Virtual Particle Pairs</div>
+        <div class="info-text" id="infoText">
+            Quantum uncertainty allows particle-antiparticle pairs to briefly pop into existence everywhere in space. At the event horizon, <strong>one particle can escape</strong> while its partner falls in. The escaping particle becomes real—this is Hawking radiation.
+        </div>
+    </div>
+
+    <div class="ui-panel equation-panel">
+        <div class="equation-title">Hawking Temperature</div>
+        <div class="equation">
+            <span class="orange">T</span> = <span class="highlight">ℏc³</span> / (8π<span class="cyan">GM</span>k<sub>B</sub>)
+        </div>
+        <div class="equation" style="font-size: 0.9rem; margin-top: 10px;">
+            Smaller mass → <span class="red">Higher temperature</span> → Faster evaporation
+        </div>
+        <div class="equation-explanation">
+            A 10 solar mass black hole is incredibly cold (6 nanokelvins). But as it shrinks, it gets hotter. In its final second, it reaches trillions of degrees and explodes.
+        </div>
+    </div>
+
+    <div class="action-panel">
+        <button class="action-btn" onclick="toggleSimulation()">
+            <span id="playLabel">START</span>
+        </button>
+        <button class="action-btn secondary" onclick="resetSimulation()">RESET</button>
+        <button class="action-btn secondary" onclick="fastForward()">FAST FORWARD →</button>
+    </div>
+
+</div>
+
+<script>
+// ============================================
+// HAWKING RADIATION VISUALIZATION
+// Black Holes Aren't Forever
+// ============================================
+
+const canvas = document.getElementById('mainCanvas');
+const ctx = canvas.getContext('2d');
+
+// === CONSTANTS ===
+const SOLAR_MASS = 1.989e30; // kg
+const G = 6.674e-11;
+const C = 3e8;
+const HBAR = 1.055e-34;
+const K_B = 1.381e-23;
+
+// === STATE ===
+const STATE = {
+    mode: 'virtual',
+    mass: 10, // Solar masses
+    initialMass: 10,
+    timeAccel: 1,
+    pairRate: 5,
+    isRunning: false,
+    time: 0,
+    particlesRadiated: 0,
+    virtualPairs: [],
+    escapingParticles: [],
+    fallingParticles: [],
+    radiationRings: [],
+    stars: [],
+    accretionParticles: []
+};
+
+const COLORS = {
+    cyan: '#00f3ff',
+    magenta: '#ff0080',
+    gold: '#ffd700',
+    orange: '#f97316',
+    red: '#ef4444',
+    purple: '#a855f7',
+    white: '#ffffff',
+    dim: 'rgba(255, 255, 255, 0.3)'
+};
+
+// === INIT ===
+function init() {
+    resize();
+    window.addEventListener('resize', resize);
+
+    for (let i = 0; i < 300; i++) {
+        STATE.stars.push({
+            x: Math.random(),
+            y: Math.random(),
+            size: Math.random() * 1.5 + 0.5,
+            brightness: Math.random()
+        });
+    }
+
+    setupControls();
+    updateDisplays();
+    requestAnimationFrame(loop);
+}
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+function setupControls() {
+    document.getElementById('massSlider').addEventListener('input', e => {
+        STATE.mass = parseFloat(e.target.value);
+        STATE.initialMass = STATE.mass;
+        updateDisplays();
+    });
+
+    document.getElementById('timeSlider').addEventListener('input', e => {
+        STATE.timeAccel = parseInt(e.target.value);
+        updateDisplays();
+    });
+
+    document.getElementById('rateSlider').addEventListener('input', e => {
+        STATE.pairRate = parseInt(e.target.value);
+        updateDisplays();
+    });
+}
+
+function updateDisplays() {
+    document.getElementById('massDisplay').textContent = STATE.mass.toFixed(1) + ' M☉';
+    document.getElementById('timeDisplay').textContent = STATE.timeAccel + 'x';
+
+    const rates = ['Very Low', 'Low', 'Medium-Low', 'Medium', 'Medium', 'Medium-High', 'High', 'High', 'Very High', 'Maximum'];
+    document.getElementById('rateDisplay').textContent = rates[STATE.pairRate - 1];
+
+    // Calculate physical properties
+    const massKg = STATE.mass * SOLAR_MASS;
+    const rs = 2 * G * massKg / (C * C); // Schwarzschild radius
+    const rsKm = rs / 1000;
+
+    // Hawking temperature
+    const temp = (HBAR * C * C * C) / (8 * Math.PI * G * massKg * K_B);
+
+    // Luminosity (Stefan-Boltzmann for black body)
+    const area = 4 * Math.PI * rs * rs;
+    const sigma = 5.67e-8;
+    const luminosity = sigma * area * Math.pow(temp, 4);
+
+    // Evaporation time (approximate)
+    const evapTime = (5120 * Math.PI * G * G * Math.pow(massKg, 3)) / (HBAR * C * C * C * C);
+    const evapYears = evapTime / (365.25 * 24 * 3600);
+
+    document.getElementById('radiusValue').textContent = formatNumber(rsKm) + ' km';
+    document.getElementById('tempValue').textContent = formatTemp(temp);
+    document.getElementById('luminosityValue').textContent = formatPower(luminosity);
+    document.getElementById('evapTimeValue').textContent = formatTime(evapYears);
+
+    document.getElementById('particleCount').textContent = STATE.particlesRadiated;
+}
+
+function formatNumber(n) {
+    if (n < 0.01) return n.toExponential(1);
+    if (n < 1) return n.toFixed(2);
+    if (n < 100) return n.toFixed(1);
+    return n.toFixed(0);
+}
+
+function formatTemp(t) {
+    if (t < 1e-9) return (t * 1e12).toFixed(1) + ' pK';
+    if (t < 1e-6) return (t * 1e9).toFixed(1) + ' nK';
+    if (t < 1e-3) return (t * 1e6).toFixed(1) + ' μK';
+    if (t < 1) return (t * 1e3).toFixed(1) + ' mK';
+    if (t < 1000) return t.toFixed(1) + ' K';
+    return t.toExponential(1) + ' K';
+}
+
+function formatPower(p) {
+    if (p < 1e-30) return p.toExponential(0) + ' W';
+    if (p < 1e-20) return p.toExponential(0) + ' W';
+    if (p < 1) return p.toExponential(1) + ' W';
+    return p.toExponential(1) + ' W';
+}
+
+function formatTime(years) {
+    if (years < 1e10) return years.toExponential(0) + ' yr';
+    const exp = Math.floor(Math.log10(years));
+    return '10^' + exp + ' yr';
+}
+
+// === SIMULATION ===
+function toggleSimulation() {
+    STATE.isRunning = !STATE.isRunning;
+    document.getElementById('playLabel').textContent = STATE.isRunning ? 'PAUSE' : 'START';
+}
+
+function resetSimulation() {
+    STATE.isRunning = false;
+    STATE.mass = STATE.initialMass;
+    STATE.time = 0;
+    STATE.particlesRadiated = 0;
+    STATE.virtualPairs = [];
+    STATE.escapingParticles = [];
+    STATE.fallingParticles = [];
+    STATE.radiationRings = [];
+    document.getElementById('playLabel').textContent = 'START';
+    updateDisplays();
+}
+
+function fastForward() {
+    // Jump ahead in time
+    for (let i = 0; i < 50; i++) {
+        createVirtualPair();
+        STATE.particlesRadiated += 1;
+    }
+    // Decrease mass slightly
+    STATE.mass *= 0.99;
+    updateDisplays();
+}
+
+function createVirtualPair() {
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    // Event horizon radius (visual)
+    const bhRadius = 50 + STATE.mass * 5;
+
+    // Create pair just outside horizon
+    const angle = Math.random() * Math.PI * 2;
+    const dist = bhRadius + 10 + Math.random() * 20;
+
+    const x = cx + Math.cos(angle) * dist;
+    const y = cy + Math.sin(angle) * dist;
+
+    STATE.virtualPairs.push({
+        x: x,
+        y: y,
+        angle: angle,
+        life: 1,
+        separated: false,
+        separateTime: 0.3 + Math.random() * 0.3
+    });
+}
+
+function setMode(mode) {
+    STATE.mode = mode;
+    document.querySelectorAll('.mode-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', ['virtual', 'evaporation', 'temperature', 'information'][i] === mode);
+    });
+
+    const infos = {
+        virtual: {
+            title: 'Virtual Particle Pairs',
+            text: 'Quantum uncertainty allows particle-antiparticle pairs to briefly pop into existence everywhere in space. At the event horizon, <strong>one particle can escape</strong> while its partner falls in. The escaping particle becomes real—this is Hawking radiation.'
+        },
+        evaporation: {
+            title: 'Black Hole Evaporation',
+            text: 'Each escaping particle carries away energy. By E=mc², this means the black hole <strong>loses mass</strong>. A stellar black hole takes 10<sup>67</sup> years to evaporate—far longer than the age of the universe. But primordial black holes from the Big Bang could be evaporating right now.'
+        },
+        temperature: {
+            title: 'Hawking Temperature',
+            text: 'Smaller black holes are <strong>hotter</strong>. As a black hole shrinks, its temperature rises. In its final moments, it reaches trillions of degrees and releases a burst of gamma rays. A black hole the mass of a mountain would glow white-hot.'
+        },
+        information: {
+            title: 'The Information Paradox',
+            text: 'If black holes evaporate completely, what happens to information that fell in? Quantum mechanics says information can\'t be destroyed. This <strong>information paradox</strong> remains one of physics\' greatest unsolved mysteries. Hawking eventually conceded information might escape.'
+        }
+    };
+
+    document.getElementById('infoTitle').textContent = infos[mode].title;
+    document.getElementById('infoText').innerHTML = infos[mode].text;
+}
+
+function startExperience() {
+    document.getElementById('introOverlay').classList.add('hidden');
+    document.getElementById('uiLayer').style.opacity = '1';
+}
+
+// === MAIN LOOP ===
+let lastTime = 0;
+function loop(timestamp) {
+    const dt = (timestamp - lastTime) / 1000;
+    lastTime = timestamp;
+
+    if (STATE.isRunning) {
+        update(dt);
+    }
+
+    draw();
+    requestAnimationFrame(loop);
+}
+
+function update(dt) {
+    STATE.time += dt * STATE.timeAccel;
+
+    // Create virtual pairs
+    if (Math.random() < STATE.pairRate * 0.1 * dt * 60) {
+        createVirtualPair();
+    }
+
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const bhRadius = 50 + STATE.mass * 5;
+
+    // Update virtual pairs
+    STATE.virtualPairs = STATE.virtualPairs.filter(pair => {
+        pair.life -= dt * 2;
+
+        if (!pair.separated && pair.life < pair.separateTime) {
+            pair.separated = true;
+
+            // One escapes, one falls
+            const escapeAngle = pair.angle + (Math.random() - 0.5) * 0.5;
+            STATE.escapingParticles.push({
+                x: pair.x,
+                y: pair.y,
+                vx: Math.cos(escapeAngle) * 100,
+                vy: Math.sin(escapeAngle) * 100,
+                life: 1,
+                color: COLORS.cyan
+            });
+
+            const fallAngle = pair.angle + Math.PI;
+            STATE.fallingParticles.push({
+                x: pair.x,
+                y: pair.y,
+                angle: fallAngle,
+                life: 1,
+                color: COLORS.magenta
+            });
+
+            STATE.particlesRadiated++;
+
+            // Radiation ring
+            STATE.radiationRings.push({
+                x: cx,
+                y: cy,
+                radius: bhRadius,
+                maxRadius: bhRadius + 100,
+                alpha: 0.5
+            });
+        }
+
+        return pair.life > 0 && !pair.separated;
+    });
+
+    // Update escaping particles
+    STATE.escapingParticles = STATE.escapingParticles.filter(p => {
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.life -= dt * 0.5;
+        return p.life > 0;
+    });
+
+    // Update falling particles
+    STATE.fallingParticles = STATE.fallingParticles.filter(p => {
+        const dx = cx - p.x;
+        const dy = cy - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist > 5) {
+            p.x += (dx / dist) * 150 * dt;
+            p.y += (dy / dist) * 150 * dt;
+        }
+
+        p.life -= dt;
+        return dist > bhRadius * 0.3 && p.life > 0;
+    });
+
+    // Update radiation rings
+    STATE.radiationRings = STATE.radiationRings.filter(r => {
+        r.radius += 50 * dt;
+        r.alpha -= dt * 0.5;
+        return r.alpha > 0;
+    });
+
+    // Very slow mass loss (visual effect)
+    if (STATE.particlesRadiated % 100 === 0 && STATE.particlesRadiated > 0) {
+        STATE.mass *= 0.999;
+    }
+
+    updateDisplays();
+}
+
+function draw() {
+    ctx.fillStyle = '#020617';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Stars
+    STATE.stars.forEach(star => {
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness * 0.5})`;
+        ctx.beginPath();
+        ctx.arc(star.x * canvas.width, star.y * canvas.height, star.size, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const bhRadius = 50 + STATE.mass * 5;
+
+    // Gravitational lensing effect (simple)
+    drawLensingRing(cx, cy, bhRadius);
+
+    // Event horizon
+    drawBlackHole(cx, cy, bhRadius);
+
+    // Radiation rings
+    STATE.radiationRings.forEach(r => {
+        ctx.strokeStyle = `rgba(249, 115, 22, ${r.alpha})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+        ctx.stroke();
+    });
+
+    // Virtual pairs
+    STATE.virtualPairs.forEach(pair => {
+        drawVirtualPair(pair);
+    });
+
+    // Escaping particles (Hawking radiation)
+    STATE.escapingParticles.forEach(p => {
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 15);
+        gradient.addColorStop(0, p.color);
+        gradient.addColorStop(1, 'transparent');
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 15, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    });
+
+    // Falling particles
+    STATE.fallingParticles.forEach(p => {
+        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 10);
+        gradient.addColorStop(0, p.color);
+        gradient.addColorStop(1, 'transparent');
+        ctx.globalAlpha = p.life;
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 10, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+    });
+
+    // Labels
+    drawLabels(cx, cy, bhRadius);
+}
+
+function drawBlackHole(x, y, radius) {
+    // Accretion disk glow
+    const diskGradient = ctx.createRadialGradient(x, y, radius * 0.8, x, y, radius * 3);
+    diskGradient.addColorStop(0, 'rgba(239, 68, 68, 0.3)');
+    diskGradient.addColorStop(0.3, 'rgba(249, 115, 22, 0.2)');
+    diskGradient.addColorStop(0.6, 'rgba(234, 179, 8, 0.1)');
+    diskGradient.addColorStop(1, 'transparent');
+    ctx.fillStyle = diskGradient;
+    ctx.beginPath();
+    ctx.arc(x, y, radius * 3, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Photon sphere
+    ctx.strokeStyle = 'rgba(255, 200, 100, 0.3)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 10]);
+    ctx.beginPath();
+    ctx.arc(x, y, radius * 1.5, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Event horizon
+    const bhGradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+    bhGradient.addColorStop(0, '#000000');
+    bhGradient.addColorStop(0.7, '#000000');
+    bhGradient.addColorStop(1, 'rgba(30, 30, 50, 1)');
+    ctx.fillStyle = bhGradient;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Edge glow
+    ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.stroke();
+}
+
+function drawLensingRing(x, y, radius) {
+    // Einstein ring effect
+    for (let i = 0; i < 3; i++) {
+        const r = radius * (1.8 + i * 0.3);
+        ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 - i * 0.03})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+}
+
+function drawVirtualPair(pair) {
+    const size = 8;
+    const separation = (1 - pair.life) * 15;
+
+    // Particle
+    const gradient1 = ctx.createRadialGradient(
+        pair.x + separation, pair.y, 0,
+        pair.x + separation, pair.y, size
+    );
+    gradient1.addColorStop(0, COLORS.cyan);
+    gradient1.addColorStop(1, 'transparent');
+    ctx.globalAlpha = pair.life;
+    ctx.fillStyle = gradient1;
+    ctx.beginPath();
+    ctx.arc(pair.x + separation, pair.y, size, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Anti-particle
+    const gradient2 = ctx.createRadialGradient(
+        pair.x - separation, pair.y, 0,
+        pair.x - separation, pair.y, size
+    );
+    gradient2.addColorStop(0, COLORS.magenta);
+    gradient2.addColorStop(1, 'transparent');
+    ctx.fillStyle = gradient2;
+    ctx.beginPath();
+    ctx.arc(pair.x - separation, pair.y, size, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Connection line
+    ctx.strokeStyle = `rgba(168, 85, 247, ${pair.life * 0.5})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(pair.x - separation, pair.y);
+    ctx.lineTo(pair.x + separation, pair.y);
+    ctx.stroke();
+
+    ctx.globalAlpha = 1;
+}
+
+function drawLabels(cx, cy, radius) {
+    ctx.font = '11px Space Mono';
+    ctx.textAlign = 'center';
+
+    // Event horizon label
+    ctx.fillStyle = COLORS.red;
+    ctx.fillText('EVENT HORIZON', cx, cy + radius + 25);
+
+    // Photon sphere label
+    ctx.fillStyle = COLORS.gold;
+    ctx.fillText('PHOTON SPHERE', cx + radius * 1.5 + 60, cy);
+
+    // Hawking radiation label
+    if (STATE.escapingParticles.length > 0) {
+        ctx.fillStyle = COLORS.cyan;
+        ctx.fillText('← HAWKING RADIATION', cx + radius * 2.5, cy - 50);
+    }
+}
+
+// === START ===
+init();
+</script>
+
+</body>
+</html>
